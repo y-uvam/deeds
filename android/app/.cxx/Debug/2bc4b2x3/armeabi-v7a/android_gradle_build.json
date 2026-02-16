@@ -1,6 +1,7 @@
 {
   "buildFiles": [
     "/Users/yuvam/Documents/React Native/deeds/node_modules/react-native-safe-area-context/android/src/main/jni/CMakeLists.txt",
+    "/Users/yuvam/Documents/React Native/deeds/node_modules/react-native-screens/android/src/main/jni/CMakeLists.txt",
     "/Users/yuvam/Documents/React Native/deeds/node_modules/react-native/ReactAndroid/cmake-utils/default-app-setup/CMakeLists.txt"
   ],
   "cleanCommandsComponents": [
@@ -27,6 +28,17 @@
         "/Users/yuvam/.gradle/caches/9.0.0/transforms/5fa135f9220cf0ae1e3ee40cd371125b/transformed/fbjni-0.7.0/prefab/modules/fbjni/libs/android.armeabi-v7a/libfbjni.so",
         "/Users/yuvam/.gradle/caches/9.0.0/transforms/ea12ac1f332b31fb5e1a55c985795b89/transformed/react-android-0.82.0-debug/prefab/modules/jsi/libs/android.armeabi-v7a/libjsi.so",
         "/Users/yuvam/.gradle/caches/9.0.0/transforms/ea12ac1f332b31fb5e1a55c985795b89/transformed/react-android-0.82.0-debug/prefab/modules/reactnative/libs/android.armeabi-v7a/libreactnative.so"
+      ]
+    },
+    "react_codegen_rnscreens::@25bcbd507e98d3a854ad": {
+      "toolchain": "toolchain",
+      "abi": "armeabi-v7a",
+      "artifactName": "react_codegen_rnscreens",
+      "output": "/Users/yuvam/Documents/React Native/deeds/android/app/build/intermediates/cxx/Debug/2bc4b2x3/obj/armeabi-v7a/libreact_codegen_rnscreens.so",
+      "runtimeFiles": [
+        "/Users/yuvam/.gradle/caches/9.0.0/transforms/ea12ac1f332b31fb5e1a55c985795b89/transformed/react-android-0.82.0-debug/prefab/modules/reactnative/libs/android.armeabi-v7a/libreactnative.so",
+        "/Users/yuvam/.gradle/caches/9.0.0/transforms/ea12ac1f332b31fb5e1a55c985795b89/transformed/react-android-0.82.0-debug/prefab/modules/jsi/libs/android.armeabi-v7a/libjsi.so",
+        "/Users/yuvam/.gradle/caches/9.0.0/transforms/5fa135f9220cf0ae1e3ee40cd371125b/transformed/fbjni-0.7.0/prefab/modules/fbjni/libs/android.armeabi-v7a/libfbjni.so"
       ]
     },
     "react_codegen_safeareacontext::@7984cd80db47aa7b952a": {

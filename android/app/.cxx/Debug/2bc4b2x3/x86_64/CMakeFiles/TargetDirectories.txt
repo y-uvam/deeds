@@ -1,6 +1,12 @@
 /Users/yuvam/Documents/React Native/deeds/android/app/.cxx/Debug/2bc4b2x3/x86_64/CMakeFiles/appmodules.dir
 /Users/yuvam/Documents/React Native/deeds/android/app/.cxx/Debug/2bc4b2x3/x86_64/CMakeFiles/edit_cache.dir
 /Users/yuvam/Documents/React Native/deeds/android/app/.cxx/Debug/2bc4b2x3/x86_64/CMakeFiles/rebuild_cache.dir
+/Users/yuvam/Documents/React Native/deeds/android/app/.cxx/Debug/2bc4b2x3/x86_64/rngesturehandler_codegen_autolinked_build/CMakeFiles/react_codegen_rngesturehandler_codegen.dir
+/Users/yuvam/Documents/React Native/deeds/android/app/.cxx/Debug/2bc4b2x3/x86_64/rngesturehandler_codegen_autolinked_build/CMakeFiles/edit_cache.dir
+/Users/yuvam/Documents/React Native/deeds/android/app/.cxx/Debug/2bc4b2x3/x86_64/rngesturehandler_codegen_autolinked_build/CMakeFiles/rebuild_cache.dir
 /Users/yuvam/Documents/React Native/deeds/android/app/.cxx/Debug/2bc4b2x3/x86_64/safeareacontext_autolinked_build/CMakeFiles/react_codegen_safeareacontext.dir
 /Users/yuvam/Documents/React Native/deeds/android/app/.cxx/Debug/2bc4b2x3/x86_64/safeareacontext_autolinked_build/CMakeFiles/edit_cache.dir
 /Users/yuvam/Documents/React Native/deeds/android/app/.cxx/Debug/2bc4b2x3/x86_64/safeareacontext_autolinked_build/CMakeFiles/rebuild_cache.dir
+/Users/yuvam/Documents/React Native/deeds/android/app/.cxx/Debug/2bc4b2x3/x86_64/rnscreens_autolinked_build/CMakeFiles/react_codegen_rnscreens.dir
+/Users/yuvam/Documents/React Native/deeds/android/app/.cxx/Debug/2bc4b2x3/x86_64/rnscreens_autolinked_build/CMakeFiles/edit_cache.dir
+/Users/yuvam/Documents/React Native/deeds/android/app/.cxx/Debug/2bc4b2x3/x86_64/rnscreens_autolinked_build/CMakeFiles/rebuild_cache.dir

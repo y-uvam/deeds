@@ -1,0 +1,16 @@
+export const routesConstants = {
+  Login: 'Login',
+  Splash: 'Splash',
+  ForgotPassword: 'ForgotPassword',
+  Checkinbox: 'CheckInbox',
+  Dashboard: 'Dashboard',
+  NewRepair: 'NewRepair',
+  Notification: 'Notification',
+  Settings: 'Settings',
+  BottomTabs: 'BottomTabs',
+  DetailView: 'DetailView',
+  Task: 'Task',
+  TaskDetails: 'TaskDetails',
+  ReportAnIssue: 'ReportAnIssue',
+  EditProfile: 'EditProfile',
+};
