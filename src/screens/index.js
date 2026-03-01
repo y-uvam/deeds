@@ -6,7 +6,7 @@ export * from './dashboard/dashboard';
 export * from './newrepair/newrepair';
 export * from './notification/notification';
 export * from './settings/settings';
-export * from './detailView/detailView';
+
 export * from './tasks/tasks';
 export * from './taskdetails/taskdetails';
 export * from './reportIssue/reportissue';

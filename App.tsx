@@ -4,15 +4,25 @@ import {
   useSafeAreaInsets,
 } from 'react-native-safe-area-context';
 import Routes from './src/navigation/routes';
-
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { KeyboardProvider } from 'react-native-keyboard-controller';
+import { Loader } from './src/components';
+//vagama6094@fentaoba.com
 function App() {
   const isDarkMode = useColorScheme() === 'dark';
 
   return (
+   <GestureHandlerRootView style={{flex: 1}}>
     <SafeAreaProvider>
-      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-      <Routes />
+      <View style={styles.container}>
+      <StatusBar barStyle={isDarkMode?'light-content':'dark-content'} />
+        {/* <KeyboardProvider> */}
+            <Routes />
+            {/* <Loader /> */}
+        {/* </KeyboardProvider> */}
+      </View>
     </SafeAreaProvider>
+    </GestureHandlerRootView>
   );
 }
 
