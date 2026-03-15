@@ -14,7 +14,7 @@ export const goBack = () => {
   navigationRef.current.goBack();
 };
 
-export const reset = (name, index, data = null) => {
+export const reset = (name, index = 0, data = null) => {
   navigationRef?.current?.dispatch(
     CommonActions.reset({
       index: index,

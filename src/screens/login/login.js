@@ -1,79 +1,77 @@
-import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-} from 'react-native';
-import { AppBackground, CustomInput, GlassCard, CustomButton } from '../../components';
-import { colors, scales } from '../../utils';
+import React, { useState, useRef, useEffect } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, KeyboardAvoidingView, Platform } from 'react-native';
+import { AppBackground, CustomInput, CustomButton, CustomBottomSheet } from '../../components';
+import { colors, commonText, scales } from '../../utils';
 import { fontFamily, appImages } from '../../assets';
+import { navigate, reset, routesConstants } from '../../navigation';
+import LottieView from 'lottie-react-native';
+import { animations } from '../../animations/animations';
 
 export const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const bottomSheetRef = useRef(null);
+
+  useEffect(() => {
+    const timer = setTimeout(() => bottomSheetRef.current?.present(), 100);
+    return () => clearTimeout(timer);
+  }, []);
 
   return (
     <AppBackground>
-      <KeyboardAvoidingView
-        style={styles.kav}
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-      >
-        <ScrollView
-          contentContainerStyle={styles.scroll}
-          keyboardShouldPersistTaps="handled"
-          showsVerticalScrollIndicator={false}
+      <KeyboardAvoidingView style={styles.kav} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+          <LottieView
+                source={animations.auth}
+                autoPlay
+                loop={true}
+                style={{ width: '50%', height: '50%',alignSelf:'center' }}
+              />
+        <CustomBottomSheet
+          ref={bottomSheetRef}
+          snapPoints={['55%']}
+          enablePanDownToClose={false}
+          title={commonText.welcomeMessage}
+          subtitle={commonText.letstart}
         >
-          <GlassCard>
-
-             <Text style={styles.title}>Welcome Back, Buddy !</Text>
-            <Text style={styles.subtitle}>Let's Get You Back In</Text>
-
-            <View style={styles.spacer} />
-{/*
-
+          <View style={styles.formContainer}>
             <CustomInput
-              label="Email Address"
-              placeholder="Enter Email Address"
+              label={commonText.email}
+              placeholder={commonText.enteremailaddress}
               value={email}
               onChangeText={setEmail}
-              icon={appImages.mail}   // replace with an email icon if you add one
+              icon={appImages.mail}
             />
 
-
             <CustomInput
-              label="Password"
-              placeholder="Enter Password"
+              label={commonText.password}
+              placeholder={commonText.enterpassword}
               value={password}
               onChangeText={setPassword}
               isPassword
-              icon={appImages.lock}        // replace with a lock icon if you add one
+              icon={appImages.lock}
             />
 
-            <TouchableOpacity style={styles.forgotRow} activeOpacity={0.7}>
-              <Text style={styles.forgotText}>Forgot Password?</Text>
+            <TouchableOpacity style={styles.forgotRow} activeOpacity={0.7} onPress={()=>{
+              navigate(routesConstants.ForgotPassword)
+            }}>
+              <Text style={styles.forgotText}>{commonText.forgotPassword}</Text>
             </TouchableOpacity>
 
-            <View style={styles.spacer} />
-
             <CustomButton
-              label="Let's Go"
-              onPress={() => {}}
+              label={commonText.letsGo}
+              onPress={() => {reset(routesConstants.BottomTabs)}}
               buttonStyle={styles.button}
               labelStyle={styles.buttonLabel}
             />
 
             <View style={styles.signUpRow}>
-              <Text style={styles.signUpBase}>New To Virtue ? </Text>
-              <TouchableOpacity activeOpacity={0.7}>
-                <Text style={styles.signUpLink}>Create Account</Text>
+              <Text style={styles.signUpBase}>{commonText.newToVirtue} </Text>
+              <TouchableOpacity activeOpacity={0.7} onPress={()=>{navigate(routesConstants.SignUp)}}>
+                <Text style={styles.signUpLink}>{commonText.createAccount}</Text>
               </TouchableOpacity>
-            </View> */}
-          </GlassCard>
-        </ScrollView>
+            </View>
+          </View>
+        </CustomBottomSheet>
       </KeyboardAvoidingView>
     </AppBackground>
   );
@@ -83,53 +81,23 @@ const styles = StyleSheet.create({
   kav: {
     flex: 1,
   },
-
-  scroll: {
-    flexGrow: 1,
-    justifyContent: 'center',
-    paddingHorizontal: scales(20),
-    paddingVertical: scales(40),
+  formContainer: {
+    flex: 1,
   },
-
-  spacer: {
-    height: scales(12),
-  },
-
-  // — Title section —
-  title: {
-    fontSize: scales(24),
-    fontFamily: fontFamily.bold,
-    color: colors.white,
-    letterSpacing: 0.3,
-  },
-
-  subtitle: {
-    fontSize: scales(14),
-    fontFamily: fontFamily.regular,
-    color: 'rgba(255,255,255,0.55)',
-    marginTop: scales(6),
-    letterSpacing: 0.2,
-  },
-
-  // — Forgot password —
   forgotRow: {
     alignSelf: 'flex-end',
     marginTop: scales(4),
     marginBottom: scales(4),
   },
-
   forgotText: {
     fontSize: scales(13),
     fontFamily: fontFamily.medium,
     color: colors.blue,
     letterSpacing: 0.2,
   },
-
-  // — Button —
   button: {
     borderRadius: 14,
     paddingVertical: scales(17),
-    // Vivid blue matching the design
     backgroundColor: '#1E7BFF',
     shadowColor: '#1E7BFF',
     shadowOffset: { width: 0, height: 4 },
@@ -137,27 +105,22 @@ const styles = StyleSheet.create({
     shadowRadius: 12,
     elevation: 8,
   },
-
   buttonLabel: {
     fontSize: scales(16),
     fontFamily: fontFamily.bold,
     letterSpacing: 0.5,
   },
-
-  // — Sign up row —
   signUpRow: {
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
     marginTop: scales(20),
   },
-
   signUpBase: {
     fontSize: scales(13),
     fontFamily: fontFamily.regular,
     color: 'rgba(255,255,255,0.55)',
   },
-
   signUpLink: {
     fontSize: scales(13),
     fontFamily: fontFamily.medium,

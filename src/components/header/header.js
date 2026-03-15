@@ -3,66 +3,122 @@ import {View, Text, Image, TouchableOpacity, StyleSheet} from 'react-native';
 import {appImages, fontFamily} from '../../assets';
 import {colors, scales} from '../../utils';
 import {goBack} from '../../navigation';
-export const Header = ({label, showBackButton}) => {
+import {BlurView} from '@react-native-community/blur';
+
+export const RoundIconButton = ({icon, onPress}) => {
+  if (!icon) return null;
+  return (
+    <TouchableOpacity
+      activeOpacity={0.7}
+      onPress={onPress}
+      style={styles.roundButtonWrapper}>
+      <BlurView
+        style={StyleSheet.absoluteFill}
+        blurType="light"
+        blurAmount={15}
+        reducedTransparencyFallbackColor="transparent"
+      />
+      <View style={[StyleSheet.absoluteFill]} />
+      <Image source={icon} style={styles.iconImage}tintColor={colors.white} />
+    </TouchableOpacity>
+  );
+};
+
+export const HeaderPill = ({label}) => {
+  if (!label) return null;
+  return (
+    <View style={styles.headerPillWrapper}>
+      <BlurView
+        style={StyleSheet.absoluteFill}
+        blurType="light"
+        blurAmount={15}
+        reducedTransparencyFallbackColor="transparent"
+      />
+      <View style={[StyleSheet.absoluteFill, {backgroundColor: 'rgba(255, 255, 255, 0.05)'}]} />
+      <Text style={styles.headerLabel}>{label}</Text>
+    </View>
+  );
+};
+
+export const Header = ({label, showBackButton, rightIcon, onRightPress}) => {
   return (
     <View style={styles.container}>
-      <View style={styles.headerContent}>
+      <View style={styles.sideContainer}>
         {showBackButton && (
-          <TouchableOpacity
-            onPress={() => {
-              goBack();
-            }}
-            style={styles.backButton}>
-            <Image source={appImages.backarrow} style={styles.backImage} />
-            <Text style={styles.backText}>Back</Text>
-          </TouchableOpacity>
+          <RoundIconButton icon={appImages.backarrow} onPress={() => goBack()} />
         )}
-
-        <Text style={styles.headerLabel}>{label}</Text>
       </View>
 
-      <View style={styles.separator} />
+      <View style={styles.centerContainer}>
+        <HeaderPill label={label} />
+      </View>
+
+      <View style={styles.sideContainerRight}>
+        {/* {rightIcon && ( */}
+          <RoundIconButton icon={appImages.backarrow} onPress={onRightPress} />
+        {/* )} */}
+      </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: 10,
-  },
-  headerContent: {
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  backButton: {
+    marginTop: scales(10),
+    marginHorizontal: scales(20),
     flexDirection: 'row',
     alignItems: 'center',
-    position: 'absolute',
-    left: 20,
+    justifyContent: 'space-between',
+    marginBottom: scales(20),
+    height: scales(55),
+    zIndex: 10,
   },
-  backImage: {
-    height: 20,
-    width: 20,
+  sideContainer: {
+    flex: 1,
+    alignItems: 'flex-start',
+    justifyContent: 'center',
+    height: '100%',
+  },
+  sideContainerRight: {
+    flex: 1,
+    alignItems: 'flex-end',
+    justifyContent: 'center',
+    height: '100%',
+  },
+  centerContainer: {
+    flex: 2,
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: '100%',
+  },
+  roundButtonWrapper: {
+    height: scales(45),
+    width: scales(45),
+    borderRadius: scales(25),
+    overflow: 'hidden',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  iconImage: {
+    height: scales(18),
+    width: scales(18),
     resizeMode: 'contain',
+    tintColor: colors.white,
   },
-  backText: {
-    fontSize: scales(18),
-    fontFamily: fontFamily.regular,
-    color: colors.black,
-    marginLeft: 5,
-    alignSelf: 'center',
-    fontWeight: '600',
+  headerPillWrapper: {
+    height: scales(45),
+    paddingHorizontal: scales(20),
+    borderRadius: scales(25),
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.2)',
+    overflow: 'hidden',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   headerLabel: {
-    fontWeight: '600',
-    fontFamily: fontFamily.regular,
-    color: colors.black,
-    fontSize: scales(20),
-    textAlign: 'center',
-  },
-  separator: {
-    height: 1,
-    backgroundColor: colors.borderColor,
-    marginTop: 10,
+    fontFamily: fontFamily.bold,
+    color: colors.white,
+    fontSize: scales(16),
+    letterSpacing: 0.5,
   },
 });

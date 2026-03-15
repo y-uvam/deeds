@@ -1,5 +1,5 @@
 export const appImages = {
-  back: require('../icons/back.png'),
+  backarrow: require('../icons/back.png'),
   imageupload: require('../icons/imageupload.png'),
   eyeclose: require('../icons/eyeclose.png'),
   eyeopen: require('../icons/eyeopen.png'),

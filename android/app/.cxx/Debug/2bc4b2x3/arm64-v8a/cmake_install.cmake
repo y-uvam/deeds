@@ -45,10 +45,13 @@ endif()
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
   include("/Users/yuvam/Documents/React Native/deeds/android/app/.cxx/Debug/2bc4b2x3/arm64-v8a/rnblurview_autolinked_build/cmake_install.cmake")
+  include("/Users/yuvam/Documents/React Native/deeds/android/app/.cxx/Debug/2bc4b2x3/arm64-v8a/lottiereactnative_autolinked_build/cmake_install.cmake")
   include("/Users/yuvam/Documents/React Native/deeds/android/app/.cxx/Debug/2bc4b2x3/arm64-v8a/rngesturehandler_codegen_autolinked_build/cmake_install.cmake")
   include("/Users/yuvam/Documents/React Native/deeds/android/app/.cxx/Debug/2bc4b2x3/arm64-v8a/RNKC_autolinked_build/cmake_install.cmake")
+  include("/Users/yuvam/Documents/React Native/deeds/android/app/.cxx/Debug/2bc4b2x3/arm64-v8a/rnreanimated_autolinked_build/cmake_install.cmake")
   include("/Users/yuvam/Documents/React Native/deeds/android/app/.cxx/Debug/2bc4b2x3/arm64-v8a/safeareacontext_autolinked_build/cmake_install.cmake")
   include("/Users/yuvam/Documents/React Native/deeds/android/app/.cxx/Debug/2bc4b2x3/arm64-v8a/rnscreens_autolinked_build/cmake_install.cmake")
+  include("/Users/yuvam/Documents/React Native/deeds/android/app/.cxx/Debug/2bc4b2x3/arm64-v8a/rnworklets_autolinked_build/cmake_install.cmake")
 
 endif()
 
