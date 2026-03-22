@@ -8,3 +8,5 @@ export * from './customBottomSheet/customBottomSheet';
 export * from './customSkeleton/customSkeleton';
 export * from './bottomBar/bottomBar';
 export { default as FooterComponent } from './footerComponent/foterComponent';
+export * from './postItem/postItem'
+export * from './profileComponent/profileComponent'

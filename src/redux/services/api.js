@@ -1,5 +1,5 @@
-import { Method } from "../services/apiMethod";
-import { emptySplitApi, header1 } from "../services/rtkquery";
+import { Method } from "./apiMethod";
+import { emptySplitApi, header1 } from "./rtkquery";
 import { apiEndPoint } from "./apiEndPoint";
 
 export const Api = emptySplitApi.injectEndpoints({

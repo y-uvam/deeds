@@ -1,31 +1,53 @@
-import { StatusBar, StyleSheet, useColorScheme, View } from 'react-native';
-import {
-  SafeAreaProvider,
-  useSafeAreaInsets,
-} from 'react-native-safe-area-context';
+import {StatusBar, StyleSheet, useColorScheme, View} from 'react-native';
+import {SafeAreaProvider} from 'react-native-safe-area-context';
 import Routes from './src/navigation/routes';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { KeyboardProvider } from 'react-native-keyboard-controller';
-import { Loader } from './src/components';
-import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
-//vagama6094@fentaoba.com
-function App() {
+import {GestureHandlerRootView} from 'react-native-gesture-handler';
+import {BottomSheetModalProvider} from '@gorhom/bottom-sheet';
+import {appImages} from './src/assets';
+import {Provider, useDispatch} from 'react-redux';
+import {PersistGate} from 'redux-persist/integration/react';
+import store, {persistor} from './src/redux/store/store';
+import {setProfileData} from './src/redux/slices/persistedSlice';
+import {useEffect} from 'react';
+function AppContent() {
   const isDarkMode = useColorScheme() === 'dark';
+  const dispatch = useDispatch();
+
+  const userData = {
+    _id: '1',
+    name: 'Yuvam Dhanda',
+    email: 'yuvamdhanda975@gmail.com',
+    gender: 'male',
+    age: '21',
+    profileImage: appImages.dummyuser,
+  };
+
+  useEffect(() => {
+    dispatch(setProfileData(userData));
+  }, []);
 
   return (
-   <GestureHandlerRootView style={{flex: 1}}>
-    <SafeAreaProvider>
-<BottomSheetModalProvider>
-      <View style={styles.container}>
-      <StatusBar barStyle={isDarkMode?'dark-content':'light-content'} />
-        {/* <KeyboardProvider> */}
+    <GestureHandlerRootView style={{flex: 1}}>
+      <SafeAreaProvider>
+        <BottomSheetModalProvider>
+          <View style={styles.container}>
+            <StatusBar
+              barStyle={isDarkMode ? 'dark-content' : 'light-content'}
+            />
             <Routes />
-            {/* <Loader /> */}
-        {/* </KeyboardProvider> */}
-      </View>
-      </BottomSheetModalProvider>
-    </SafeAreaProvider>
+          </View>
+        </BottomSheetModalProvider>
+      </SafeAreaProvider>
     </GestureHandlerRootView>
+  );
+}
+function App() {
+  return (
+    <Provider store={store}>
+      <PersistGate loading={null} persistor={persistor}>
+        <AppContent />
+      </PersistGate>
+    </Provider>
   );
 }
 
