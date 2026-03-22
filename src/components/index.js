@@ -7,3 +7,4 @@ export * from './loader/loader';
 export * from './customBottomSheet/customBottomSheet';
 export * from './customSkeleton/customSkeleton';
 export * from './bottomBar/bottomBar';
+export { default as FooterComponent } from './footerComponent/foterComponent';

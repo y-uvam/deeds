@@ -6,7 +6,7 @@ export const Browse=()=>{
     return(
        <View style={style.container}>
         <Text>Browse</Text>
-         <CustomSkeleton variant="listItem"/>
+         <CustomSkeleton variant="text"/>
        </View>
     )
 }

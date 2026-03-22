@@ -28,13 +28,13 @@ export const HeaderPill = ({label}) => {
   if (!label) return null;
   return (
     <View style={styles.headerPillWrapper}>
-      <BlurView
+      {/* <BlurView
         style={StyleSheet.absoluteFill}
         blurType="light"
         blurAmount={15}
         reducedTransparencyFallbackColor="transparent"
-      />
-      <View style={[StyleSheet.absoluteFill, {backgroundColor: 'rgba(255, 255, 255, 0.05)'}]} />
+      /> */}
+      <View style={[StyleSheet.absoluteFill, {}]} />
       <Text style={styles.headerLabel}>{label}</Text>
     </View>
   );
@@ -54,9 +54,9 @@ export const Header = ({label, showBackButton, rightIcon, onRightPress}) => {
       </View>
 
       <View style={styles.sideContainerRight}>
-        {/* {rightIcon && ( */}
-          <RoundIconButton icon={appImages.backarrow} onPress={onRightPress} />
-        {/* )} */}
+        {rightIcon && (
+          <RoundIconButton icon={rightIcon} onPress={onRightPress} />
+        )}
       </View>
     </View>
   );
@@ -64,14 +64,13 @@ export const Header = ({label, showBackButton, rightIcon, onRightPress}) => {
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: scales(10),
-    marginHorizontal: scales(20),
+    margin:10,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: scales(20),
-    height: scales(55),
+    height: scales(45),
     zIndex: 10,
+    backgroundColor: 'transparent',
   },
   sideContainer: {
     flex: 1,
@@ -92,25 +91,27 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   roundButtonWrapper: {
-    height: scales(45),
-    width: scales(45),
-    borderRadius: scales(25),
+    height: scales(40),
+    width: scales(40),
+    borderRadius: scales(20),
     overflow: 'hidden',
     justifyContent: 'center',
     alignItems: 'center',
+    borderColor:colors.borderColor,
+    borderWidth:1
   },
   iconImage: {
-    height: scales(18),
-    width: scales(18),
+    height: scales(15),
+    width: scales(15),
     resizeMode: 'contain',
     tintColor: colors.white,
   },
   headerPillWrapper: {
-    height: scales(45),
+    height: scales(40),
     paddingHorizontal: scales(20),
-    borderRadius: scales(25),
+    borderRadius: scales(20),
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.2)',
+    borderColor: colors.borderColor,
     overflow: 'hidden',
     justifyContent: 'center',
     alignItems: 'center',

@@ -1,54 +1,168 @@
 import React from 'react';
 import { View, StyleSheet, Dimensions } from 'react-native';
 import Skeleton from 'react-native-reanimated-skeleton';
-import { colors, scales } from '../../utils';
+import { colors, height, scales } from '../../utils';
 
 const { width } = Dimensions.get('window');
 
 const LAYOUTS = {
   listItem: [
-    { key: 'avatar',    width: scales(44), height: scales(44), borderRadius: scales(22) },
+{
+  key: 'main',
+  flexDirection: 'row',
+  alignItems: 'center',
+  paddingHorizontal: scales(16),
+  paddingVertical: scales(12),
+  children: [
     {
-      key: 'lines',
-      flexDirection: 'column',
-      children: [
-        { key: 'line1', width: width * 0.5,  height: scales(13), marginBottom: scales(6),  borderRadius: scales(6) },
-        { key: 'line2', width: width * 0.35, height: scales(11), borderRadius: scales(6) },
-      ],
-      marginLeft: scales(12),
-      justifyContent: 'center',
+      key: 'avatar',
+      width: scales(44),
+      height: scales(44),
+      borderRadius: scales(22),
     },
+    {
+      key: 'content',
+      flex: 1,
+      marginLeft: scales(12),
+      children: [
+        {
+          key: 'line1',
+          width: width * 0.5,
+          height: scales(13),
+          borderRadius: scales(6),
+          marginBottom: scales(6),
+        },
+        {
+          key: 'line2',
+          width: width * 0.35,
+          height: scales(11),
+          borderRadius: scales(6),
+        },
+      ],
+    },
+  ],
+}
   ],
   card: [
-    { key: 'banner',   width: '100%', height: scales(130), borderRadius: scales(16), marginBottom: scales(12) },
+    { key: 'banner',   width: '100%', height: height*0.35, borderRadius: scales(16), marginBottom: scales(12) },
+    // {
+    //   key: 'tags',
+    //   flexDirection: 'row',
+    //   marginBottom: scales(12),
+    //   children: [
+    //     { key: 't1', width: scales(40), height: scales(40), borderRadius: scales(20), marginRight: scales(8) },
+    //     { key: 't2', width: scales(40), height: scales(40), borderRadius: scales(20), marginRight: scales(8) },
+    //     { key: 't3', width: scales(40), height: scales(40), borderRadius: scales(20), marginRight: scales(8) },
+    //   ],
+    // },
     { key: 'title',    width: width * 0.55, height: scales(14), borderRadius: scales(6), marginBottom: scales(8) },
-    { key: 'subtitle', width: width * 0.38, height: scales(11), borderRadius: scales(6), marginBottom: scales(16) },
-    {
-      key: 'tags',
-      flexDirection: 'row',
-      children: [
-        { key: 't1', width: scales(60), height: scales(22), borderRadius: scales(11), marginRight: scales(8) },
-        { key: 't2', width: scales(70), height: scales(22), borderRadius: scales(11), marginRight: scales(8) },
-        { key: 't3', width: scales(50), height: scales(22), borderRadius: scales(11) },
-      ],
-    },
+    { key: 'subtitle', width: width * 0.8, height: scales(11), borderRadius: scales(6), marginBottom: scales(5) },
+    { key: 'subtitle', width: width * 0.8, height: scales(11), borderRadius: scales(6), marginBottom: scales(16) },
   ],
-  profile: [
-    { key: 'profilePic', width: scales(72), height: scales(72), borderRadius: scales(36), alignSelf: 'center', marginBottom: scales(14) },
-    { key: 'name',       width: width * 0.42, height: scales(16), borderRadius: scales(8),  alignSelf: 'center', marginBottom: scales(8) },
-    { key: 'bio1',       width: width * 0.65, height: scales(12), borderRadius: scales(6),  alignSelf: 'center', marginBottom: scales(6) },
-    { key: 'bio2',       width: width * 0.5,  height: scales(12), borderRadius: scales(6),  alignSelf: 'center', marginBottom: scales(20) },
-    {
-      key: 'stats',
-      flexDirection: 'row',
-      justifyContent: 'space-evenly',
-      children: [
-        { key: 's1', width: scales(55), height: scales(40), borderRadius: scales(12) },
-        { key: 's2', width: scales(55), height: scales(40), borderRadius: scales(12) },
-        { key: 's3', width: scales(55), height: scales(40), borderRadius: scales(12) },
-      ],
-    },
-  ],
+ profile: [
+  {
+    key: 'header',
+    alignItems: 'center',
+    marginBottom: scales(20),
+    children: [
+      {
+        key: 'profilePic',
+        width: scales(72),
+        height: scales(72),
+        borderRadius: scales(36),
+        marginBottom: scales(14),
+      },
+      {
+        key: 'name',
+        width: width * 0.45,
+        height: scales(16),
+        borderRadius: scales(8),
+        marginBottom: scales(10),
+      },
+      {
+        key: 'bio1',
+        width: width * 0.65,
+        height: scales(12),
+        borderRadius: scales(6),
+        marginBottom: scales(6),
+      },
+      {
+        key: 'bio2',
+        width: width * 0.5,
+        height: scales(12),
+        borderRadius: scales(6),
+      },
+    ],
+  },
+
+  {
+    key: 'stats',
+    flexDirection: 'row',
+    justifyContent: 'space-evenly',
+    paddingHorizontal: scales(20),
+    children: [
+      {
+        key: 'stat1',
+        alignItems: 'center',
+        children: [
+          {
+            key: 'statValue1',
+            width: scales(40),
+            height: scales(14),
+            borderRadius: scales(6),
+            marginBottom: scales(6),
+          },
+          {
+            key: 'statLabel1',
+            width: scales(55),
+            height: scales(10),
+            borderRadius: scales(6),
+          },
+        ],
+      },
+
+      {
+        key: 'stat2',
+        alignItems: 'center',
+        children: [
+          {
+            key: 'statValue2',
+            width: scales(40),
+            height: scales(14),
+            borderRadius: scales(6),
+            marginBottom: scales(6),
+          },
+          {
+            key: 'statLabel2',
+            width: scales(55),
+            height: scales(10),
+            borderRadius: scales(6),
+          },
+        ],
+      },
+
+      {
+        key: 'stat3',
+        alignItems: 'center',
+        children: [
+          {
+            key: 'statValue3',
+            width: scales(40),
+            height: scales(14),
+            borderRadius: scales(6),
+            marginBottom: scales(6),
+          },
+          {
+            key: 'statLabel3',
+            width: scales(55),
+            height: scales(10),
+            borderRadius: scales(6),
+          },
+        ],
+      },
+    ],
+  },
+],
   text: [
     { key: 'tx1', width: '100%',       height: scales(12), borderRadius: scales(6), marginBottom: scales(8) },
     { key: 'tx2', width: '100%',       height: scales(12), borderRadius: scales(6), marginBottom: scales(8) },
