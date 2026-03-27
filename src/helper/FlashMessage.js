@@ -1,90 +1,141 @@
 import React from "react";
-import { Animated, Platform, StyleSheet } from "react-native";
+import { StyleSheet, View, Text, Platform } from "react-native";
 import FlashMessage, { showMessage } from "react-native-flash-message";
-import { colors, topInset } from "../utils";
+import { BlurView } from "@react-native-community/blur";
+import LinearGradient from "react-native-linear-gradient";
+import { colors, scales } from "../utils";
+import { fontFamily } from "../assets";
 
-// Custom FlashMessage Component with Animation
+// Custom FlashMessage Component
 const FlashMessageComponent = () => {
-  // Animation value for smooth slide-in/slide-out
-  const slideAnim = new Animated.Value(-100); // Start off-screen (top)
-
-  // Function to trigger animation
-  const animateMessage = (show) => {
-    Animated.spring(slideAnim, {
-      toValue: show ? 0 : -100, // Slide in (0) or out (-100)
-      useNativeDriver: true,
-      friction: 8, // Controls "bounciness"
-      tension: 40, // Controls speed
-    }).start();
-  };
-
   return (
-    <Animated.View
-      style={[styles.container, { transform: [{ translateY: slideAnim }] }]}
-    >
-      <FlashMessage
-        position="top"
-        floating // Gives it a card-like effect
-        hideOnPress // Dismiss on tap
-        duration={3000} // Auto-dismiss after 3 seconds
-        animationDuration={300} // Smooth animation timing
-        onShow={() => animateMessage(true)} // Slide in when shown
-        onHide={() => animateMessage(false)} // Slide out when hidden
-        style={styles.flashStyle} // Custom styling
-      />
-    </Animated.View>
+    <FlashMessage
+      position="top"
+      duration={3500}
+      animationDuration={450}
+      renderFlashMessage={(message) => {
+        const type = message.message?.type || "info";
+        const bgColor = message.message?.backgroundColor;
+
+        // Custom Gradient Colors based on type
+        let gradientColors = ["#00B4DB", "#0083B0"]; // Default info
+        if (bgColor === colors.red || type === "danger") {
+          gradientColors = ["#FF4B2B", "#FF416C"];
+        } else if (bgColor === colors.green || type === "success") {
+          gradientColors = ["#56AB2F", "#A8E063"];
+        } else if (bgColor === colors.yellow || type === "warning") {
+          gradientColors = ["#F1C40F", "#F39C12"];
+        }
+
+        return (
+          <View style={styles.outerContainer}>
+            <View style={styles.cardContainer}>
+              {/* Premium Glass Effect Background */}
+              <BlurView
+                style={StyleSheet.absoluteFill}
+                blurType="dark"
+                blurAmount={12}
+                reducedTransparencyFallbackColor="black"
+              />
+              
+              <View style={styles.contentWrapper}>
+                {/* Status Indicator Bar */}
+                <LinearGradient
+                  colors={gradientColors}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 0, y: 1 }}
+                  style={styles.indicatorBar}
+                />
+                
+                <View style={styles.textContainer}>
+                   <Text style={[styles.titleText, { color: gradientColors[0] }]}>
+                     {type.charAt(0).toUpperCase() + type.slice(1)}
+                   </Text>
+                   <Text style={styles.messageText}>{message.message?.message}</Text>
+                   {!!message.message?.description && (
+                     <Text style={styles.descText}>{message.message.description}</Text>
+                   )}
+                </View>
+              </View>
+            </View>
+          </View>
+        );
+      }}
+    />
   );
 };
 
 // Function to show custom messages with enhanced UI
-export const showCustomMessage = (message, type) => {
-  const typeStyles = {
-    success: { backgroundColor: colors.green, icon: "success" },
-    danger: { backgroundColor: colors.red, icon: "danger" },
-    info: { backgroundColor: colors.blue, icon: "info" },
-    warning: { backgroundColor: colors.yellow, icon: "warning" },
+export const showCustomMessage = (message, type = "info", description = "") => {
+  const typeConfigs = {
+    success: { backgroundColor: colors.green },
+    danger: { backgroundColor: colors.red },
+    info: { backgroundColor: colors.blue },
+    warning: { backgroundColor: colors.yellow },
   };
 
-  const style = typeStyles[type] || typeStyles.info; // Default to 'info' if type is invalid
+  const config = typeConfigs[type] || typeConfigs.info;
 
   showMessage({
-    message, // The message text
-    type: style.icon, // Icon based on type
-    backgroundColor: style.backgroundColor, // Dynamic background color
-    color: colors.white, // Text/icon color
-    style: styles.messageStyle, // Additional styling
-    titleStyle: styles.titleStyle, // Message text styling
+    message,
+    description,
+    type,
+    backgroundColor: config.backgroundColor,
+    color: colors.white,
+    hideOnPress: true,
+    animated: true,
   });
 };
 
-// Styles for the FlashMessage
 const styles = StyleSheet.create({
-  container: {
-    position: "absolute",
-    top: Platform.OS === "ios" ? 0 : topInset,
-    left: 0,
-    right: 0,
-    zIndex: 999, // Ensure it stays on top
+  outerContainer: {
+    paddingTop: Platform.OS === "ios" ? scales(50) : scales(20),
+    paddingHorizontal: scales(16),
+    zIndex: 9999999,
   },
-  flashStyle: {
-    borderRadius: 12, // Rounded corners for modern UI
-    marginTop: 40, // Space from the top (status bar)
-    marginHorizontal: 10, // Side margins
-    shadowColor: "#000", // Subtle shadow for depth
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 6,
-    elevation: 8, // Shadow for Android
+  cardContainer: {
+    borderRadius: scales(20),
+    overflow: "hidden",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.5,
+    shadowRadius: 15,
+    elevation: 20,
+    backgroundColor: "rgba(25, 25, 25, 0.75)",
+    borderWidth: 1,
+    borderColor: "rgba(255, 255, 255, 0.12)",
   },
-  messageStyle: {
-    paddingVertical: 12, // Vertical padding for better spacing
-    paddingHorizontal: 16, // Horizontal padding
-    alignItems: "center", // Center content
+  contentWrapper: {
+    flexDirection: "row",
+    alignItems: "stretch", // Ensures children stretch to match container height
   },
-  titleStyle: {
-    fontSize: 16,
-    fontWeight: "600", // Slightly bold text
-    textAlign: "center",
+  indicatorBar: {
+    width: scales(6),
+    borderTopLeftRadius: scales(20),
+    borderBottomLeftRadius: scales(20),
+  },
+  textContainer: {
+    flex: 1,
+    paddingVertical: scales(14),
+    paddingHorizontal: scales(18),
+  },
+  titleText: {
+    fontSize: scales(11),
+    fontFamily: fontFamily.bold,
+    letterSpacing: 1.5,
+    marginBottom: scales(4),
+  },
+  messageText: {
+    fontSize: scales(14),
+    fontFamily: fontFamily.bold,
+    color: colors.white,
+    letterSpacing: 0.3,
+  },
+  descText: {
+    fontSize: scales(12),
+    fontFamily: fontFamily.medium,
+    color: "rgba(255,255,255,0.6)",
+    marginTop: scales(2),
   },
 });
 

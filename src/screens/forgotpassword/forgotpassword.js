@@ -8,14 +8,31 @@ import { navigate, routesConstants } from '../../navigation';
 import LottieView from 'lottie-react-native';
 import { animations } from '../../animations/animations';
 
+import { Controller, useForm } from "react-hook-form";
+import { validationConstants, validationSchema } from "../../utils";
+
 export const Forgotpassword = () => {
-   const bottomSheetRef = useRef(null);
-    const [email, setEmail] = useState('');
-  
-    useEffect(() => {
-      const timer = setTimeout(() => bottomSheetRef.current?.present(), 100);
-      return () => clearTimeout(timer);
-    }, []);
+  const bottomSheetRef = useRef(null);
+
+  useEffect(() => {
+    const timer = setTimeout(() => bottomSheetRef.current?.present(), 100);
+    return () => clearTimeout(timer);
+  }, []);
+
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    defaultValues: {
+      email: "",
+    },
+  });
+
+  const onSubmit = (data) => {
+    console.log(data, "Forgot Password Data");
+    navigate(routesConstants.OTP);
+  };
  return (
      <AppBackground>
        <KeyboardAvoidingView style={styles.kav} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
@@ -33,19 +50,35 @@ export const Forgotpassword = () => {
            subtitle={commonText.dontStress}
          >
            <View style={styles.formContainer}>
-             <CustomInput
-               label={commonText.email}
-               placeholder={commonText.enteremailaddress}
-               value={email}
-               onChangeText={setEmail}
-               icon={appImages.mail}
-             />
-             <CustomButton
-               label={commonText.continue}
-               onPress={() => {navigate(routesConstants.OTP)}}
-               buttonStyle={styles.button}
-               labelStyle={styles.buttonLabel}
-             />
+              <Controller
+                control={control}
+                name="email"
+                rules={{
+                  required: validationConstants.emailRequired,
+                  pattern: {
+                    value: validationSchema.email,
+                    message: validationConstants.invalidEmail,
+                  },
+                }}
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <CustomInput
+                    label={commonText.email}
+                    placeholder={commonText.enteremailaddress}
+                    value={value}
+                    onChangeText={onChange}
+                    onBlur={onBlur}
+                    icon={appImages.mail}
+                    isBottomSheet={true}
+                    errors={errors.email}
+                  />
+                )}
+              />
+              <CustomButton
+                label={commonText.continue}
+                onPress={handleSubmit(onSubmit)}
+                buttonStyle={styles.button}
+                labelStyle={styles.buttonLabel}
+              />
  
            </View>
            <Spacer height={scales(40)} />

@@ -3,11 +3,13 @@ import { routesConstants } from "./routeConstants";
 import { colors } from "../utils";
 import {
   Browse,
+  Editprofile,
   Forgotpassword,
   Home,
   Login,
   Notification,
   OTP,
+  Profile,
   ResetPassword,
   Settings,
   SignUp,
@@ -20,7 +22,7 @@ const { Navigator, Screen } = createStackNavigator();
 const MainStack = () => {
   return (
     <Navigator
-      initialRouteName={routesConstants.BottomTabs}
+      initialRouteName={routesConstants.Splash}
       screenOptions={{
         headerShown: false,
         cardStyle: { backgroundColor: colors.white },
@@ -37,15 +39,17 @@ const MainStack = () => {
       <Screen name={routesConstants.BottomTabs} component={BottomTab} />
       <Screen name={routesConstants.OTP} component={OTP} />
       <Screen name={routesConstants.ResetPassword} component={ResetPassword} />
-       <Screen
+      <Screen
         name={routesConstants.ForgotPassword}
         component={Forgotpassword}
       />
       <Screen name={routesConstants.SignUp} component={SignUp} />
       <Screen name={routesConstants.Home} component={Home} />
+      <Screen name={routesConstants.Profile} component={Profile} />
       <Screen name={routesConstants.Settings} component={Settings} />
       <Screen name={routesConstants.Notification} component={Notification} />
       <Screen name={routesConstants.Browse} component={Browse} />
+      <Screen name={routesConstants.editProfile} component={Editprofile} />
     </Navigator>
   );
 };

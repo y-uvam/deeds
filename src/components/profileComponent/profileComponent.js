@@ -14,10 +14,7 @@ export const ProfileComponent =({userId,name,profileImage})=>{
 const styles= StyleSheet.create({
     container:{
         flex:1,
-        borderColor:'red',
-        borderWidth:1,
-        borderRadius:scales(20),
-        padding:scales(10),
+        paddingHorizontal:scales(10),
         flexDirection:'row',
         alignItems:'center',
         gap:10
@@ -29,6 +26,7 @@ const styles= StyleSheet.create({
     },
     profileName:{
         fontFamily:fontFamily.regular,
-        color:colors.white
+        color:colors.white,
+        fontSize:scales(16)
     }
 })

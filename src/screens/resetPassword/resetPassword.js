@@ -3,13 +3,14 @@ import { View, Text, StyleSheet, TouchableOpacity, KeyboardAvoidingView, Platfor
 import { AppBackground, CustomInput, CustomButton, CustomBottomSheet } from '../../components';
 import { colors, commonText, scales } from '../../utils';
 import { fontFamily, appImages } from '../../assets';
-import { navigate, routesConstants } from '../../navigation';
+import { navigate, reset, routesConstants } from "../../navigation";
 import LottieView from 'lottie-react-native';
 import { animations } from '../../animations/animations';
 
+import { Controller, useForm } from "react-hook-form";
+import { validationConstants, validationSchema } from "../../utils";
+
 export const ResetPassword = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const bottomSheetRef = useRef(null);
 
   useEffect(() => {
@@ -17,46 +18,97 @@ export const ResetPassword = () => {
     return () => clearTimeout(timer);
   }, []);
 
+  const {
+    control,
+    handleSubmit,
+    watch,
+    formState: { errors },
+  } = useForm({
+    defaultValues: {
+      password: "",
+      confirmPassword: "",
+    },
+  });
+
+  const onSubmit = (data) => {
+    console.log(data, "Reset Password Data");
+    reset(routesConstants.Login);
+  };
+
   return (
     <AppBackground>
-      <KeyboardAvoidingView style={styles.kav} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-       
+      <KeyboardAvoidingView
+        style={styles.kav}
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+      >
         <LottieView
-                       source={animations.auth}
-                       autoPlay
-                       loop={true}
-                       style={{ width: '50%', height: '50%',alignSelf:'center' }}
-                     />
+          source={animations.auth}
+          autoPlay
+          loop={true}
+          style={{ width: "50%", height: "50%", alignSelf: "center" }}
+        />
         <CustomBottomSheet
           ref={bottomSheetRef}
-          snapPoints={['55%']}
+          snapPoints={["55%"]}
           enablePanDownToClose={false}
           title={commonText.youAreAlmostBack}
           subtitle={commonText.justSetYOurPassword}
         >
           <View style={styles.formContainer}>
-
-            <CustomInput
-              label={commonText.password}
-              placeholder={commonText.enterpassword}
-              value={password}
-              onChangeText={setPassword}
-              isPassword
-              icon={appImages.lock}
+            <Controller
+              control={control}
+              name="password"
+              rules={{
+                required: validationConstants.passwordRequired,
+                pattern: {
+                  value: validationSchema.password,
+                  message: validationConstants.invalidPassword,
+                },
+              }}
+              render={({ field: { onChange, onBlur, value } }) => (
+                <CustomInput
+                  label={commonText.password}
+                  placeholder={commonText.enterpassword}
+                  value={value}
+                  onChangeText={onChange}
+                  onBlur={onBlur}
+                  isPassword
+                  icon={appImages.lock}
+                  isBottomSheet={true}
+                  errors={errors.password}
+                />
+              )}
             />
 
-            <CustomInput
-              label={commonText.confirmPassword}
-              placeholder={commonText.enterpassword}
-              value={password}
-              onChangeText={setPassword}
-              isPassword
-              icon={appImages.lock}
+            <Controller
+              control={control}
+              name="confirmPassword"
+              rules={{
+                required: validationConstants.enterconfirmPassword,
+                validate: (val) => {
+                  if (watch("password") != val) {
+                    return validationConstants.passwordNotMatch;
+                  }
+                },
+              }}
+              render={({ field: { onChange, onBlur, value } }) => (
+                <CustomInput
+                  label={commonText.confirmPassword}
+                  placeholder={commonText.enterConfirmPassword}
+                  value={value}
+                  onChangeText={onChange}
+                  onBlur={onBlur}
+                  isPassword
+                  icon={appImages.lock}
+                  isBottomSheet={true}
+                  errors={errors.confirmPassword}
+                />
+              )}
             />
 
             <CustomButton
               label={commonText.letsGo}
-              onPress={() => {}}
+              onPress={handleSubmit(onSubmit)}
               buttonStyle={styles.button}
               labelStyle={styles.buttonLabel}
             />

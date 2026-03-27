@@ -9,6 +9,8 @@ import {PersistGate} from 'redux-persist/integration/react';
 import store, {persistor} from './src/redux/store/store';
 import {setProfileData} from './src/redux/slices/persistedSlice';
 import {useEffect} from 'react';
+import { KeyboardProvider } from 'react-native-keyboard-controller';
+import FlashMessageComponent from './src/helper/FlashMessage';
 function AppContent() {
   const isDarkMode = useColorScheme() === 'dark';
   const dispatch = useDispatch();
@@ -35,6 +37,7 @@ function AppContent() {
               barStyle={isDarkMode ? 'dark-content' : 'light-content'}
             />
             <Routes />
+            <FlashMessageComponent />
           </View>
         </BottomSheetModalProvider>
       </SafeAreaProvider>

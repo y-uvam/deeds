@@ -2,9 +2,9 @@ import React from "react";
 import {
   Text,
   StyleSheet,
-  TouchableWithoutFeedback,
   View,
   ActivityIndicator,
+  TouchableOpacity,
 } from "react-native";
 import { colors, scales } from "../../utils";
 import { fontFamily } from "../../assets";
@@ -21,7 +21,7 @@ export const CustomButton = ({
   const isDisabled = disable || loader;
 
   return (
-    <TouchableWithoutFeedback onPress={onPress} disabled={isDisabled}>
+    <TouchableOpacity onPress={onPress} disabled={isDisabled}>
       <View
         style={[
           styles.button,
@@ -38,7 +38,7 @@ export const CustomButton = ({
           <Text style={[styles.label, { ...labelStyle }]}>{label}</Text>
         )}
       </View>
-    </TouchableWithoutFeedback>
+    </TouchableOpacity>
   );
 };
 

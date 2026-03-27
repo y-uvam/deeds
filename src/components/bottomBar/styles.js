@@ -35,7 +35,7 @@ export const styles= StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: scales(10),
+    paddingHorizontal: scales(6),
   },
 
   tab: {
@@ -70,7 +70,7 @@ export const styles= StyleSheet.create({
   
   label: {
     color: colors.white,
-    marginLeft: scales(5),
+    marginLeft: scales(3),
     fontSize: scales(12),
     fontFamily: fontFamily.bold,
   },
