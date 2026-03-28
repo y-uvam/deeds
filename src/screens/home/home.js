@@ -1,4 +1,10 @@
-import { FlatList, StyleSheet, Text, View } from "react-native";
+import {
+  ActivityIndicator,
+  FlatList,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import {
   AppBackground,
   CustomSkeleton,
@@ -34,6 +40,9 @@ export const Home = () => {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ gap: scales(10) }}
         ListFooterComponent={<FooterComponent height={scales(100)} />}
+        refreshControl={() => {
+          <ActivityIndicator size={"small"} />;
+        }}
       />
     </AppBackground>
   );

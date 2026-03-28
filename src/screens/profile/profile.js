@@ -9,7 +9,7 @@ import {
   Dimensions,
   FlatList,
 } from "react-native";
-import { Spacer, CustomSkeleton } from "../../components";
+import { Spacer, CustomSkeleton, AppBackground } from "../../components";
 import { colors, scales, commonText } from "../../utils";
 import { useSelector } from "react-redux";
 import { fontFamily, appImages } from "../../assets";
@@ -290,7 +290,7 @@ export const Profile = () => {
   }
 
   return (
-    <View style={styles.container}>
+    <AppBackground>
       <FlatList
         data={getGridData()}
         keyExtractor={(item) => item.id}
@@ -307,7 +307,7 @@ export const Profile = () => {
         )}
         scrollEventThrottle={16}
       />
-    </View>
+    </AppBackground>
   );
 };
 

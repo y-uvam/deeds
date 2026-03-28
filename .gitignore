@@ -48,3 +48,8 @@ yarn-error.log
 .expo/
 web-build/
 node_modules
+
+# Android
+android/app/build/
+android/build/
+android/.cxx/

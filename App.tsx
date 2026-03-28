@@ -11,6 +11,7 @@ import {setProfileData} from './src/redux/slices/persistedSlice';
 import {useEffect} from 'react';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
 import FlashMessageComponent from './src/helper/FlashMessage';
+import { bottomInset } from './src/utils';
 function AppContent() {
   const isDarkMode = useColorScheme() === 'dark';
   const dispatch = useDispatch();
@@ -39,6 +40,7 @@ function AppContent() {
             <Routes />
             <FlashMessageComponent />
           </View>
+          {/* <View style={{height:bottomInset}} /> */}
         </BottomSheetModalProvider>
       </SafeAreaProvider>
     </GestureHandlerRootView>

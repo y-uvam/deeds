@@ -287,6 +287,99 @@ const LAYOUTS = {
       borderRadius: scales(6),
     },
   ],
+  browse: [
+    {
+      key: "browseRow",
+      flexDirection: "row",
+      paddingHorizontal: scales(1),
+      children: [
+        {
+          key: "item1",
+          width: (width - 6) / 3,
+          height: (width - 6) / 3,
+          margin: 0.7,
+        },
+        {
+          key: "item2",
+          width: (width - 6) / 3,
+          height: (width - 6) / 3,
+          margin: 0.7,
+        },
+        {
+          key: "item3",
+          width: (width - 6) / 3,
+          height: (width - 6) / 3,
+          margin: 0.7,
+        },
+      ],
+    },
+  ],
+  browseFeaturedLeft: [
+    {
+      key: "featuredLeftRoot",
+      flexDirection: "row",
+      paddingHorizontal: scales(1),
+      children: [
+        {
+          key: "bigItem",
+          width: ((width - 6) / 3) * 2 + 1.4,
+          height: ((width - 6) / 3) * 2 + 1.4,
+          margin: 0.7,
+        },
+        {
+          key: "smallItemsColumn",
+          flexDirection: "column",
+          children: [
+            {
+              key: "small1",
+              width: (width - 6) / 3,
+              height: (width - 6) / 3,
+              margin: 0.7,
+            },
+            {
+              key: "small2",
+              width: (width - 6) / 3,
+              height: (width - 6) / 3,
+              margin: 0.7,
+            },
+          ],
+        },
+      ],
+    },
+  ],
+  browseFeaturedRight: [
+    {
+      key: "featuredRightRoot",
+      flexDirection: "row",
+      paddingHorizontal: scales(1),
+      children: [
+        {
+          key: "smallItemsColumn",
+          flexDirection: "column",
+          children: [
+            {
+              key: "small1",
+              width: (width - 6) / 3,
+              height: (width - 6) / 3,
+              margin: 0.7,
+            },
+            {
+              key: "small2",
+              width: (width - 6) / 3,
+              height: (width - 6) / 3,
+              margin: 0.7,
+            },
+          ],
+        },
+        {
+          key: "bigItem",
+          width: ((width - 6) / 3) * 2 + 1.4,
+          height: ((width - 6) / 3) * 2 + 1.4,
+          margin: 0.7,
+        },
+      ],
+    },
+  ],
 };
 export const CustomSkeleton = ({
   variant = "card",
