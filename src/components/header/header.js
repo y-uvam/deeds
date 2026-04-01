@@ -21,7 +21,7 @@ import Animated, {
 } from "react-native-reanimated";
 import { appImages, fontFamily } from "../../assets";
 import { colors, scales } from "../../utils";
-import { goBack } from "../../navigation";
+import { goBack } from "../../navigation/navigationServices";
 import { BlurView } from "@react-native-community/blur";
 
 const { width } = Dimensions.get("window");

@@ -94,14 +94,19 @@ export const Profile = () => {
         <Image source={appImages.appBackground} style={styles.coverImage} />
         <View style={styles.coverOverlay} />
         <View style={[styles.headerActions, { top: insets.top + scales(10) }]}>
-          <TouchableOpacity style={styles.iconCircle}>
+          {/* <TouchableOpacity style={styles.iconCircle}>
             <Image source={appImages.backarrow} style={styles.backIcon} />
-          </TouchableOpacity>
+          </TouchableOpacity> */}
           <View style={styles.rightHeaderActions}>
             <TouchableOpacity style={styles.iconCircle}>
               <Image source={appImages.plus} style={styles.topIcon} />
             </TouchableOpacity>
-            <TouchableOpacity style={styles.iconCircle}>
+            <TouchableOpacity
+              style={styles.iconCircle}
+              onPress={() => {
+                navigate(routesConstants.Settings);
+              }}
+            >
               <Image source={appImages.settings} style={styles.topIcon} />
             </TouchableOpacity>
           </View>
@@ -334,7 +339,7 @@ const styles = StyleSheet.create({
     left: scales(16),
     right: scales(16),
     flexDirection: "row",
-    justifyContent: "space-between",
+    justifyContent: "flex-end",
     alignItems: "center",
   },
   rightHeaderActions: {
@@ -360,7 +365,7 @@ const styles = StyleSheet.create({
     tintColor: colors.white,
   },
   profileCard: {
-    backgroundColor: colors.profileCardBg,
+    // backgroundColor: colors.profileCardBg,
     borderTopLeftRadius: scales(30),
     borderTopRightRadius: scales(30),
     paddingHorizontal: scales(20),

@@ -49,6 +49,14 @@ export const commonText = {
   editProfile: "Edit Profile",
   shareProfile: "Share Profile",
   search: "Search",
+  settings: "Settings",
+  yourActivity: "Your Activity",
+  saved: "Saved",
+  archive: "Archive",
+  accountPrivacy: "Account Privacy",
+  notification: "Notification",
+  help: "Help",
+  blocked: "Blocked",
 };
 export const validationConstants = {
   noInternet: "Please check your internet connection.",

@@ -11,7 +11,7 @@ import { useNavigationState, useFocusEffect } from "@react-navigation/native";
 import { navigate } from "../../navigation/navigationServices";
 import { appImages } from "../../assets";
 import { scales, colors } from "../../utils";
-import { routesConstants } from "../../navigation";
+import { routesConstants } from "../../navigation/routeConstants";
 import { styles } from "./styles";
 import { BlurView } from "@react-native-community/blur";
 import { CreateMenu } from "./CreateMenu";
@@ -37,9 +37,9 @@ const TABS = [
   },
   {
     id: 4,
-    icon: appImages.bell,
-    route: routesConstants.Settings,
-    label: "Notifications",
+    icon: appImages.chat,
+    route: routesConstants.Chat,
+    label: "Chat",
   },
   {
     id: 5,

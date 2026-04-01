@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, View } from "react-native";
 import { Spacer } from "../spacer/spacer";
 
-const FooterComponent = ({ height }) => {
+export const FooterComponent = ({ height }) => {
     return (
        <View style={style.container}>
         <Spacer height={height} />
@@ -16,5 +16,3 @@ const style = StyleSheet.create({
         backgroundColor: 'transparent'
     }
 });
-
-export default FooterComponent;

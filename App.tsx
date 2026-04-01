@@ -9,13 +9,12 @@ import {PersistGate} from 'redux-persist/integration/react';
 import store, {persistor} from './src/redux/store/store';
 import {setProfileData} from './src/redux/slices/persistedSlice';
 import {useEffect} from 'react';
-import { KeyboardProvider } from 'react-native-keyboard-controller';
 import FlashMessageComponent from './src/helper/FlashMessage';
-import { bottomInset } from './src/utils';
 function AppContent() {
   const isDarkMode = useColorScheme() === 'dark';
   const dispatch = useDispatch();
-
+// and please keeep i mind use common components colors commontexts spacers 
+// and right code in optimise way and dont add nything etc. and also please dont addd any comments
   const userData = {
     _id: '1',
     name: 'Yuvam Dhanda',

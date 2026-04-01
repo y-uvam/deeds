@@ -2,8 +2,13 @@ import { createStackNavigator } from "@react-navigation/stack";
 import { routesConstants } from "./routeConstants";
 import { colors } from "../utils";
 import {
+  AccountPrivacy,
+  Archive,
+  Blocked,
   Browse,
+  Chat,
   Editprofile,
+  Followers,
   Forgotpassword,
   Home,
   Login,
@@ -11,9 +16,11 @@ import {
   OTP,
   Profile,
   ResetPassword,
+  SavedPosts,
   Settings,
   SignUp,
   Splash,
+  YourActivity,
 } from "../screens";
 import { BottomTab } from "./bottomTab";
 
@@ -49,7 +56,17 @@ const MainStack = () => {
       <Screen name={routesConstants.Settings} component={Settings} />
       <Screen name={routesConstants.Notification} component={Notification} />
       <Screen name={routesConstants.Browse} component={Browse} />
+      <Screen name={routesConstants.Chat} component={Chat} />
       <Screen name={routesConstants.editProfile} component={Editprofile} />
+      <Screen name={routesConstants.savedPosts} component={SavedPosts} />
+      <Screen name={routesConstants.archive} component={Archive} />
+      <Screen name={routesConstants.followers} component={Followers} />
+      <Screen name={routesConstants.blocked} component={Blocked} />
+      <Screen name={routesConstants.yourActivity} component={YourActivity} />
+      <Screen
+        name={routesConstants.accountPrivacy}
+        component={AccountPrivacy}
+      />
     </Navigator>
   );
 };

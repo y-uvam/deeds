@@ -214,6 +214,7 @@ export const Splash = () => {
   const glowOpacity = useSharedValue(0);
 
   const letters = [
+    appImages.appLogo,
     appImages.v,
     appImages.i,
     appImages.r,

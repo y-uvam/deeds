@@ -1,6 +1,9 @@
 import { StyleSheet } from "react-native";
-import { colors, scales } from "../../utils";
+import { colors, scales, width } from "../../utils";
 import { fontFamily } from "../../assets";
+
+const DOT_SIZE = scales(6);
+const DOT_ACTIVE_WIDTH = scales(14);
 
 export const styles = StyleSheet.create({
   container: {
@@ -129,5 +132,95 @@ export const styles = StyleSheet.create({
     fontSize: scales(13),
     color: colors.gray,
     marginTop: scales(2),
+  },
+  root: {
+    width: width,
+  },
+  slideWrapper: {
+    width,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  imageContainer: {
+    width,
+    overflow: "hidden",
+  },
+  postImage: {
+    width,
+    height: width * 1.1,
+  },
+  imageEdgeFade: {
+    ...StyleSheet.absoluteFillObject,
+    borderTopLeftRadius: 0,
+    borderTopRightRadius: 0,
+  },
+  heartOverlay: {
+    position: "absolute",
+    alignSelf: "center",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  heartEmoji: {
+    fontSize: scales(80),
+  },
+  badgeWrapper: {
+    position: "absolute",
+    top: scales(14),
+    right: scales(14),
+    borderRadius: scales(12),
+    overflow: "hidden",
+  },
+  blurBadge: {
+    borderRadius: scales(12),
+  },
+  badgeInner: {
+    paddingHorizontal: scales(10),
+    paddingVertical: scales(4),
+    backgroundColor: "rgba(0,0,0,0.25)",
+    borderRadius: scales(12),
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: "rgba(255,255,255,0.15)",
+  },
+  badgeText: {
+    color: colors.white,
+    fontSize: scales(12),
+    fontWeight: "700",
+    letterSpacing: 0.5,
+  },
+  badgeSeparator: {
+    color: "rgba(255,255,255,0.4)",
+    fontWeight: "400",
+  },
+  dotsRow: {
+    position: "absolute",
+    bottom: scales(14),
+    alignSelf: "center",
+    borderRadius: scales(12),
+    overflow: "hidden",
+  },
+  dotsBlur: {
+    borderRadius: scales(12),
+  },
+  dotsInner: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: scales(10),
+    paddingVertical: scales(6),
+    backgroundColor: "rgba(0,0,0,0.3)",
+    borderRadius: scales(12),
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: "rgba(255,255,255,0.12)",
+  },
+  dot: {
+    width: DOT_SIZE,
+    height: DOT_SIZE,
+    borderRadius: DOT_SIZE / 2,
+    backgroundColor: colors.white,
+    marginHorizontal: scales(2),
+    opacity: 0.3,
+  },
+  dotActive: {
+    width: DOT_ACTIVE_WIDTH,
+    opacity: 1,
   },
 });

@@ -13,4 +13,11 @@ export const routesConstants = {
   Browse: "Browse",
   Profile: "Profile",
   editProfile: "EditProfile",
+  savedPosts: "SavedPosts",
+  archive: "Archive",
+  followers: "Followers",
+  blocked: "Blocked",
+  yourActivity: "YourActivity",
+  accountPrivacy: "AccountPrivacy",
+  Chat: "Chat",
 };

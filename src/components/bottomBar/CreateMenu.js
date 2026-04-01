@@ -12,159 +12,223 @@ import Animated, {
   useAnimatedStyle,
   withSpring,
   withTiming,
+  withDelay,
+  withRepeat,
+  withSequence,
   interpolate,
-  Extrapolate,
+  Extrapolation,
   runOnJS,
-  useDerivedValue,
+  Easing,
 } from "react-native-reanimated";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
+import { BlurView } from "@react-native-community/blur";
 import { appImages, fontFamily } from "../../assets";
 import { colors, scales } from "../../utils";
 
-const { width: SCREEN_WIDTH } = Dimensions.get("window");
+const { width: W } = Dimensions.get("window");
 
-// Add this if it's not already in your file
 const ITEMS = [
-  { id: 1, label: "Post", icon: appImages.post, color: "#0088FF" },
-  { id: 2, label: "Story", icon: appImages.heart, color: "#FF4F7B" },
-  { id: 3, label: "Live", icon: appImages.bell, color: "#FF8C00" },
-  { id: 4, label: "Media", icon: appImages.imageupload, color: "#7C3AED" },
-  { id: 5, label: "Message", icon: appImages.send, color: "#00C896" },
-  { id: 6, label: "Share", icon: appImages.share, color: "#E040FB" },
+  { id: 1, label: "Post", icon: appImages.post },
+  { id: 2, label: "Story", icon: appImages.heart },
+  { id: 3, label: "Live", icon: appImages.bell },
+  { id: 4, label: "Media", icon: appImages.imageupload },
+  { id: 5, label: "Message", icon: appImages.send },
+  { id: 6, label: "Share", icon: appImages.share },
 ];
 
-// Configuration Constants
-const ITEM_SIZE = scales(80);
+const ITEM_SIZE = scales(70);
 const SPACING = scales(100);
 const ARC_RADIUS = scales(400);
+const SPRING_CONFIG = { damping: 22, stiffness: 140, mass: 0.6 };
+const ENTRANCE_SPRING = { damping: 14, stiffness: 85, mass: 0.5 };
 
-const SPRING_CONFIG = {
-  damping: 18,
-  stiffness: 120,
-  mass: 0.8,
-};
+const PulseRing = memo(({ size }) => {
+  const scale = useSharedValue(0.4);
+  const opacity = useSharedValue(0);
 
-// ── Memoized MenuItem ────────────────────────────────────────────────────────
+  useEffect(() => {
+    opacity.value = withRepeat(
+      withSequence(
+        withTiming(0.25, { duration: 500 }),
+        withTiming(0, { duration: 1500 }),
+      ),
+      -1,
+      false,
+    );
+    scale.value = withRepeat(
+      withTiming(1, { duration: 2000, easing: Easing.out(Easing.ease) }),
+      -1,
+      false,
+    );
+  }, []);
+
+  const style = useAnimatedStyle(() => ({
+    position: "absolute",
+    width: size * 2.2,
+    height: size * 2.2,
+    borderRadius: (size * 2.2) / 2,
+    borderWidth: 1.5,
+    borderColor: "rgba(255,255,255,0.6)",
+    opacity: opacity.value,
+    transform: [{ scale: scale.value }],
+  }));
+
+  return <Animated.View style={style} pointerEvents="none" />;
+});
+
 const MenuItem = memo(({ item, index, scrollX, entryAnim, onPress }) => {
   const animatedStyle = useAnimatedStyle(() => {
-    // Calculate relative position to center
-    const relativePos = index * SPACING;
-    const inputX = scrollX.value + relativePos;
+    const tx = scrollX.value + index * SPACING;
+    const ty = ARC_RADIUS - Math.sqrt(Math.max(0, ARC_RADIUS ** 2 - tx ** 2));
+    const rot = (tx / ARC_RADIUS) * (180 / Math.PI);
+    const dist = Math.abs(tx);
 
-    // Circular Arc Math: x^2 + y^2 = R^2
-    const tx = inputX;
-    const ty =
-      ARC_RADIUS -
-      Math.sqrt(Math.max(0, Math.pow(ARC_RADIUS, 2) - Math.pow(tx, 2)));
-
-    // Rotation based on arc tangent
-    const rotation = (tx / ARC_RADIUS) * (180 / Math.PI);
-
-    // Focus Effects (Scale/Opacity)
-    const distance = Math.abs(tx);
     const scale = interpolate(
-      distance,
+      dist,
       [0, SPACING],
-      [1.1, 0.7],
-      Extrapolate.CLAMP,
+      [1.25, 0.7],
+      Extrapolation.CLAMP,
     );
     const opacity = interpolate(
-      distance,
+      dist,
       [0, SPACING * 1.5],
       [1, 0],
-      Extrapolate.CLAMP,
-    );
-    const labelOpacity = interpolate(
-      distance,
-      [0, SPACING / 2],
-      [1, 0],
-      Extrapolate.CLAMP,
+      Extrapolation.CLAMP,
     );
 
     return {
       opacity: opacity * entryAnim.value,
       transform: [
-        { translateY: ty },
         { translateX: tx },
-        { rotate: `${rotation}deg` },
-        { scale: scale },
+        { translateY: -ty },
+        { rotate: `${rot}deg` },
+        { scale: scale * interpolate(entryAnim.value, [0, 1], [0.5, 1]) },
       ],
     };
   });
 
   const labelStyle = useAnimatedStyle(() => {
-    const distance = Math.abs(scrollX.value + index * SPACING);
+    const dist = Math.abs(scrollX.value + index * SPACING);
     return {
       opacity: interpolate(
-        distance,
-        [0, SPACING / 2],
+        dist,
+        [0, SPACING * 0.45],
         [1, 0],
-        Extrapolate.CLAMP,
+        Extrapolation.CLAMP,
       ),
-      transform: [{ translateY: interpolate(distance, [0, SPACING], [0, 10]) }],
+      transform: [
+        { translateY: interpolate(dist, [0, SPACING], [-5, 15], Extrapolation.CLAMP) }
+      ],
     };
+  });
+
+  const isCenterStyle = useAnimatedStyle(() => {
+    const dist = Math.abs(scrollX.value + index * SPACING);
+    return { opacity: interpolate(dist, [0, SPACING * 0.3], [1, 0], Extrapolation.CLAMP) };
   });
 
   return (
     <Animated.View style={[styles.itemContainer, animatedStyle]}>
-      <Animated.Text
-        style={[styles.itemLabel, { color: item.color }, labelStyle]}
-      >
+      <Animated.Text style={[styles.itemLabel, labelStyle]}>
         {item.label}
       </Animated.Text>
-      <Pressable
-        onPress={() => onPress(item)}
-        style={({ pressed }) => [
-          styles.itemCircle,
-          { backgroundColor: `${item.color}15`, borderColor: item.color },
-          pressed && { opacity: 0.7 },
-        ]}
-      >
-        <Image
-          source={item.icon}
-          style={[styles.itemIcon, { tintColor: item.color }]}
-          resizeMode="contain"
-        />
-      </Pressable>
+
+      <View style={styles.itemCircleWrapper}>
+        <Animated.View style={[StyleSheet.absoluteFill, styles.pulseWrapper, isCenterStyle]}>
+          <PulseRing size={ITEM_SIZE} />
+        </Animated.View>
+
+        <Pressable
+          onPress={() => onPress(item)}
+          style={({ pressed }) => [
+            styles.itemCircle,
+            pressed && { opacity: 0.6, transform: [{ scale: 0.9 }] },
+          ]}
+        >
+          <BlurView
+            style={StyleSheet.absoluteFill}
+            blurType="dark"
+            blurAmount={25}
+            reducedTransparencyFallbackColor="transparent"
+          />
+          <View style={[StyleSheet.absoluteFill, styles.circleOverlay]} />
+          <Image
+            source={item.icon}
+            style={styles.itemIcon}
+            resizeMode="contain"
+          />
+        </Pressable>
+      </View>
     </Animated.View>
   );
 });
 
-// ── Main Menu ────────────────────────────────────────────────────────────────
+const GlowLine = memo(({ entryAnim }) => {
+  const lineW = useSharedValue(0);
+
+  useEffect(() => {
+    lineW.value = withDelay(
+      300,
+      withSpring(W * 0.65, { damping: 20, stiffness: 40 }),
+    );
+  }, []);
+
+  const style = useAnimatedStyle(() => ({
+    width: lineW.value,
+    opacity: entryAnim.value * 0.6,
+    transform: [{ scaleX: interpolate(entryAnim.value, [0, 1], [0.1, 1]) }],
+  }));
+
+  return <Animated.View style={[styles.glowLine, style]} />;
+});
+
+const DotItem = memo(({ index, scrollX }) => {
+  const style = useAnimatedStyle(() => {
+    const itemX = scrollX.value + index * SPACING;
+    const dist = Math.abs(itemX);
+    return {
+      width: interpolate(dist, [0, SPACING], [22, 6], Extrapolation.CLAMP),
+      opacity: interpolate(dist, [0, SPACING], [1, 0.25], Extrapolation.CLAMP),
+      backgroundColor: interpolate(dist, [0, SPACING], [1, 0], Extrapolation.CLAMP) > 0.5 ? colors.white : "rgba(255,255,255,0.4)"
+    };
+  });
+  return <Animated.View style={[styles.dot, style]} />;
+});
+
 export const CreateMenu = ({ visible, onClose }) => {
   const [mounted, setMounted] = useState(false);
-  const scrollX = useSharedValue(0);
+  const scrollValue = useSharedValue(0);
   const contextX = useSharedValue(0);
 
-  const entryY = useSharedValue(100);
+  const entryY = useSharedValue(150);
   const entryOpac = useSharedValue(0);
 
   useEffect(() => {
     if (visible) {
       setMounted(true);
-      entryOpac.value = withTiming(1, { duration: 300 });
-      entryY.value = withSpring(0, SPRING_CONFIG);
-      // Reset scroll to first item or middle item
-      scrollX.value = withSpring(0);
+      entryOpac.value = withTiming(1, { duration: 400 });
+      entryY.value = withSpring(0, ENTRANCE_SPRING);
+      scrollValue.value = withSpring(0, SPRING_CONFIG);
     } else {
-      entryOpac.value = withTiming(0, { duration: 200 });
-      entryY.value = withTiming(100, { duration: 250 }, () =>
+      entryOpac.value = withTiming(0, { duration: 250 });
+      entryY.value = withTiming(150, { duration: 300, easing: Easing.in(Easing.ease) }, () =>
         runOnJS(setMounted)(false),
       );
     }
   }, [visible]);
 
-  const panGesture = Gesture.Pan()
+  const pan = Gesture.Pan()
     .onStart(() => {
-      contextX.value = scrollX.value;
+      contextX.value = scrollValue.value;
     })
     .onUpdate((e) => {
-      scrollX.value = contextX.value + e.translationX;
+      const resistance = 0.75;
+      scrollValue.value = contextX.value + e.translationX * resistance;
     })
     .onEnd((e) => {
-      const index = Math.round(scrollX.value / SPACING);
-      const clampedIndex = Math.min(Math.max(index, -(ITEMS.length - 1)), 0);
-      scrollX.value = withSpring(clampedIndex * SPACING, {
+      const idx = Math.round(scrollValue.value / SPACING);
+      const clamped = Math.min(Math.max(idx, -(ITEMS.length - 1)), 0);
+      scrollValue.value = withSpring(clamped * SPACING, {
         velocity: e.velocityX,
         ...SPRING_CONFIG,
       });
@@ -173,102 +237,182 @@ export const CreateMenu = ({ visible, onClose }) => {
   const onSelect = useCallback(
     (item) => {
       onClose();
-      console.log("Selected:", item.label);
     },
     [onClose],
   );
 
+  const overlayStyle = useAnimatedStyle(() => ({
+    opacity: entryOpac.value * 0.75,
+  }));
+  const wrapperStyle = useAnimatedStyle(() => ({
+    opacity: entryOpac.value,
+    transform: [{ translateY: entryY.value }],
+  }));
+
   if (!mounted) return null;
 
   return (
-    <View style={StyleSheet.absoluteFill} pointerEvents="box-none">
-      <Pressable style={styles.overlay} onPress={onClose}>
+    <View style={StyleSheet.absoluteFill} pointerEvents="none">
+      <Pressable style={StyleSheet.absoluteFillObject} onPress={onClose}>
         <Animated.View
-          style={[
-            StyleSheet.absoluteFill,
-            { opacity: entryOpac, backgroundColor: "rgba(0,0,0,0.6)" },
-          ]}
+          style={[StyleSheet.absoluteFill, styles.overlay, overlayStyle]}
         />
       </Pressable>
 
       <Animated.View
-        style={[
-          styles.menuWrapper,
-          { opacity: entryOpac, transform: [{ translateY: entryY }] },
-        ]}
+        style={[styles.menuWrapper, wrapperStyle]}
         pointerEvents="box-none"
       >
-        <GestureDetector gesture={panGesture}>
-          <View style={styles.container}>
-            <View style={styles.track}>
-              {ITEMS.map((item, index) => (
-                <MenuItem
-                  key={item.id}
-                  index={index}
-                  item={item}
-                  scrollX={scrollX}
-                  entryAnim={entryOpac}
-                  onPress={onSelect}
-                />
-              ))}
-            </View>
+        <View style={styles.glassPanel}>
+          <BlurView
+            style={StyleSheet.absoluteFill}
+            blurType="dark"
+            blurAmount={30}
+            reducedTransparencyFallbackColor="#000"
+          />
+          <View style={[StyleSheet.absoluteFill, styles.glassFill]} />
+          <View style={styles.panelTopBorder} />
+        </View>
+
+        <Animated.Text style={[styles.hintText, { opacity: entryOpac }]}>
+          X P L O R E
+        </Animated.Text>
+
+        <GestureDetector gesture={pan}>
+          <View style={styles.track}>
+            {ITEMS.map((item, index) => (
+              <MenuItem
+                key={item.id}
+                index={index}
+                item={item}
+                scrollX={scrollValue}
+                entryAnim={entryOpac}
+                onPress={onSelect}
+              />
+            ))}
           </View>
         </GestureDetector>
+
+        <GlowLine entryAnim={entryOpac} />
+
+        <View style={styles.dotsRow}>
+          {ITEMS.map((_, i) => (
+            <DotItem key={i} index={i} scrollX={scrollValue} />
+          ))}
+        </View>
       </Animated.View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  overlay: { ...StyleSheet.absoluteFillObject },
+  overlay: {
+    backgroundColor: "#000",
+  },
   menuWrapper: {
     position: "absolute",
     bottom: 0,
-    width: SCREEN_WIDTH,
+    width: W,
     height: scales(300),
+    alignItems: "center",
     justifyContent: "center",
-    alignItems: "center",
   },
-  container: {
-    width: SCREEN_WIDTH,
-    alignItems: "center",
+  glassPanel: {
+    ...StyleSheet.absoluteFillObject,
+    overflow: "hidden",
+    borderTopLeftRadius: scales(35),
+    borderTopRightRadius: scales(35),
+  },
+  glassFill: {
+    backgroundColor: "rgba(1,14,35,0.7)",
+    borderTopLeftRadius: scales(35),
+    borderTopRightRadius: scales(35),
+  },
+  panelTopBorder: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    height: 1,
+    backgroundColor: "rgba(255,255,255,0.15)",
+  },
+  hintText: {
+    color: "rgba(255,255,255,0.35)",
+    fontSize: scales(10),
+    fontFamily: fontFamily.bold,
+    letterSpacing: 6,
+    marginBottom: scales(10),
+    marginTop: scales(20),
+    textTransform: "uppercase",
   },
   track: {
-    height: ITEM_SIZE + 100,
-    justifyContent: "center",
+    height: ITEM_SIZE + scales(90),
+    width: W,
     alignItems: "center",
-    width: "100%",
-    marginBottom: scales(50),
+    justifyContent: "center",
   },
   itemContainer: {
     position: "absolute",
     alignItems: "center",
     width: ITEM_SIZE,
   },
+  itemCircleWrapper: {
+    alignItems: "center",
+    justifyContent: "center",
+    height: ITEM_SIZE,
+    width: ITEM_SIZE,
+  },
+  pulseWrapper: {
+    alignItems: "center",
+    justifyContent: "center",
+  },
   itemCircle: {
     width: ITEM_SIZE,
     height: ITEM_SIZE,
     borderRadius: ITEM_SIZE / 2,
-    borderWidth: 1.5,
+    overflow: "hidden",
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#fff",
+    borderWidth: 1.2,
+    borderColor: "rgba(255,255,255,0.25)",
   },
-  itemLabel: {
-    fontSize: scales(14),
-    fontFamily: fontFamily.bold,
-    marginBottom: scales(12),
-    textAlign: "center",
+  circleOverlay: {
+    backgroundColor: "rgba(255,255,255,0.08)",
+    borderRadius: ITEM_SIZE / 2,
   },
   itemIcon: {
-    width: ITEM_SIZE * 0.45,
-    height: ITEM_SIZE * 0.45,
+    width: ITEM_SIZE * 0.44,
+    height: ITEM_SIZE * 0.44,
+    tintColor: colors.white,
   },
-  guideText: {
-    color: "rgba(255,255,255,0.5)",
-    fontSize: scales(10),
+  itemLabel: {
+    color: colors.white,
+    fontSize: scales(12),
+    fontFamily: fontFamily.bold,
+    marginBottom: scales(14),
     letterSpacing: 2,
     textTransform: "uppercase",
-    marginBottom: scales(30),
+  },
+  glowLine: {
+    height: 1.5,
+    backgroundColor: colors.white,
+    borderRadius: 2,
+    shadowColor: colors.white,
+    shadowOpacity: 1,
+    shadowRadius: 15,
+    shadowOffset: { width: 0, height: 0 },
+    elevation: 10,
+    marginTop: scales(12),
+    marginBottom: scales(8),
+  },
+  dotsRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: scales(10),
+    gap: scales(6),
+  },
+  dot: {
+    height: scales(6),
+    borderRadius: scales(3),
   },
 });

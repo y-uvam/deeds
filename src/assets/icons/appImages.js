@@ -43,4 +43,9 @@ export const appImages = {
   t: require("../icons/t.png"),
   u: require("../icons/u.png"),
   e: require("../icons/e.png"),
+  // virtue: require("../icons/virtue.png"),
+  appLogo: require("../icons/virtue_logo.png"),
+  gallery: require("../icons/gallery.png"),
+  camera: require("../icons/camera.png"),
+  chat: require("../icons/chat.png"),
 };

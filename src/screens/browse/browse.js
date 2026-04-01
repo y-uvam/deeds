@@ -82,6 +82,24 @@ const groupIntoBlocks = (posts) => {
   return blocks;
 };
 
+const GridImage = ({ item, style }) => {
+  if (!item) return null;
+  return (
+    <TouchableOpacity activeOpacity={0.8} style={[styles.gridItemBase, style]}>
+      <Image source={item.image} style={styles.gridImage} />
+      {item.isReel && (
+        <View style={styles.reelIconOverlay}>
+          <Image source={appImages.play} style={styles.reelIcon} />
+        </View>
+      )}
+    </TouchableOpacity>
+  );
+};
+
+const GridSkeleton = ({ style }) => (
+  <CustomSkeleton variant="card" style={[styles.gridItemBase, style]} />
+);
+
 export const Browse = () => {
   const insets = useSafeAreaInsets();
   const [search, setSearch] = useState("");
@@ -97,22 +115,9 @@ export const Browse = () => {
     return () => clearTimeout(timer);
   }, []);
 
-  const GridImage = ({ item, style }) => (
-    <TouchableOpacity activeOpacity={0.8} style={[styles.gridItemBase, style]}>
-      <Image source={item.image} style={styles.gridImage} />
-      {item.isReel && (
-        <View style={styles.reelIconOverlay}>
-          <Image source={appImages.play} style={styles.reelIcon} />
-        </View>
-      )}
-    </TouchableOpacity>
-  );
-
-  const GridSkeleton = ({ style }) => (
-    <CustomSkeleton variant="square" style={[styles.gridItemBase, style]} />
-  );
-
   const renderLayout = (item) => {
+    if (!item || !item.items) return null;
+
     if (item.type === "row") {
       return (
         <View style={styles.rowLayout}>
@@ -120,7 +125,7 @@ export const Browse = () => {
             <CustomSkeleton variant="browse" />
           ) : (
             <View style={styles.rowLayout}>
-              {item.items.map((post) => (
+              {item.items?.map((post) => (
                 <GridImage
                   key={post.id}
                   item={post}
@@ -140,22 +145,28 @@ export const Browse = () => {
             <CustomSkeleton variant="browseFeaturedLeft" />
           ) : (
             <View style={{ flexDirection: "row" }}>
-              <GridImage
-                item={item.items[0]}
-                style={{
-                  width: COLUMN_WIDTH * 2 + 1.4,
-                  height: COLUMN_WIDTH * 2 + 1.4,
-                }}
-              />
+              {item.items?.[0] && (
+                <GridImage
+                  item={item.items[0]}
+                  style={{
+                    width: COLUMN_WIDTH * 2 + 1.4,
+                    height: COLUMN_WIDTH * 2 + 1.4,
+                  }}
+                />
+              )}
               <View style={styles.verticalStack}>
-                <GridImage
-                  item={item.items[1]}
-                  style={{ width: COLUMN_WIDTH, height: COLUMN_WIDTH }}
-                />
-                <GridImage
-                  item={item.items[2]}
-                  style={{ width: COLUMN_WIDTH, height: COLUMN_WIDTH }}
-                />
+                {item.items?.[1] && (
+                  <GridImage
+                    item={item.items[1]}
+                    style={{ width: COLUMN_WIDTH, height: COLUMN_WIDTH }}
+                  />
+                )}
+                {item.items?.[2] && (
+                  <GridImage
+                    item={item.items[2]}
+                    style={{ width: COLUMN_WIDTH, height: COLUMN_WIDTH }}
+                  />
+                )}
               </View>
             </View>
           )}
@@ -171,22 +182,28 @@ export const Browse = () => {
           ) : (
             <View style={{ flexDirection: "row" }}>
               <View style={styles.verticalStack}>
-                <GridImage
-                  item={item.items[0]}
-                  style={{ width: COLUMN_WIDTH, height: COLUMN_WIDTH }}
-                />
-                <GridImage
-                  item={item.items[1]}
-                  style={{ width: COLUMN_WIDTH, height: COLUMN_WIDTH }}
-                />
+                {item.items?.[0] && (
+                  <GridImage
+                    item={item.items[0]}
+                    style={{ width: COLUMN_WIDTH, height: COLUMN_WIDTH }}
+                  />
+                )}
+                {item.items?.[1] && (
+                  <GridImage
+                    item={item.items[1]}
+                    style={{ width: COLUMN_WIDTH, height: COLUMN_WIDTH }}
+                  />
+                )}
               </View>
-              <GridImage
-                item={item.items[2]}
-                style={{
-                  width: COLUMN_WIDTH * 2 + 1.4,
-                  height: COLUMN_WIDTH * 2 + 1.4,
-                }}
-              />
+              {item.items?.[2] && (
+                <GridImage
+                  item={item.items[2]}
+                  style={{
+                    width: COLUMN_WIDTH * 2 + 1.4,
+                    height: COLUMN_WIDTH * 2 + 1.4,
+                  }}
+                />
+              )}
             </View>
           )}
         </View>

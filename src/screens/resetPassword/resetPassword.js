@@ -3,7 +3,8 @@ import { View, Text, StyleSheet, TouchableOpacity, KeyboardAvoidingView, Platfor
 import { AppBackground, CustomInput, CustomButton, CustomBottomSheet } from '../../components';
 import { colors, commonText, scales } from '../../utils';
 import { fontFamily, appImages } from '../../assets';
-import { navigate, reset, routesConstants } from "../../navigation";
+import { navigate, reset } from "../../navigation/navigationServices";
+import { routesConstants } from "../../navigation/routeConstants";
 import LottieView from 'lottie-react-native';
 import { animations } from '../../animations/animations';
 

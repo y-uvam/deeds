@@ -1,10 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, Platform } from 'react-native';
 import { AppBackground, CustomBottomSheet, CustomButton, CustomInput, Spacer } from '../../components';
 import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 import { commonText, scales } from '../../utils';
 import { appImages } from '../../assets';
-import { navigate, routesConstants } from '../../navigation';
+import { navigate } from "../../navigation/navigationServices";
+import { routesConstants } from "../../navigation/routeConstants";
 import LottieView from 'lottie-react-native';
 import { animations } from '../../animations/animations';
 

@@ -22,7 +22,8 @@ import {
   validationSchema,
 } from "../../utils";
 import { fontFamily, appImages } from "../../assets";
-import { goBack, navigate, routesConstants } from "../../navigation";
+import { goBack, navigate } from "../../navigation/navigationServices";
+import { routesConstants } from "../../navigation/routeConstants";
 import LottieView from "lottie-react-native";
 import { animations } from "../../animations/animations";
 import { Controller, useForm } from "react-hook-form";
