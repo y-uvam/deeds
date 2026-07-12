@@ -1,10 +1,11 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef } from "react";
 import {
   View,
   Text,
   StyleSheet,
   TouchableOpacity,
   Platform,
+  Image,
 } from "react-native";
 import {
   AppBackground,
@@ -23,8 +24,7 @@ import {
 import { fontFamily, appImages } from "../../assets";
 import { navigate, reset } from "../../navigation/navigationServices";
 import { routesConstants } from "../../navigation/routeConstants";
-import LottieView from "lottie-react-native";
-import { animations } from "../../animations/animations";
+
 import { Controller, useForm } from "react-hook-form";
 import { KeyboardAvoidingView } from "react-native-keyboard-controller";
 import { DataManager } from "../../helper/dataManager";
@@ -53,16 +53,16 @@ export const Login = () => {
     console.log(data, "Login Data");
     const userData = await DataManager.getUserDetails();
     console.log(userData, "userData");
-    if (
-      userData &&
-      userData.email === data.email &&
-      userData.password === data.password
-    ) {
-      showCustomMessage("Logged-In successfully.", "success");
-      reset(routesConstants.BottomTabs);
-    } else {
-      showCustomMessage("Please enter valid email or password.", "danger");
-    }
+    // if (
+    //   userData &&
+    //   userData.email === data.email &&
+    //   userData.password === data.password
+    // ) {
+    showCustomMessage("Logged-In successfully.", "success");
+    reset(routesConstants.BottomTabs);
+    // } else {
+    //   showCustomMessage("Please enter valid email or password.", "danger");
+    // }
   };
 
   return (
@@ -71,12 +71,13 @@ export const Login = () => {
         style={styles.kav}
         behavior={Platform.OS === "ios" ? "padding" : undefined}
       >
-        <LottieView
-          source={animations.auth}
-          autoPlay
-          loop={true}
-          style={{ width: "50%", height: "50%", alignSelf: "center" }}
-        />
+        <View style={styles.logoRow}>
+          <Image
+            source={appImages.appLogo}
+            style={styles.logo}
+            resizeMode="contain"
+          />
+        </View>
         <CustomBottomSheet
           ref={bottomSheetRef}
           snapPoints={["55%"]}
@@ -215,5 +216,15 @@ const styles = StyleSheet.create({
     fontFamily: fontFamily.medium,
     color: colors.blue,
     letterSpacing: 0.2,
+  },
+  logoRow: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  logo: {
+    width: scales(72),
+    height: scales(72),
+    tintColor: "rgba(255,255,255,0.9)",
   },
 });

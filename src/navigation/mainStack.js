@@ -26,7 +26,6 @@ import {
   YourActivity,
 } from "../screens";
 import { BottomTab } from "./bottomTab";
-import { AiCall } from "../ai/call";
 
 const { Navigator, Screen } = createStackNavigator();
 
@@ -67,7 +66,6 @@ const MainStack = () => {
       <Screen name={routesConstants.followers} component={Followers} />
       <Screen name={routesConstants.blocked} component={Blocked} />
       <Screen name={routesConstants.yourActivity} component={YourActivity} />
-      <Screen name={routesConstants.aiCall} component={AiCall} />
       <Screen name={routesConstants.chatCard} component={ChatCard} />
       <Screen name={routesConstants.newChat} component={NewChat} />
       <Screen name={routesConstants.dashboard} component={Dashboard} />

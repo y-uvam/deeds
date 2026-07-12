@@ -12,12 +12,12 @@ import { BlurView } from "@react-native-community/blur";
 const CustomBackground = ({ style }) => {
   return (
     <View style={[style, styles.background]}>
-      <BlurView
+      {/* <BlurView
         style={StyleSheet.absoluteFill}
         blurType="light"
         blurAmount={1}
         reducedTransparencyFallbackColor="white"
-      />
+      /> */}
     </View>
   );
 };

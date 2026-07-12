@@ -23,4 +23,5 @@ export const colors = {
   purple: "#7C3AED",
   lightGreen: "#00C896",
   pink: "#E040FB",
+  background: "#051424",
 };

@@ -16,34 +16,37 @@ import { appImages, fontFamily } from "../../assets";
 
 const { width } = Dimensions.get("window");
 
-export const CustomSearch = ({ 
-  value, 
-  onChangeText, 
-  placeholder = "Search", 
+export const CustomSearch = ({
+  value,
+  onChangeText,
+  placeholder = "Search",
   containerStyle,
   onFocus: onFocusProp,
   onBlur: onBlurProp,
-  onCancel: onCancelProp
+  onCancel: onCancelProp,
 }) => {
   const [isFocused, setIsFocused] = useState(false);
   const cancelAnim = useRef(new Animated.Value(0)).current;
   const glowAnim = useRef(new Animated.Value(0)).current;
   const inputRef = useRef(null);
 
-  const animate = useCallback((focused) => {
-    Animated.parallel([
-      Animated.timing(cancelAnim, {
-        toValue: focused ? 1 : 0,
-        duration: 250,
-        useNativeDriver: false,
-      }),
-      Animated.timing(glowAnim, {
-        toValue: focused ? 1 : 0,
-        duration: 200,
-        useNativeDriver: false,
-      }),
-    ]).start();
-  }, [cancelAnim, glowAnim]);
+  const animate = useCallback(
+    (focused) => {
+      Animated.parallel([
+        Animated.timing(cancelAnim, {
+          toValue: focused ? 1 : 0,
+          duration: 250,
+          useNativeDriver: false,
+        }),
+        Animated.timing(glowAnim, {
+          toValue: focused ? 1 : 0,
+          duration: 200,
+          useNativeDriver: false,
+        }),
+      ]).start();
+    },
+    [cancelAnim, glowAnim],
+  );
 
   const handleFocus = () => {
     setIsFocused(true);
@@ -80,17 +83,22 @@ export const CustomSearch = ({
 
   return (
     <View style={[styles.mainContainer, containerStyle]}>
-      <Animated.View style={[styles.searchWrapper, { width: inputWidth, borderColor }]}>
-        <BlurView
+      <Animated.View
+        style={[styles.searchWrapper, { width: inputWidth, borderColor }]}
+      >
+        {/* <BlurView
           style={StyleSheet.absoluteFill}
           blurType="dark"
           blurAmount={10}
           reducedTransparencyFallbackColor="black"
-        />
+        /> */}
         <View style={styles.contentRow}>
-          <Image 
-            source={appImages.browse} 
-            style={[styles.searchIcon, { tintColor: isFocused ? colors.blue : colors.profileHandleText }]} 
+          <Image
+            source={appImages.browse}
+            style={[
+              styles.searchIcon,
+              { tintColor: isFocused ? colors.blue : colors.profileHandleText },
+            ]}
           />
           <TextInput
             ref={inputRef}
@@ -105,7 +113,10 @@ export const CustomSearch = ({
             autoCapitalize="none"
           />
           {value?.length > 0 && (
-            <TouchableOpacity onPress={() => onChangeText?.("")} activeOpacity={0.7}>
+            <TouchableOpacity
+              onPress={() => onChangeText?.("")}
+              activeOpacity={0.7}
+            >
               <View style={styles.clearCircle}>
                 <Image source={appImages.close} style={styles.clearIcon} />
               </View>
@@ -114,7 +125,9 @@ export const CustomSearch = ({
         </View>
       </Animated.View>
 
-      <Animated.View style={[styles.cancelBtnContainer, { opacity: cancelOpacity }]}>
+      <Animated.View
+        style={[styles.cancelBtnContainer, { opacity: cancelOpacity }]}
+      >
         <TouchableOpacity onPress={handleCancel} activeOpacity={0.7}>
           <Text style={styles.cancelText}>Cancel</Text>
         </TouchableOpacity>
@@ -136,7 +149,7 @@ const styles = StyleSheet.create({
     borderRadius: scales(14),
     borderWidth: 1,
     overflow: "hidden",
-    backgroundColor: "rgba(255, 255, 255, 0.05)",
+    backgroundColor: colors.background,
   },
   contentRow: {
     flex: 1,
@@ -181,4 +194,3 @@ const styles = StyleSheet.create({
     fontFamily: fontFamily.semiBold,
   },
 });
-

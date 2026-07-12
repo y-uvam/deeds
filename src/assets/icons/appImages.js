@@ -5,7 +5,7 @@ export const appImages = {
   eyeopen: require("../icons/eyeopen.png"),
   dashboard: require("../icons/home.png"),
   dummyuser: require("../icons/dummyuser.png"),
-  appBackground: require("../icons/appBakground.png"),
+  appBackground: require("../icons/appBackground.png"),
   bell: require("../icons/bell.png"),
   mail: require("../icons/mail.png"),
   lock: require("../icons/lock.png"),

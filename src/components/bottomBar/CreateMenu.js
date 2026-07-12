@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback, memo } from "react";
+import React, { useEffect, useCallback, memo, useState } from "react";
 import {
   StyleSheet,
   View,
@@ -6,6 +6,7 @@ import {
   Dimensions,
   Image,
   Pressable,
+  TouchableOpacity,
 } from "react-native";
 import Animated, {
   useSharedValue,
@@ -13,294 +14,236 @@ import Animated, {
   withSpring,
   withTiming,
   withDelay,
-  withRepeat,
-  withSequence,
-  interpolate,
-  Extrapolation,
   runOnJS,
   Easing,
+  interpolate,
+  Extrapolation,
 } from "react-native-reanimated";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import { BlurView } from "@react-native-community/blur";
 import { appImages, fontFamily } from "../../assets";
 import { colors, scales } from "../../utils";
 
-const { width: W } = Dimensions.get("window");
+const { width: W, height: H } = Dimensions.get("window");
+
+const SHEET_HEIGHT = H * 0.42;
 
 const ITEMS = [
-  { id: 1, label: "Post", icon: appImages.post },
-  { id: 2, label: "Story", icon: appImages.heart },
-  { id: 3, label: "Live", icon: appImages.bell },
-  { id: 4, label: "Media", icon: appImages.imageupload },
-  { id: 5, label: "Message", icon: appImages.send },
-  { id: 6, label: "Share", icon: appImages.share },
+  { id: 1, label: "Post", icon: appImages.post, color: "#6C63FF" },
+  { id: 2, label: "Story", icon: appImages.heart, color: "#E040FB" },
+  { id: 3, label: "Reel", icon: appImages.bell, color: "#FF4F7B" },
+  { id: 4, label: "Media", icon: appImages.imageupload, color: "#00C896" },
+  { id: 5, label: "Message", icon: appImages.send, color: "#0088FF" },
+  { id: 6, label: "Share", icon: appImages.share, color: "#FFC107" },
 ];
 
-const ITEM_SIZE = scales(70);
-const SPACING = scales(100);
-const ARC_RADIUS = scales(400);
-const SPRING_CONFIG = { damping: 22, stiffness: 140, mass: 0.6 };
-const ENTRANCE_SPRING = { damping: 14, stiffness: 85, mass: 0.5 };
+const ITEM_SIZE = scales(62);
 
-const PulseRing = memo(({ size }) => {
-  const scale = useSharedValue(0.4);
-  const opacity = useSharedValue(0);
-
-  useEffect(() => {
-    opacity.value = withRepeat(
-      withSequence(
-        withTiming(0.25, { duration: 500 }),
-        withTiming(0, { duration: 1500 }),
-      ),
-      -1,
-      false,
+// ─── Individual menu item ───────────────────────────────────────────────────
+const MenuItem = memo(({ item, index, onPress, entryAnim }) => {
+  const animStyle = useAnimatedStyle(() => {
+    const delay = index * 40; // ms stagger - handled via inputRange trick
+    const progress = interpolate(
+      entryAnim.value,
+      [0, 1],
+      [0, 1],
+      Extrapolation.CLAMP
     );
-    scale.value = withRepeat(
-      withTiming(1, { duration: 2000, easing: Easing.out(Easing.ease) }),
-      -1,
-      false,
-    );
-  }, []);
-
-  const style = useAnimatedStyle(() => ({
-    position: "absolute",
-    width: size * 2.2,
-    height: size * 2.2,
-    borderRadius: (size * 2.2) / 2,
-    borderWidth: 1.5,
-    borderColor: "rgba(255,255,255,0.6)",
-    opacity: opacity.value,
-    transform: [{ scale: scale.value }],
-  }));
-
-  return <Animated.View style={style} pointerEvents="none" />;
-});
-
-const MenuItem = memo(({ item, index, scrollX, entryAnim, onPress }) => {
-  const animatedStyle = useAnimatedStyle(() => {
-    const tx = scrollX.value + index * SPACING;
-    const ty = ARC_RADIUS - Math.sqrt(Math.max(0, ARC_RADIUS ** 2 - tx ** 2));
-    const rot = (tx / ARC_RADIUS) * (180 / Math.PI);
-    const dist = Math.abs(tx);
-
-    const scale = interpolate(
-      dist,
-      [0, SPACING],
-      [1.25, 0.7],
-      Extrapolation.CLAMP,
-    );
-    const opacity = interpolate(
-      dist,
-      [0, SPACING * 1.5],
-      [1, 0],
-      Extrapolation.CLAMP,
-    );
-
     return {
-      opacity: opacity * entryAnim.value,
+      opacity: progress,
       transform: [
-        { translateX: tx },
-        { translateY: -ty },
-        { rotate: `${rot}deg` },
-        { scale: scale * interpolate(entryAnim.value, [0, 1], [0.5, 1]) },
+        {
+          translateY: interpolate(progress, [0, 1], [30, 0], Extrapolation.CLAMP),
+        },
+        {
+          scale: interpolate(progress, [0, 1], [0.8, 1], Extrapolation.CLAMP),
+        },
       ],
     };
-  });
-
-  const labelStyle = useAnimatedStyle(() => {
-    const dist = Math.abs(scrollX.value + index * SPACING);
-    return {
-      opacity: interpolate(
-        dist,
-        [0, SPACING * 0.45],
-        [1, 0],
-        Extrapolation.CLAMP,
-      ),
-      transform: [
-        { translateY: interpolate(dist, [0, SPACING], [-5, 15], Extrapolation.CLAMP) }
-      ],
-    };
-  });
-
-  const isCenterStyle = useAnimatedStyle(() => {
-    const dist = Math.abs(scrollX.value + index * SPACING);
-    return { opacity: interpolate(dist, [0, SPACING * 0.3], [1, 0], Extrapolation.CLAMP) };
   });
 
   return (
-    <Animated.View style={[styles.itemContainer, animatedStyle]}>
-      <Animated.Text style={[styles.itemLabel, labelStyle]}>
-        {item.label}
-      </Animated.Text>
-
-      <View style={styles.itemCircleWrapper}>
-        <Animated.View style={[StyleSheet.absoluteFill, styles.pulseWrapper, isCenterStyle]}>
-          <PulseRing size={ITEM_SIZE} />
-        </Animated.View>
-
-        <Pressable
-          onPress={() => onPress(item)}
-          style={({ pressed }) => [
-            styles.itemCircle,
-            pressed && { opacity: 0.6, transform: [{ scale: 0.9 }] },
-          ]}
-        >
-          <BlurView
-            style={StyleSheet.absoluteFill}
-            blurType="dark"
-            blurAmount={25}
-            reducedTransparencyFallbackColor="transparent"
+    <Animated.View style={[styles.itemWrapper, animStyle]}>
+      <TouchableOpacity
+        activeOpacity={0.7}
+        onPress={() => onPress(item)}
+        style={styles.itemTouchable}
+      >
+        <View style={[styles.itemCircle, { backgroundColor: item.color + "22" }]}>
+          {/* Subtle colored border */}
+          <View
+            style={[
+              styles.itemCircleBorder,
+              { borderColor: item.color + "55" },
+            ]}
           />
-          <View style={[StyleSheet.absoluteFill, styles.circleOverlay]} />
           <Image
             source={item.icon}
-            style={styles.itemIcon}
+            style={[styles.itemIcon, { tintColor: item.color }]}
             resizeMode="contain"
           />
-        </Pressable>
-      </View>
+        </View>
+        <Text style={styles.itemLabel}>{item.label}</Text>
+      </TouchableOpacity>
     </Animated.View>
   );
 });
 
-const GlowLine = memo(({ entryAnim }) => {
-  const lineW = useSharedValue(0);
+// ─── Drag handle ────────────────────────────────────────────────────────────
+const DragHandle = () => (
+  <View style={styles.handleWrapper}>
+    <View style={styles.handle} />
+  </View>
+);
 
-  useEffect(() => {
-    lineW.value = withDelay(
-      300,
-      withSpring(W * 0.65, { damping: 20, stiffness: 40 }),
+// ─── Main component ──────────────────────────────────────────────────────────
+export const CreateMenu = ({ visible, onClose }) => {
+  const [mounted, setMounted] = useState(false);
+  const translateY = useSharedValue(SHEET_HEIGHT);
+  const overlayOpacity = useSharedValue(0);
+  const itemsProgress = useSharedValue(0);
+
+  // drag gesture state
+  const startY = useSharedValue(0);
+  const isDragging = useSharedValue(false);
+
+  const open = useCallback(() => {
+    overlayOpacity.value = withTiming(1, { duration: 280 });
+    translateY.value = withSpring(0, {
+      damping: 26,
+      stiffness: 220,
+      mass: 0.7,
+      overshootClamping: false,
+    });
+    itemsProgress.value = withDelay(
+      120,
+      withTiming(1, {
+        duration: 320,
+        easing: Easing.out(Easing.cubic),
+      })
     );
   }, []);
 
-  const style = useAnimatedStyle(() => ({
-    width: lineW.value,
-    opacity: entryAnim.value * 0.6,
-    transform: [{ scaleX: interpolate(entryAnim.value, [0, 1], [0.1, 1]) }],
-  }));
-
-  return <Animated.View style={[styles.glowLine, style]} />;
-});
-
-const DotItem = memo(({ index, scrollX }) => {
-  const style = useAnimatedStyle(() => {
-    const itemX = scrollX.value + index * SPACING;
-    const dist = Math.abs(itemX);
-    return {
-      width: interpolate(dist, [0, SPACING], [22, 6], Extrapolation.CLAMP),
-      opacity: interpolate(dist, [0, SPACING], [1, 0.25], Extrapolation.CLAMP),
-      backgroundColor: interpolate(dist, [0, SPACING], [1, 0], Extrapolation.CLAMP) > 0.5 ? colors.white : "rgba(255,255,255,0.4)"
-    };
-  });
-  return <Animated.View style={[styles.dot, style]} />;
-});
-
-export const CreateMenu = ({ visible, onClose }) => {
-  const [mounted, setMounted] = useState(false);
-  const scrollValue = useSharedValue(0);
-  const contextX = useSharedValue(0);
-
-  const entryY = useSharedValue(150);
-  const entryOpac = useSharedValue(0);
+  const close = useCallback(() => {
+    overlayOpacity.value = withTiming(0, { duration: 220 });
+    itemsProgress.value = withTiming(0, { duration: 150 });
+    translateY.value = withSpring(
+      SHEET_HEIGHT,
+      { damping: 24, stiffness: 260, mass: 0.6 },
+      (finished) => {
+        if (finished) {
+          runOnJS(setMounted)(false);
+          runOnJS(onClose)();
+        }
+      }
+    );
+  }, [onClose]);
 
   useEffect(() => {
     if (visible) {
       setMounted(true);
-      entryOpac.value = withTiming(1, { duration: 400 });
-      entryY.value = withSpring(0, ENTRANCE_SPRING);
-      scrollValue.value = withSpring(0, SPRING_CONFIG);
+      // Small delay to let RN mount the view before animating
+      setTimeout(open, 10);
     } else {
-      entryOpac.value = withTiming(0, { duration: 250 });
-      entryY.value = withTiming(150, { duration: 300, easing: Easing.in(Easing.ease) }, () =>
-        runOnJS(setMounted)(false),
-      );
+      // reset silently (closed externally via onClose already)
+      translateY.value = SHEET_HEIGHT;
+      overlayOpacity.value = 0;
+      itemsProgress.value = 0;
+      setMounted(false);
     }
   }, [visible]);
 
-  const pan = Gesture.Pan()
+  // Drag-to-dismiss gesture
+  const panGesture = Gesture.Pan()
     .onStart(() => {
-      contextX.value = scrollValue.value;
+      startY.value = translateY.value;
+      isDragging.value = true;
     })
     .onUpdate((e) => {
-      const resistance = 0.75;
-      scrollValue.value = contextX.value + e.translationX * resistance;
+      // Only allow dragging down
+      const next = startY.value + e.translationY;
+      translateY.value = Math.max(0, next);
     })
     .onEnd((e) => {
-      const idx = Math.round(scrollValue.value / SPACING);
-      const clamped = Math.min(Math.max(idx, -(ITEMS.length - 1)), 0);
-      scrollValue.value = withSpring(clamped * SPACING, {
-        velocity: e.velocityX,
-        ...SPRING_CONFIG,
-      });
+      isDragging.value = false;
+      const shouldClose =
+        translateY.value > SHEET_HEIGHT * 0.3 || e.velocityY > 800;
+      if (shouldClose) {
+        runOnJS(close)();
+      } else {
+        translateY.value = withSpring(0, {
+          damping: 26,
+          stiffness: 220,
+          velocity: e.velocityY,
+        });
+      }
     });
+
+  const overlayStyle = useAnimatedStyle(() => ({
+    opacity: overlayOpacity.value * 0.65,
+  }));
+
+  const sheetStyle = useAnimatedStyle(() => ({
+    transform: [{ translateY: translateY.value }],
+  }));
 
   const onSelect = useCallback(
     (item) => {
-      onClose();
+      close();
     },
-    [onClose],
+    [close]
   );
-
-  const overlayStyle = useAnimatedStyle(() => ({
-    opacity: entryOpac.value * 0.75,
-  }));
-  const wrapperStyle = useAnimatedStyle(() => ({
-    opacity: entryOpac.value,
-    transform: [{ translateY: entryY.value }],
-  }));
 
   if (!mounted) return null;
 
   return (
-    <View style={StyleSheet.absoluteFill} pointerEvents="none">
-      <Pressable style={StyleSheet.absoluteFillObject} onPress={onClose}>
+    <View style={StyleSheet.absoluteFill} pointerEvents="box-none">
+      {/* Backdrop */}
+      <Pressable
+        style={StyleSheet.absoluteFillObject}
+        onPress={close}
+        pointerEvents={visible ? "auto" : "none"}
+      >
         <Animated.View
           style={[StyleSheet.absoluteFill, styles.overlay, overlayStyle]}
         />
       </Pressable>
 
-      <Animated.View
-        style={[styles.menuWrapper, wrapperStyle]}
-        pointerEvents="box-none"
-      >
-        <View style={styles.glassPanel}>
+      {/* Sheet */}
+      <GestureDetector gesture={panGesture}>
+        <Animated.View style={[styles.sheet, sheetStyle]} pointerEvents="box-none">
+          {/* Glass blur background */}
           <BlurView
             style={StyleSheet.absoluteFill}
             blurType="dark"
             blurAmount={30}
-            reducedTransparencyFallbackColor="#000"
+            reducedTransparencyFallbackColor="#0a0a18"
           />
-          <View style={[StyleSheet.absoluteFill, styles.glassFill]} />
-          <View style={styles.panelTopBorder} />
-        </View>
+          <View style={[StyleSheet.absoluteFill, styles.sheetFill]} />
+          {/* Top border glow */}
+          <View style={styles.topGlow} />
 
-        <Animated.Text style={[styles.hintText, { opacity: entryOpac }]}>
-          X P L O R E
-        </Animated.Text>
+          <DragHandle />
 
-        <GestureDetector gesture={pan}>
-          <View style={styles.track}>
+          <Text style={styles.sheetTitle}>Create</Text>
+
+          {/* Items grid — 3 columns */}
+          <View style={styles.grid}>
             {ITEMS.map((item, index) => (
               <MenuItem
                 key={item.id}
-                index={index}
                 item={item}
-                scrollX={scrollValue}
-                entryAnim={entryOpac}
+                index={index}
                 onPress={onSelect}
+                entryAnim={itemsProgress}
               />
             ))}
           </View>
-        </GestureDetector>
 
-        <GlowLine entryAnim={entryOpac} />
-
-        <View style={styles.dotsRow}>
-          {ITEMS.map((_, i) => (
-            <DotItem key={i} index={i} scrollX={scrollValue} />
-          ))}
-        </View>
-      </Animated.View>
+          {/* Bottom safe area spacer */}
+          <View style={styles.safeAreaSpacer} />
+        </Animated.View>
+      </GestureDetector>
     </View>
   );
 };
@@ -309,110 +252,97 @@ const styles = StyleSheet.create({
   overlay: {
     backgroundColor: "#000",
   },
-  menuWrapper: {
+
+  sheet: {
     position: "absolute",
     bottom: 0,
-    width: W,
-    height: scales(300),
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  glassPanel: {
-    ...StyleSheet.absoluteFillObject,
-    overflow: "hidden",
-    borderTopLeftRadius: scales(35),
-    borderTopRightRadius: scales(35),
-  },
-  glassFill: {
-    backgroundColor: "rgba(1,14,35,0.7)",
-    borderTopLeftRadius: scales(35),
-    borderTopRightRadius: scales(35),
-  },
-  panelTopBorder: {
-    position: "absolute",
-    top: 0,
     left: 0,
     right: 0,
-    height: 1,
-    backgroundColor: "rgba(255,255,255,0.15)",
+    height: SHEET_HEIGHT,
+    borderTopLeftRadius: scales(28),
+    borderTopRightRadius: scales(28),
+    overflow: "hidden",
   },
-  hintText: {
-    color: "rgba(255,255,255,0.35)",
-    fontSize: scales(10),
-    fontFamily: fontFamily.bold,
-    letterSpacing: 6,
-    marginBottom: scales(10),
-    marginTop: scales(20),
-    textTransform: "uppercase",
+  sheetFill: {
+    backgroundColor: "rgba(8, 8, 22, 0.78)",
+    borderTopLeftRadius: scales(28),
+    borderTopRightRadius: scales(28),
   },
-  track: {
-    height: ITEM_SIZE + scales(90),
-    width: W,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  itemContainer: {
+  topGlow: {
     position: "absolute",
-    alignItems: "center",
-    width: ITEM_SIZE,
+    top: 0,
+    left: "15%",
+    right: "15%",
+    height: 1.5,
+    backgroundColor: "rgba(255,255,255,0.18)",
+    shadowColor: "#fff",
+    shadowOpacity: 0.6,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 0 },
   },
-  itemCircleWrapper: {
+
+  handleWrapper: {
     alignItems: "center",
-    justifyContent: "center",
-    height: ITEM_SIZE,
-    width: ITEM_SIZE,
+    paddingTop: scales(12),
+    paddingBottom: scales(4),
   },
-  pulseWrapper: {
+  handle: {
+    width: scales(36),
+    height: scales(4),
+    borderRadius: scales(2),
+    backgroundColor: "rgba(255,255,255,0.25)",
+  },
+
+  sheetTitle: {
+    color: "rgba(255,255,255,0.9)",
+    fontSize: scales(16),
+    fontFamily: fontFamily.bold,
+    letterSpacing: 1,
+    textAlign: "center",
+    marginTop: scales(6),
+    marginBottom: scales(20),
+  },
+
+  // 3-column grid
+  grid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    paddingHorizontal: scales(20),
+    justifyContent: "space-between",
+    rowGap: scales(20),
+  },
+  itemWrapper: {
+    width: (W - scales(40) - scales(20)) / 3,
     alignItems: "center",
-    justifyContent: "center",
+  },
+  itemTouchable: {
+    alignItems: "center",
+    gap: scales(8),
   },
   itemCircle: {
     width: ITEM_SIZE,
     height: ITEM_SIZE,
     borderRadius: ITEM_SIZE / 2,
-    overflow: "hidden",
-    justifyContent: "center",
     alignItems: "center",
-    borderWidth: 1.2,
-    borderColor: "rgba(255,255,255,0.25)",
+    justifyContent: "center",
   },
-  circleOverlay: {
-    backgroundColor: "rgba(255,255,255,0.08)",
+  itemCircleBorder: {
+    ...StyleSheet.absoluteFillObject,
     borderRadius: ITEM_SIZE / 2,
+    borderWidth: 1.5,
   },
   itemIcon: {
-    width: ITEM_SIZE * 0.44,
-    height: ITEM_SIZE * 0.44,
-    tintColor: colors.white,
+    width: ITEM_SIZE * 0.42,
+    height: ITEM_SIZE * 0.42,
   },
   itemLabel: {
-    color: colors.white,
+    color: "rgba(255,255,255,0.8)",
     fontSize: scales(12),
     fontFamily: fontFamily.bold,
-    marginBottom: scales(14),
-    letterSpacing: 2,
-    textTransform: "uppercase",
+    letterSpacing: 0.5,
+    textAlign: "center",
   },
-  glowLine: {
-    height: 1.5,
-    backgroundColor: colors.white,
-    borderRadius: 2,
-    shadowColor: colors.white,
-    shadowOpacity: 1,
-    shadowRadius: 15,
-    shadowOffset: { width: 0, height: 0 },
-    elevation: 10,
-    marginTop: scales(12),
-    marginBottom: scales(8),
-  },
-  dotsRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginTop: scales(10),
-    gap: scales(6),
-  },
-  dot: {
-    height: scales(6),
-    borderRadius: scales(3),
+  safeAreaSpacer: {
+    height: scales(30),
   },
 });

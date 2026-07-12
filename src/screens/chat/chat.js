@@ -7,8 +7,14 @@ import {
   Image,
   TouchableOpacity,
 } from "react-native";
-import { AppBackground, Header, Spacer, CustomInput } from "../../components";
-import { colors, scales } from "../../utils";
+import {
+  AppBackground,
+  Header,
+  Spacer,
+  CustomInput,
+  CustomSearch,
+} from "../../components";
+import { colors, commonText, scales } from "../../utils";
 import { appImages, fontFamily } from "../../assets";
 import { navigate, routesConstants } from "../../navigation";
 
@@ -103,15 +109,11 @@ export const Chat = () => {
         onRightPress={() => navigate(routesConstants.newChat)}
       />
 
-      <View style={styles.searchContainer}>
-        <CustomInput
-          placeholder="Search conversations..."
-          value={search}
-          onChangeText={setSearch}
-          leftIcon={appImages.browse}
-          height={scales(50)}
-        />
-      </View>
+      <CustomSearch
+        placeholder={commonText.search}
+        value={search}
+        onChangeText={setSearch}
+      />
 
       <Spacer height={scales(10)} />
 

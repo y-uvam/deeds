@@ -52,4 +52,4 @@ node_modules
 # Android
 android/app/build/
 android/build/
-android/.cxx/
+android/app/.cxx/

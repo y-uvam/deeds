@@ -73,30 +73,9 @@ export const Profile = () => {
   };
 
   const renderCoverPhoto = () => {
-    const translateY = scrollY.interpolate({
-      inputRange: [-100, 0, 100],
-      outputRange: [-50, 0, 0],
-      extrapolate: "clamp",
-    });
-    const scale = scrollY.interpolate({
-      inputRange: [-100, 0, 100],
-      outputRange: [1.5, 1, 1],
-      extrapolate: "clamp",
-    });
-
     return (
-      <Animated.View
-        style={[
-          styles.coverContainer,
-          { transform: [{ translateY }, { scale }] },
-        ]}
-      >
-        <Image source={appImages.appBackground} style={styles.coverImage} />
-        <View style={styles.coverOverlay} />
-        <View style={[styles.headerActions, { top: insets.top + scales(10) }]}>
-          {/* <TouchableOpacity style={styles.iconCircle}>
-            <Image source={appImages.backarrow} style={styles.backIcon} />
-          </TouchableOpacity> */}
+      <View style={[styles.coverContainer]}>
+        <View style={styles.headerActions}>
           <View style={styles.rightHeaderActions}>
             <TouchableOpacity style={styles.iconCircle}>
               <Image source={appImages.plus} style={styles.topIcon} />
@@ -111,7 +90,7 @@ export const Profile = () => {
             </TouchableOpacity>
           </View>
         </View>
-      </Animated.View>
+      </View>
     );
   };
 
@@ -323,7 +302,7 @@ const styles = StyleSheet.create({
   },
   coverContainer: {
     width: "100%",
-    height: scales(220),
+    height: scales(30),
     position: "relative",
   },
   coverImage: {

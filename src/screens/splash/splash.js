@@ -1,314 +1,115 @@
-import React, { useEffect, memo, useCallback } from "react";
-import { View, StyleSheet, Dimensions, StatusBar } from "react-native";
+import React, { useEffect, useCallback } from "react";
+import { View, StyleSheet, Dimensions, StatusBar, Image } from "react-native";
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
   withTiming,
   withDelay,
-  withRepeat,
-  withSequence,
   withSpring,
   Easing,
   runOnJS,
-  interpolate,
-  interpolateColor,
 } from "react-native-reanimated";
-import LinearGradient from "react-native-linear-gradient";
 import { useNavigation } from "@react-navigation/native";
 import { routesConstants } from "../../navigation/routeConstants";
-import { colors } from "../../utils";
+import { colors, scales } from "../../utils";
 import { DataManager } from "../../helper/dataManager";
 import { appImages } from "../../assets/icons/appImages";
+import { fontFamily } from "../../assets";
 
 const { width, height } = Dimensions.get("screen");
 
-const PulseRing = memo(({ delay, size }) => {
-  const scale = useSharedValue(0.3);
-  const opacity = useSharedValue(0);
-
-  useEffect(() => {
-    opacity.value = withDelay(
-      delay,
-      withRepeat(
-        withSequence(
-          withTiming(0.25, { duration: 400 }),
-          withTiming(0, { duration: 1800 }),
-        ),
-        -1,
-        false,
-      ),
-    );
-    scale.value = withDelay(
-      delay,
-      withRepeat(
-        withTiming(1, { duration: 2200, easing: Easing.out(Easing.quad) }),
-        -1,
-        false,
-      ),
-    );
-  }, []);
-
-  const style = useAnimatedStyle(() => ({
-    position: "absolute",
-    width: size,
-    height: size,
-    borderRadius: size / 2,
-    borderWidth: 1,
-    borderColor: colors.white,
-    opacity: opacity.value,
-    transform: [{ scale: scale.value }],
-  }));
-
-  return <Animated.View style={style} />;
-});
-
-const Particle = memo(({ index }) => {
-  const tx = useSharedValue(0);
-  const ty = useSharedValue(0);
-  const opacity = useSharedValue(0);
-  const scale = useSharedValue(0);
-
-  useEffect(() => {
-    const angle = (index / 18) * Math.PI * 2;
-    const radius = 90 + Math.random() * 60;
-    const delay = 1200 + index * 80;
-
-    opacity.value = withDelay(
-      delay,
-      withRepeat(
-        withSequence(
-          withTiming(0.7, { duration: 500 }),
-          withTiming(0, { duration: 1500 }),
-        ),
-        -1,
-        false,
-      ),
-    );
-    scale.value = withDelay(
-      delay,
-      withRepeat(
-        withSequence(
-          withTiming(1, { duration: 500 }),
-          withTiming(0, { duration: 1500 }),
-        ),
-        -1,
-        false,
-      ),
-    );
-    tx.value = withDelay(
-      delay,
-      withRepeat(
-        withSequence(
-          withTiming(Math.cos(angle) * radius, {
-            duration: 2000,
-            easing: Easing.out(Easing.cubic),
-          }),
-          withTiming(0, { duration: 0 }),
-        ),
-        -1,
-        false,
-      ),
-    );
-    ty.value = withDelay(
-      delay,
-      withRepeat(
-        withSequence(
-          withTiming(Math.sin(angle) * radius, {
-            duration: 2000,
-            easing: Easing.out(Easing.cubic),
-          }),
-          withTiming(0, { duration: 0 }),
-        ),
-        -1,
-        false,
-      ),
-    );
-  }, []);
-
-  const style = useAnimatedStyle(() => ({
-    position: "absolute",
-    width: 3,
-    height: 3,
-    borderRadius: 1.5,
-    backgroundColor: colors.white,
-    opacity: opacity.value,
-    transform: [
-      { translateX: tx.value },
-      { translateY: ty.value },
-      { scale: scale.value },
-    ],
-  }));
-
-  return <Animated.View style={style} />;
-});
-
-const AnimatedLetter = memo(({ image, index, totalLetters, onComplete }) => {
-  const scale = useSharedValue(0);
-  const opacity = useSharedValue(0);
-  const translateY = useSharedValue(30);
-  const shimmer = useSharedValue(0);
-
-  const targetX = (index - (totalLetters - 1) / 2) * 44;
-
-  useEffect(() => {
-    const d = 600 + index * 90;
-
-    scale.value = withDelay(d, withSpring(1, { damping: 12, stiffness: 90 }));
-    opacity.value = withDelay(d, withTiming(1, { duration: 500 }));
-    translateY.value = withDelay(
-      d,
-      withSpring(0, { damping: 14, stiffness: 70 }),
-    );
-    shimmer.value = withDelay(
-      d + 400,
-      withRepeat(
-        withSequence(
-          withTiming(1, { duration: 800 }),
-          withTiming(0, { duration: 1200 }),
-        ),
-        -1,
-        false,
-      ),
-    );
-
-    if (index === totalLetters - 1) {
-      setTimeout(() => onComplete?.(), d + 2800);
-    }
-  }, []);
-
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [
-      { translateX: targetX },
-      { translateY: translateY.value },
-      { scale: scale.value },
-    ],
-    opacity: opacity.value,
-    position: "absolute",
-  }));
-
-  const tintStyle = useAnimatedStyle(() => ({
-    tintColor: interpolateColor(
-      shimmer.value,
-      [0, 1],
-      [colors.white, colors.white],
-    ),
-  }));
-
-  return (
-    <View style={styles.letterHub}>
-      <Animated.Image
-        source={image}
-        style={[styles.letterAsset, animatedStyle, tintStyle]}
-        resizeMode="contain"
-      />
-    </View>
-  );
-});
-
 export const Splash = () => {
   const navigation = useNavigation();
-  const masterOpacity = useSharedValue(1);
-  const masterScale = useSharedValue(1);
-  const lineWidth = useSharedValue(0);
-  const lineOpacity = useSharedValue(0);
-  const glowOpacity = useSharedValue(0);
 
-  const letters = [
-    appImages.appLogo,
-    appImages.v,
-    appImages.i,
-    appImages.r,
-    appImages.t,
-    appImages.u,
-    appImages.e,
-  ];
+  // Logo animations
+  const logoOpacity = useSharedValue(0);
+  const logoScale = useSharedValue(0.85);
+  const taglineOpacity = useSharedValue(0);
+  const taglineY = useSharedValue(10);
+
+  // Exit animation
+  const masterOpacity = useSharedValue(1);
+
+  const navigateNextStep = useCallback(async () => {
+    const userData = await DataManager.getUserDetails();
+    masterOpacity.value = withTiming(0, { duration: 500 }, (done) => {
+      if (done) {
+        runOnJS(navigation.replace)(
+          userData?.email ? routesConstants.BottomTabs : routesConstants.Login
+        );
+      }
+    });
+  }, []);
 
   useEffect(() => {
-    glowOpacity.value = withDelay(300, withTiming(1, { duration: 1200 }));
-    lineWidth.value = withDelay(
-      2200,
-      withSpring(1, { damping: 18, stiffness: 35 }),
+    // Logo fades + scales in
+    logoOpacity.value = withTiming(1, {
+      duration: 700,
+      easing: Easing.out(Easing.cubic),
+    });
+    logoScale.value = withSpring(1, { damping: 18, stiffness: 80 });
+
+    // Tagline slides up shortly after
+    taglineOpacity.value = withDelay(
+      400,
+      withTiming(1, { duration: 600, easing: Easing.out(Easing.cubic) })
     );
-    lineOpacity.value = withDelay(2200, withTiming(1, { duration: 600 }));
+    taglineY.value = withDelay(
+      400,
+      withSpring(0, { damping: 20, stiffness: 90 })
+    );
+
+    // Navigate after 2.2s total
+    const timer = setTimeout(navigateNextStep, 2200);
+    return () => clearTimeout(timer);
   }, []);
 
-  const navigateNextStep = useCallback((userData) => {
-    navigation.replace(
-      userData?.email ? routesConstants.BottomTabs : routesConstants.Login,
-    );
-  }, []);
-
-  const handleFinishSequence = useCallback(async () => {
-    const userData = await DataManager.getUserDetails();
-    masterOpacity.value = withTiming(0, { duration: 700 });
-    masterScale.value = withTiming(
-      1.08,
-      { duration: 900, easing: Easing.inOut(Easing.quad) },
-      (done) => {
-        if (done) runOnJS(navigateNextStep)(userData);
-      },
-    );
-  }, []);
-
-  const overallStyle = useAnimatedStyle(() => ({
+  const containerStyle = useAnimatedStyle(() => ({
     opacity: masterOpacity.value,
-    transform: [{ scale: masterScale.value }],
     flex: 1,
   }));
 
-  const lineStyle = useAnimatedStyle(() => ({
-    width: interpolate(lineWidth.value, [0, 1], [0, width * 0.65]),
-    opacity: lineOpacity.value,
+  const logoStyle = useAnimatedStyle(() => ({
+    opacity: logoOpacity.value,
+    transform: [{ scale: logoScale.value }],
   }));
 
-  const glowStyle = useAnimatedStyle(() => ({ opacity: glowOpacity.value }));
+  const taglineStyle = useAnimatedStyle(() => ({
+    opacity: taglineOpacity.value,
+    transform: [{ translateY: taglineY.value }],
+  }));
 
   return (
     <View style={styles.root}>
       <StatusBar hidden />
-      <Animated.View style={[StyleSheet.absoluteFill, overallStyle]}>
-        <LinearGradient
-          colors={["#000000", "#010A1A", "#000510", "#000000"]}
-          locations={[0, 0.3, 0.7, 1]}
-          style={StyleSheet.absoluteFill}
-        />
+      <Animated.View style={[StyleSheet.absoluteFill, containerStyle]}>
+        {/* Background */}
+        <View style={styles.bg} />
 
-        <Animated.View style={[styles.radialCore, glowStyle]}>
-          <LinearGradient
-            colors={["#001833", "transparent"]}
-            style={StyleSheet.absoluteFill}
-            start={{ x: 0.5, y: 0.5 }}
-            end={{ x: 1, y: 1 }}
-          />
-        </Animated.View>
+        {/* Subtle top accent line */}
+        <View style={styles.accentLine} />
 
+        {/* Center content */}
         <View style={styles.center}>
-          <PulseRing delay={800} size={220} />
-          <PulseRing delay={1400} size={320} />
-          <PulseRing delay={2000} size={430} />
+          <Animated.View style={logoStyle}>
+            <Image
+              source={appImages.appLogo}
+              style={styles.logo}
+              resizeMode="contain"
+            />
+          </Animated.View>
 
-          {Array.from({ length: 18 }).map((_, i) => (
-            <Particle key={i} index={i} />
-          ))}
+          <Animated.Text style={[styles.appName, logoStyle]}>
+            virtue
+          </Animated.Text>
 
-          <View style={styles.letterContainer}>
-            {letters.map((img, i) => (
-              <AnimatedLetter
-                key={i}
-                image={img}
-                index={i}
-                totalLetters={letters.length}
-                onComplete={
-                  i === letters.length - 1 ? handleFinishSequence : undefined
-                }
-              />
-            ))}
-          </View>
-
-          <View style={styles.lineWrapper}>
-            <Animated.View style={[styles.glowLine, lineStyle]} />
-          </View>
+          <Animated.Text style={[styles.tagline, taglineStyle]}>
+            Connect. Share. Inspire.
+          </Animated.Text>
         </View>
+
+        {/* Bottom brand dot */}
+        <Animated.View style={[styles.bottomDot, taglineStyle]} />
       </Animated.View>
     </View>
   );
@@ -317,47 +118,58 @@ export const Splash = () => {
 const styles = StyleSheet.create({
   root: {
     flex: 1,
-    backgroundColor: "#000000",
+    backgroundColor: "#050A14",
     width,
     height,
   },
-  radialCore: {
+  bg: {
     ...StyleSheet.absoluteFillObject,
-    justifyContent: "center",
-    alignItems: "center",
+    backgroundColor: "#050A14",
+  },
+  accentLine: {
+    position: "absolute",
+    top: 0,
+    left: "20%",
+    right: "20%",
+    height: 2,
+    backgroundColor: colors.blue,
+    borderBottomLeftRadius: 2,
+    borderBottomRightRadius: 2,
+    opacity: 0.7,
   },
   center: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  letterContainer: {
-    height: 80,
-    width,
     alignItems: "center",
     justifyContent: "center",
+    gap: scales(8),
   },
-  letterHub: {
-    position: "absolute",
-    alignItems: "center",
-    justifyContent: "center",
+  logo: {
+    width: scales(64),
+    height: scales(64),
+    tintColor: colors.white,
   },
-  letterAsset: {
-    width: 38,
-    height: 52,
+  appName: {
+    color: colors.white,
+    fontSize: scales(34),
+    fontFamily: fontFamily.bold,
+    letterSpacing: 6,
+    marginTop: scales(4),
   },
-  lineWrapper: {
-    marginTop: 40,
-    alignItems: "center",
+  tagline: {
+    color: "rgba(255,255,255,0.45)",
+    fontSize: scales(13),
+    fontFamily: fontFamily.regular,
+    letterSpacing: 2,
+    marginTop: scales(6),
+    textTransform: "uppercase",
   },
-  glowLine: {
-    height: 1.5,
-    backgroundColor: colors.white,
-    borderRadius: 1,
-    shadowColor: colors.white,
-    shadowOpacity: 1,
-    shadowRadius: 12,
-    shadowOffset: { width: 0, height: 0 },
-    elevation: 12,
+  bottomDot: {
+    alignSelf: "center",
+    width: scales(5),
+    height: scales(5),
+    borderRadius: scales(3),
+    backgroundColor: colors.blue,
+    marginBottom: scales(50),
+    opacity: 0.6,
   },
 });

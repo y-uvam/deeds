@@ -96,10 +96,6 @@ const GridImage = ({ item, style }) => {
   );
 };
 
-const GridSkeleton = ({ style }) => (
-  <CustomSkeleton variant="card" style={[styles.gridItemBase, style]} />
-);
-
 export const Browse = () => {
   const insets = useSafeAreaInsets();
   const [search, setSearch] = useState("");
@@ -278,7 +274,7 @@ export const Browse = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.black,
+    backgroundColor: colors.background,
   },
   headerContent: {
     paddingBottom: scales(10),
