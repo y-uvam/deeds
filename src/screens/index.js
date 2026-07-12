@@ -17,3 +17,6 @@ export * from "./blocked/blocked";
 export * from "./yourActivity/yourActivity";
 export * from "./accountPrivacy/accountPrivacy";
 export * from "./chat/chat";
+export * from "./chatCard/chatCard";
+export * from "./newChat/newChat";
+export * from "./dashboard/dashboard";

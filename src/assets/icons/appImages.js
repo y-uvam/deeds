@@ -48,4 +48,6 @@ export const appImages = {
   gallery: require("../icons/gallery.png"),
   camera: require("../icons/camera.png"),
   chat: require("../icons/chat.png"),
+  car: require("../icons/car.png"),
+  earnings: require("../icons/earnings_illustration.png"),
 };

@@ -20,4 +20,8 @@ export const routesConstants = {
   yourActivity: "YourActivity",
   accountPrivacy: "AccountPrivacy",
   Chat: "Chat",
+  aiCall: "AiCall",
+  chatCard: "ChatCard",
+  newChat: "NewChat",
+  dashboard: "Dashboard",
 };

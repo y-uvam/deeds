@@ -10,20 +10,30 @@ import {
 import { AppBackground, Header, Spacer, CustomInput } from "../../components";
 import { colors, scales } from "../../utils";
 import { appImages, fontFamily } from "../../assets";
+import { navigate, routesConstants } from "../../navigation";
 
 const ChatItem = memo(({ item }) => (
-  <TouchableOpacity style={styles.chatRow} activeOpacity={0.7}>
+  <TouchableOpacity
+    style={styles.chatRow}
+    activeOpacity={0.7}
+    onPress={() => navigate(routesConstants.dashboard)}
+  >
     <View style={styles.avatarWrapper}>
       <Image source={item.image || appImages.dummyuser} style={styles.avatar} />
       {item.online && <View style={styles.onlineBadge} />}
     </View>
     <View style={styles.chatDetails}>
       <View style={styles.chatHeader}>
-        <Text style={styles.userName} numberOfLines={1}>{item.name}</Text>
+        <Text style={styles.userName} numberOfLines={1}>
+          {item.name}
+        </Text>
         <Text style={styles.timeText}>{item.time}</Text>
       </View>
       <View style={styles.chatFooter}>
-        <Text style={[styles.lastMessage, item.unread && styles.unreadMessage]} numberOfLines={1}>
+        <Text
+          style={[styles.lastMessage, item.unread && styles.unreadMessage]}
+          numberOfLines={1}
+        >
           {item.message}
         </Text>
         {item.unread > 0 && (
@@ -40,19 +50,59 @@ export const Chat = () => {
   const [search, setSearch] = useState("");
 
   const chatData = [
-    { id: "1", name: "Alex Johnson", message: "See you at the event! 🚀", time: "12:30 PM", unread: 2, online: true },
-    { id: "2", name: "Sarah Williams", message: "That's amazing news!", time: "10:15 AM", unread: 0, online: false },
-    { id: "3", name: "Dev Team", message: "Pushing to production...", time: "Yesterday", unread: 5, online: true },
-    { id: "4", name: "Marc Spencer", message: "Can we reschedule?", time: "Monday", unread: 0, online: false },
-    { id: "5", name: "Jessica Lee", message: "Sent an attachment.", time: "Last week", unread: 0, online: true },
+    {
+      id: "1",
+      name: "Alex Johnson",
+      message: "See you at the event! 🚀",
+      time: "12:30 PM",
+      unread: 2,
+      online: true,
+    },
+    {
+      id: "2",
+      name: "Sarah Williams",
+      message: "That's amazing news!",
+      time: "10:15 AM",
+      unread: 0,
+      online: false,
+    },
+    {
+      id: "3",
+      name: "Dev Team",
+      message: "Pushing to production...",
+      time: "Yesterday",
+      unread: 5,
+      online: true,
+    },
+    {
+      id: "4",
+      name: "Marc Spencer",
+      message: "Can we reschedule?",
+      time: "Monday",
+      unread: 0,
+      online: false,
+    },
+    {
+      id: "5",
+      name: "Jessica Lee",
+      message: "Sent an attachment.",
+      time: "Last week",
+      unread: 0,
+      online: true,
+    },
   ];
 
   const renderItem = useCallback(({ item }) => <ChatItem item={item} />, []);
 
   return (
     <AppBackground>
-      <Header label="Messages" showBackButton={false} rightIcon={appImages.plus} />
-      
+      <Header
+        label="Messages"
+        showBackButton={false}
+        rightIcon={appImages.plus}
+        onRightPress={() => navigate(routesConstants.newChat)}
+      />
+
       <View style={styles.searchContainer}>
         <CustomInput
           placeholder="Search conversations..."
