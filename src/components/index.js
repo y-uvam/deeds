@@ -14,3 +14,4 @@ export * from "./customRefreshController/customRefreshController";
 export * from "./footerComponent/foterComponent";
 export * from "./nextButton/nextButton";
 export * from "./CustomSwitch/CustomSwitch";
+export * from "./splash/splash";

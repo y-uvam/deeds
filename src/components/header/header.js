@@ -87,13 +87,13 @@ export const RoundIconButton = ({ icon, onPress }) => {
       style={[styles.roundButtonWrapper, animatedStyle]}
     >
       <PulseRing delay={600} size={scales(56)} />
-      <BlurView
+      {/* <BlurView
         style={StyleSheet.absoluteFill}
         blurType="dark"
         blurAmount={20}
         reducedTransparencyFallbackColor="transparent"
       />
-      <View style={[StyleSheet.absoluteFill, styles.buttonOverlay]} />
+      <View style={[StyleSheet.absoluteFill, styles.buttonOverlay]} /> */}
       <Image source={icon} style={styles.iconImage} tintColor={colors.white} />
     </AnimatedTouchableOpacity>
   );
@@ -142,13 +142,13 @@ export const HeaderPill = ({ label, isLogo }) => {
 
   return (
     <Animated.View style={[styles.headerPillWrapper, animatedStyle]}>
-      <BlurView
+      {/* <BlurView
         style={StyleSheet.absoluteFill}
         blurType="dark"
         blurAmount={30}
         reducedTransparencyFallbackColor="transparent"
       />
-      <View style={[StyleSheet.absoluteFill, styles.pillOverlay]} />
+      <View style={[StyleSheet.absoluteFill, styles.pillOverlay]} /> */}
       {isLogo ? (
         <HeaderLogo />
       ) : (
@@ -227,9 +227,9 @@ export const Header = ({
 
 const styles = StyleSheet.create({
   root: {
-    paddingTop: Platform.OS === "ios" ? scales(10) : scales(20),
+    // paddingTop: Platform.OS === "ios" ? scales(0) : scales(10),
     alignItems: "center",
-    marginBottom: scales(15),
+    // marginBottom: scales(15),
   },
   container: {
     paddingHorizontal: scales(15),
@@ -277,8 +277,8 @@ const styles = StyleSheet.create({
     height: scales(40),
     paddingHorizontal: scales(22),
     borderRadius: scales(20),
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: "rgba(255,255,255,0.12)",
+    // borderWidth: StyleSheet.hairlineWidth,
+    // borderColor: "rgba(255,255,255,0.12)",
     overflow: "hidden",
     justifyContent: "center",
     alignItems: "center",
@@ -296,20 +296,20 @@ const styles = StyleSheet.create({
     marginHorizontal: scales(1),
   },
   miniLetter: {
-    width: scales(14),
-    height: scales(20),
+    width: scales(20),
+    height: scales(25),
     tintColor: colors.white,
   },
   headerLabel: {
     fontFamily: fontFamily.bold,
     color: colors.white,
-    fontSize: scales(13),
+    fontSize: scales(18),
     letterSpacing: 2.5,
     textTransform: "uppercase",
   },
   bottomLine: {
     height: 1,
-    backgroundColor: colors.white,
+    // backgroundColor: colors.white,
     borderRadius: 1,
     shadowColor: colors.white,
     shadowOpacity: 0.6,

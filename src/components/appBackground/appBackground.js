@@ -1,9 +1,24 @@
 import { StyleSheet, View } from "react-native";
+import LottieView from "lottie-react-native";
+import { animations } from "../../animations/animations";
 import { colors, topInset } from "../../utils";
 
-export const AppBackground = ({ children, style, isTopInset = true }) => {
+export const AppBackground = ({ children, style, isTopInset = true, showAuthAnimation = false }) => {
   return (
     <View style={styles.container}>
+      {showAuthAnimation && (
+        <>
+          <LottieView
+            source={animations.background}
+            autoPlay
+            loop
+            style={StyleSheet.absoluteFill}
+            resizeMode="cover"
+          />
+          <View style={styles.overlay} />
+        </>
+      )}
+
       <View style={styles.topAccent} />
 
       <View
@@ -22,6 +37,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,
+  },
+  overlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: "rgba(5, 20, 36, 0.72)",
   },
   topAccent: {
     position: "absolute",

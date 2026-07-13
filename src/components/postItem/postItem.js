@@ -27,6 +27,8 @@ import { useSelector } from "react-redux";
 import { appImages, fontFamily } from "../../assets";
 import { animations } from "../../animations/animations";
 import { styles } from "./styles";
+import { navigate } from "../../navigation/navigationServices";
+import { routesConstants } from "../../navigation/routeConstants";
 
 const ActionButton = ({ icon, iconStyle, count, onPress, activeColor }) => {
   const scaleAnim = useRef(new RNNAnimated.Value(1)).current;
@@ -323,62 +325,69 @@ export const PostItem = ({
   };
 
   return (
-    <View style={styles.container}>
-      <ProfileComponent
-        userId={profileData?._id}
-        name={profileData?.name}
-        profileImage={profileData?.profileImage}
-      />
+    <TouchableOpacity
+      activeOpacity={0.97}
+      onPress={() =>
+        navigate(routesConstants.post, { images, description, likes, comments, shares })
+      }
+    >
+      <View style={styles.container}>
+        <ProfileComponent
+          userId={profileData?._id}
+          name={profileData?.name}
+          profileImage={profileData?.profileImage}
+        />
 
-      <View style={{ marginTop: scales(10), position: "relative" }}>
-        <ImageCarousel images={images} />
-        {showLikeAnim && (
-          <LottieView
-            source={animations.like}
-            autoPlay
-            loop={false}
-            style={styles.animLikeOverlay}
-          />
-        )}
-        {showSaveAnim && (
-          <LottieView
-            source={animations.save}
-            autoPlay
-            loop={false}
-            style={styles.animSaveOverlay}
-          />
-        )}
-      </View>
+        <View style={{ marginTop: scales(10), position: "relative" }}>
+          <ImageCarousel images={images} />
+          {showLikeAnim && (
+            <LottieView
+              source={animations.like}
+              autoPlay
+              loop={false}
+              style={styles.animLikeOverlay}
+            />
+          )}
+          {showSaveAnim && (
+            <LottieView
+              source={animations.save}
+              autoPlay
+              loop={false}
+              style={styles.animSaveOverlay}
+            />
+          )}
+        </View>
 
-      <View style={styles.actionsRow}>
-        <View style={styles.actionsLeft}>
+        <View style={styles.actionsRow}>
+          <View style={styles.actionsLeft}>
+            <ActionButton
+              icon={appImages.like}
+              iconStyle={styles.iconLike}
+              count={likes}
+              activeColor={colors.red}
+              onPress={handleLikePress}
+            />
+            <ActionButton
+              icon={appImages.comment}
+              iconStyle={styles.iconComment}
+              count={comments}
+            />
+            <ActionButton
+              icon={appImages.share}
+              iconStyle={styles.iconShare}
+              count={shares}
+            />
+          </View>
           <ActionButton
-            icon={appImages.like}
-            iconStyle={styles.iconLike}
-            count={likes}
-            activeColor={colors.red}
-            onPress={handleLikePress}
-          />
-          <ActionButton
-            icon={appImages.comment}
-            iconStyle={styles.iconComment}
-            count={comments}
-          />
-          <ActionButton
-            icon={appImages.share}
-            iconStyle={styles.iconShare}
-            count={shares}
+            icon={appImages.save}
+            iconStyle={styles.iconSave}
+            activeColor={colors.blue}
+            onPress={handleSavePress}
           />
         </View>
-        <ActionButton
-          icon={appImages.save}
-          iconStyle={styles.iconSave}
-          activeColor={colors.blue}
-          onPress={handleSavePress}
-        />
-      </View>
 
-      <Description text={description} />
-    </View>
+        <Description text={description} />
+      </View>
+    </TouchableOpacity>
   );
 };

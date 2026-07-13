@@ -4,6 +4,7 @@ import {
   CustomSwitch,
   PostItem,
   AppBackground,
+  Header,
 } from "../../components";
 import { colors, scales } from "../../utils";
 import { appImages } from "../../assets";
@@ -35,6 +36,7 @@ export const Home = () => {
 
   return (
     <AppBackground>
+      <Header isHome={true} />
       <FlatList
         data={DATA}
         renderItem={({ item }) => <PostItem item={item} />}

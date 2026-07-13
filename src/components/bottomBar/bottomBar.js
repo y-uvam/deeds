@@ -92,7 +92,7 @@ const TabItem = ({ tab, isFocused, onPress }) => {
       </Animated.View>
 
       {/* Active dot indicator */}
-      <Animated.View style={[styles.activeDot, { opacity: dotOpacity }]} />
+      {/* <Animated.View style={[styles.activeDot, { opacity: dotOpacity }]} /> */}
     </Pressable>
   );
 };

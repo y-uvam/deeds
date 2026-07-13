@@ -1,70 +1,47 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, KeyboardAvoidingView, Platform } from 'react-native';
-import { AppBackground, CustomInput, CustomButton, CustomBottomSheet } from '../../components';
-import { colors, commonText, scales } from '../../utils';
-import { fontFamily, appImages } from '../../assets';
-import { navigate, reset } from "../../navigation/navigationServices";
+import React, { useRef, useEffect } from "react";
+import { View, Text, TouchableOpacity, Platform } from "react-native";
+import { AppBackground, CustomInput, CustomButton, CustomBottomSheet } from "../../components";
+import { commonText, validationConstants, validationSchema } from "../../utils";
+import { appImages } from "../../assets";
+import { reset } from "../../navigation/navigationServices";
 import { routesConstants } from "../../navigation/routeConstants";
-import LottieView from 'lottie-react-native';
-import { animations } from '../../animations/animations';
-
+import LottieView from "lottie-react-native";
+import { animations } from "../../animations/animations";
 import { Controller, useForm } from "react-hook-form";
-import { validationConstants, validationSchema } from "../../utils";
+import { KeyboardAvoidingView } from "react-native-keyboard-controller";
+import { authStyles as s } from "../auth/authStyles";
 
 export const ResetPassword = () => {
   const bottomSheetRef = useRef(null);
 
   useEffect(() => {
-    const timer = setTimeout(() => bottomSheetRef.current?.present(), 100);
-    return () => clearTimeout(timer);
+    const t = setTimeout(() => bottomSheetRef.current?.present(), 100);
+    return () => clearTimeout(t);
   }, []);
 
-  const {
-    control,
-    handleSubmit,
-    watch,
-    formState: { errors },
-  } = useForm({
-    defaultValues: {
-      password: "",
-      confirmPassword: "",
-    },
+  const { control, handleSubmit, watch, formState: { errors } } = useForm({
+    defaultValues: { password: "", confirmPassword: "" },
   });
 
-  const onSubmit = (data) => {
-    console.log(data, "Reset Password Data");
-    reset(routesConstants.Login);
-  };
+  const onSubmit = () => reset(routesConstants.Login);
 
   return (
-    <AppBackground>
-      <KeyboardAvoidingView
-        style={styles.kav}
-        behavior={Platform.OS === "ios" ? "padding" : undefined}
-      >
-        <LottieView
-          source={animations.auth}
-          autoPlay
-          loop={true}
-          style={{ width: "50%", height: "50%", alignSelf: "center" }}
-        />
+    <AppBackground showAuthAnimation>
+      <KeyboardAvoidingView style={s.kav} behavior={Platform.OS === "ios" ? "padding" : undefined}>
         <CustomBottomSheet
           ref={bottomSheetRef}
-          snapPoints={["55%"]}
+          snapPoints={["60%"]}
           enablePanDownToClose={false}
           title={commonText.youAreAlmostBack}
           subtitle={commonText.justSetYOurPassword}
         >
-          <View style={styles.formContainer}>
+          <View style={s.form}>
             <Controller
               control={control}
               name="password"
               rules={{
                 required: validationConstants.passwordRequired,
-                pattern: {
-                  value: validationSchema.password,
-                  message: validationConstants.invalidPassword,
-                },
+                pattern: { value: validationSchema.password, message: validationConstants.invalidPassword },
               }}
               render={({ field: { onChange, onBlur, value } }) => (
                 <CustomInput
@@ -75,22 +52,17 @@ export const ResetPassword = () => {
                   onBlur={onBlur}
                   isPassword
                   icon={appImages.lock}
-                  isBottomSheet={true}
+                  isBottomSheet
                   errors={errors.password}
                 />
               )}
             />
-
             <Controller
               control={control}
               name="confirmPassword"
               rules={{
                 required: validationConstants.enterconfirmPassword,
-                validate: (val) => {
-                  if (watch("password") != val) {
-                    return validationConstants.passwordNotMatch;
-                  }
-                },
+                validate: (val) => watch("password") === val || validationConstants.passwordNotMatch,
               }}
               render={({ field: { onChange, onBlur, value } }) => (
                 <CustomInput
@@ -101,23 +73,16 @@ export const ResetPassword = () => {
                   onBlur={onBlur}
                   isPassword
                   icon={appImages.lock}
-                  isBottomSheet={true}
+                  isBottomSheet
                   errors={errors.confirmPassword}
                 />
               )}
             />
-
-            <CustomButton
-              label={commonText.letsGo}
-              onPress={handleSubmit(onSubmit)}
-              buttonStyle={styles.button}
-              labelStyle={styles.buttonLabel}
-            />
-
-            <View style={styles.signUpRow}>
-              <Text style={styles.signUpBase}>{commonText.newToVirtue} </Text>
+            <CustomButton label={commonText.letsGo} onPress={handleSubmit(onSubmit)} buttonStyle={s.button} labelStyle={s.buttonLabel} />
+            <View style={s.row}>
+              <Text style={s.rowBase}>{commonText.newToVirtue} </Text>
               <TouchableOpacity activeOpacity={0.7}>
-                <Text style={styles.signUpLink}>{commonText.createAccount}</Text>
+                <Text style={s.rowLink}>{commonText.createAccount}</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -126,55 +91,3 @@ export const ResetPassword = () => {
     </AppBackground>
   );
 };
-
-const styles = StyleSheet.create({
-  kav: {
-    flex: 1,
-  },
-  formContainer: {
-    flex: 1,
-  },
-  forgotRow: {
-    alignSelf: 'flex-end',
-    marginTop: scales(4),
-    marginBottom: scales(4),
-  },
-  forgotText: {
-    fontSize: scales(13),
-    fontFamily: fontFamily.medium,
-    color: colors.blue,
-    letterSpacing: 0.2,
-  },
-  button: {
-    borderRadius: 14,
-    paddingVertical: scales(17),
-    backgroundColor: '#1E7BFF',
-    shadowColor: '#1E7BFF',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.55,
-    shadowRadius: 12,
-    elevation: 8,
-  },
-  buttonLabel: {
-    fontSize: scales(16),
-    fontFamily: fontFamily.bold,
-    letterSpacing: 0.5,
-  },
-  signUpRow: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: scales(20),
-  },
-  signUpBase: {
-    fontSize: scales(13),
-    fontFamily: fontFamily.regular,
-    color: 'rgba(255,255,255,0.55)',
-  },
-  signUpLink: {
-    fontSize: scales(13),
-    fontFamily: fontFamily.medium,
-    color: colors.blue,
-    letterSpacing: 0.2,
-  },
-});

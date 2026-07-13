@@ -24,4 +24,5 @@ export const routesConstants = {
   chatCard: "ChatCard",
   newChat: "NewChat",
   dashboard: "Dashboard",
+  post: "Post",
 };

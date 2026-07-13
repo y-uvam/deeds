@@ -78,7 +78,23 @@ export const Profile = () => {
         <View style={styles.headerActions}>
           <View style={styles.rightHeaderActions}>
             <TouchableOpacity style={styles.iconCircle}>
-              <Image source={appImages.plus} style={styles.topIcon} />
+              <Image
+                source={appImages.share}
+                style={styles.shareIcon}
+                resizeMode="contain"
+              />
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.iconCircle}
+              onPress={() => {
+                navigate(routesConstants.editProfile);
+              }}
+            >
+              <Image
+                source={appImages.edit}
+                style={styles.topIcon}
+                resizeMode="contain"
+              />
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.iconCircle}
@@ -103,21 +119,6 @@ export const Profile = () => {
             style={styles.avatarImage}
           />
         </View>
-        <TouchableOpacity
-          style={styles.editBtn}
-          onPress={() => {
-            navigate(routesConstants.editProfile);
-          }}
-        >
-          <Text style={styles.editBtnText}>{commonText.editProfile}</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.shareBtn}>
-          <Image
-            source={appImages.share}
-            style={styles.shareIcon}
-            resizeMode="contain"
-          />
-        </TouchableOpacity>
       </View>
 
       <Text style={styles.profileName}>

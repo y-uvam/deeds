@@ -17,6 +17,7 @@ import {
   Login,
   Notification,
   OTP,
+  Post,
   Profile,
   ResetPassword,
   SavedPosts,
@@ -69,6 +70,7 @@ const MainStack = () => {
       <Screen name={routesConstants.chatCard} component={ChatCard} />
       <Screen name={routesConstants.newChat} component={NewChat} />
       <Screen name={routesConstants.dashboard} component={Dashboard} />
+      <Screen name={routesConstants.post} component={Post} />
       <Screen
         name={routesConstants.accountPrivacy}
         component={AccountPrivacy}

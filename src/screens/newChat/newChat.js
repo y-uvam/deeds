@@ -7,8 +7,14 @@ import {
   Image,
   TouchableOpacity,
 } from "react-native";
-import { AppBackground, Header, Spacer, CustomInput } from "../../components";
-import { colors, scales } from "../../utils";
+import {
+  AppBackground,
+  Header,
+  Spacer,
+  CustomInput,
+  CustomSearch,
+} from "../../components";
+import { colors, commonText, scales } from "../../utils";
 import { appImages, fontFamily } from "../../assets";
 import { goBack, navigate, routesConstants } from "../../navigation";
 
@@ -22,7 +28,7 @@ const CONTACTS = [
 ];
 
 const ContactItem = ({ item }) => (
-  <TouchableOpacity 
+  <TouchableOpacity
     style={styles.contactRow}
     onPress={() => navigate(routesConstants.chatCard)}
   >
@@ -43,29 +49,25 @@ const ContactItem = ({ item }) => (
 export const NewChat = () => {
   const [search, setSearch] = useState("");
 
-  const filteredContacts = CONTACTS.filter(contact => 
-    contact.name.toLowerCase().includes(search.toLowerCase())
+  const filteredContacts = CONTACTS.filter((contact) =>
+    contact.name.toLowerCase().includes(search.toLowerCase()),
   );
 
   const renderItem = useCallback(({ item }) => <ContactItem item={item} />, []);
 
   return (
     <AppBackground>
-      <Header 
-        label="New Message" 
-        showBackButton={true} 
+      <Header
+        label="New Message"
+        showBackButton={true}
         onBackPress={() => goBack()}
       />
 
-      <View style={styles.searchContainer}>
-        <CustomInput
-          placeholder="To: Search contacts..."
-          value={search}
-          onChangeText={setSearch}
-          leftIcon={appImages.browse}
-          height={scales(50)}
-        />
-      </View>
+      <CustomSearch
+        placeholder={commonText.search}
+        value={search}
+        onChangeText={setSearch}
+      />
 
       <View style={styles.sectionHeader}>
         <Text style={styles.sectionTitle}>SUGGESTED</Text>

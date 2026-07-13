@@ -29,35 +29,41 @@ const { width: W, height: H } = Dimensions.get("window");
 const SHEET_HEIGHT = H * 0.42;
 
 const ITEMS = [
-  { id: 1, label: "Post", icon: appImages.post, color: "#6C63FF" },
-  { id: 2, label: "Story", icon: appImages.heart, color: "#E040FB" },
-  { id: 3, label: "Reel", icon: appImages.bell, color: "#FF4F7B" },
-  { id: 4, label: "Media", icon: appImages.imageupload, color: "#00C896" },
-  { id: 5, label: "Message", icon: appImages.send, color: "#0088FF" },
-  { id: 6, label: "Share", icon: appImages.share, color: "#FFC107" },
+  { id: 1, label: "Post", icon: appImages.post, color: colors.blue },
+  { id: 2, label: "Story", icon: appImages.heart, color: colors.purple },
+  { id: 3, label: "Reel", icon: appImages.bell, color: colors.lightRed },
+  {
+    id: 4,
+    label: "Media",
+    icon: appImages.imageupload,
+    color: colors.lightGreen,
+  },
+  { id: 5, label: "Message", icon: appImages.send, color: colors.blue },
+  { id: 6, label: "Share", icon: appImages.share, color: colors.yellow },
 ];
 
 const ITEM_SIZE = scales(62);
 
-// ─── Individual menu item ───────────────────────────────────────────────────
 const MenuItem = memo(({ item, index, onPress, entryAnim }) => {
   const animStyle = useAnimatedStyle(() => {
-    const delay = index * 40; // ms stagger - handled via inputRange trick
     const progress = interpolate(
       entryAnim.value,
       [0, 1],
       [0, 1],
-      Extrapolation.CLAMP
+      Extrapolation.CLAMP,
     );
     return {
       opacity: progress,
       transform: [
         {
-          translateY: interpolate(progress, [0, 1], [30, 0], Extrapolation.CLAMP),
+          translateY: interpolate(
+            progress,
+            [0, 1],
+            [30, 0],
+            Extrapolation.CLAMP,
+          ),
         },
-        {
-          scale: interpolate(progress, [0, 1], [0.8, 1], Extrapolation.CLAMP),
-        },
+        { scale: interpolate(progress, [0, 1], [0.8, 1], Extrapolation.CLAMP) },
       ],
     };
   });
@@ -69,12 +75,13 @@ const MenuItem = memo(({ item, index, onPress, entryAnim }) => {
         onPress={() => onPress(item)}
         style={styles.itemTouchable}
       >
-        <View style={[styles.itemCircle, { backgroundColor: item.color + "22" }]}>
-          {/* Subtle colored border */}
+        <View
+          style={[styles.itemCircle, { backgroundColor: item.color + "15" }]}
+        >
           <View
             style={[
               styles.itemCircleBorder,
-              { borderColor: item.color + "55" },
+              { borderColor: item.color + "40" },
             ]}
           />
           <Image
@@ -89,21 +96,18 @@ const MenuItem = memo(({ item, index, onPress, entryAnim }) => {
   );
 });
 
-// ─── Drag handle ────────────────────────────────────────────────────────────
 const DragHandle = () => (
   <View style={styles.handleWrapper}>
-    <View style={styles.handle} />
+    {/* <View style={styles.handle} /> */}
   </View>
 );
 
-// ─── Main component ──────────────────────────────────────────────────────────
 export const CreateMenu = ({ visible, onClose }) => {
   const [mounted, setMounted] = useState(false);
   const translateY = useSharedValue(SHEET_HEIGHT);
   const overlayOpacity = useSharedValue(0);
   const itemsProgress = useSharedValue(0);
 
-  // drag gesture state
   const startY = useSharedValue(0);
   const isDragging = useSharedValue(false);
 
@@ -117,10 +121,7 @@ export const CreateMenu = ({ visible, onClose }) => {
     });
     itemsProgress.value = withDelay(
       120,
-      withTiming(1, {
-        duration: 320,
-        easing: Easing.out(Easing.cubic),
-      })
+      withTiming(1, { duration: 320, easing: Easing.out(Easing.cubic) }),
     );
   }, []);
 
@@ -135,17 +136,15 @@ export const CreateMenu = ({ visible, onClose }) => {
           runOnJS(setMounted)(false);
           runOnJS(onClose)();
         }
-      }
+      },
     );
   }, [onClose]);
 
   useEffect(() => {
     if (visible) {
       setMounted(true);
-      // Small delay to let RN mount the view before animating
       setTimeout(open, 10);
     } else {
-      // reset silently (closed externally via onClose already)
       translateY.value = SHEET_HEIGHT;
       overlayOpacity.value = 0;
       itemsProgress.value = 0;
@@ -153,14 +152,12 @@ export const CreateMenu = ({ visible, onClose }) => {
     }
   }, [visible]);
 
-  // Drag-to-dismiss gesture
   const panGesture = Gesture.Pan()
     .onStart(() => {
       startY.value = translateY.value;
       isDragging.value = true;
     })
     .onUpdate((e) => {
-      // Only allow dragging down
       const next = startY.value + e.translationY;
       translateY.value = Math.max(0, next);
     })
@@ -180,25 +177,22 @@ export const CreateMenu = ({ visible, onClose }) => {
     });
 
   const overlayStyle = useAnimatedStyle(() => ({
-    opacity: overlayOpacity.value * 0.65,
+    opacity: overlayOpacity.value * 0.75,
   }));
-
   const sheetStyle = useAnimatedStyle(() => ({
     transform: [{ translateY: translateY.value }],
   }));
-
   const onSelect = useCallback(
     (item) => {
       close();
     },
-    [close]
+    [close],
   );
 
   if (!mounted) return null;
 
   return (
     <View style={StyleSheet.absoluteFill} pointerEvents="box-none">
-      {/* Backdrop */}
       <Pressable
         style={StyleSheet.absoluteFillObject}
         onPress={close}
@@ -209,25 +203,23 @@ export const CreateMenu = ({ visible, onClose }) => {
         />
       </Pressable>
 
-      {/* Sheet */}
       <GestureDetector gesture={panGesture}>
-        <Animated.View style={[styles.sheet, sheetStyle]} pointerEvents="box-none">
-          {/* Glass blur background */}
+        <Animated.View
+          style={[styles.sheet, sheetStyle]}
+          pointerEvents="box-none"
+        >
           <BlurView
             style={StyleSheet.absoluteFill}
             blurType="dark"
-            blurAmount={30}
-            reducedTransparencyFallbackColor="#0a0a18"
+            blurAmount={40}
+            reducedTransparencyFallbackColor={colors.background}
           />
           <View style={[StyleSheet.absoluteFill, styles.sheetFill]} />
-          {/* Top border glow */}
-          <View style={styles.topGlow} />
 
           <DragHandle />
 
           <Text style={styles.sheetTitle}>Create</Text>
 
-          {/* Items grid — 3 columns */}
           <View style={styles.grid}>
             {ITEMS.map((item, index) => (
               <MenuItem
@@ -240,7 +232,6 @@ export const CreateMenu = ({ visible, onClose }) => {
             ))}
           </View>
 
-          {/* Bottom safe area spacer */}
           <View style={styles.safeAreaSpacer} />
         </Animated.View>
       </GestureDetector>
@@ -250,66 +241,64 @@ export const CreateMenu = ({ visible, onClose }) => {
 
 const styles = StyleSheet.create({
   overlay: {
-    backgroundColor: "#000",
+    backgroundColor: colors.background,
   },
-
   sheet: {
     position: "absolute",
     bottom: 0,
     left: 0,
     right: 0,
     height: SHEET_HEIGHT,
-    borderTopLeftRadius: scales(28),
-    borderTopRightRadius: scales(28),
+    borderTopLeftRadius: scales(32),
+    borderTopRightRadius: scales(32),
     overflow: "hidden",
+    borderWidth: 1,
+    borderColor: "rgba(0,136,255,0.15)",
   },
   sheetFill: {
-    backgroundColor: "rgba(8, 8, 22, 0.78)",
-    borderTopLeftRadius: scales(28),
-    borderTopRightRadius: scales(28),
+    backgroundColor: "rgba(5,20,36,0.85)",
   },
-  topGlow: {
+  topAccent: {
     position: "absolute",
     top: 0,
-    left: "15%",
-    right: "15%",
-    height: 1.5,
-    backgroundColor: "rgba(255,255,255,0.18)",
-    shadowColor: "#fff",
-    shadowOpacity: 0.6,
-    shadowRadius: 8,
-    shadowOffset: { width: 0, height: 0 },
+    left: "25%",
+    right: "25%",
+    height: scales(2),
+    backgroundColor: colors.blue,
+    borderBottomLeftRadius: scales(4),
+    borderBottomRightRadius: scales(4),
+    opacity: 0.9,
+    shadowColor: colors.blue,
+    shadowOpacity: 1,
+    shadowRadius: 12,
+    shadowOffset: { width: 0, height: 2 },
   },
-
   handleWrapper: {
     alignItems: "center",
-    paddingTop: scales(12),
-    paddingBottom: scales(4),
+    paddingTop: scales(16),
+    paddingBottom: scales(8),
   },
   handle: {
-    width: scales(36),
+    width: scales(40),
     height: scales(4),
     borderRadius: scales(2),
-    backgroundColor: "rgba(255,255,255,0.25)",
+    backgroundColor: "rgba(255,255,255,0.15)",
   },
-
   sheetTitle: {
-    color: "rgba(255,255,255,0.9)",
-    fontSize: scales(16),
+    color: colors.white,
+    fontSize: scales(18),
     fontFamily: fontFamily.bold,
-    letterSpacing: 1,
+    letterSpacing: 1.5,
     textAlign: "center",
-    marginTop: scales(6),
-    marginBottom: scales(20),
+    marginTop: scales(4),
+    marginBottom: scales(24),
   },
-
-  // 3-column grid
   grid: {
     flexDirection: "row",
     flexWrap: "wrap",
     paddingHorizontal: scales(20),
     justifyContent: "space-between",
-    rowGap: scales(20),
+    rowGap: scales(24),
   },
   itemWrapper: {
     width: (W - scales(40) - scales(20)) / 3,
@@ -317,7 +306,7 @@ const styles = StyleSheet.create({
   },
   itemTouchable: {
     alignItems: "center",
-    gap: scales(8),
+    gap: scales(10),
   },
   itemCircle: {
     width: ITEM_SIZE,
@@ -329,20 +318,20 @@ const styles = StyleSheet.create({
   itemCircleBorder: {
     ...StyleSheet.absoluteFillObject,
     borderRadius: ITEM_SIZE / 2,
-    borderWidth: 1.5,
+    borderWidth: 1,
   },
   itemIcon: {
-    width: ITEM_SIZE * 0.42,
-    height: ITEM_SIZE * 0.42,
+    width: ITEM_SIZE * 0.45,
+    height: ITEM_SIZE * 0.45,
   },
   itemLabel: {
-    color: "rgba(255,255,255,0.8)",
+    color: "rgba(255,255,255,0.85)",
     fontSize: scales(12),
-    fontFamily: fontFamily.bold,
+    fontFamily: fontFamily.medium,
     letterSpacing: 0.5,
     textAlign: "center",
   },
   safeAreaSpacer: {
-    height: scales(30),
+    height: scales(40),
   },
 });

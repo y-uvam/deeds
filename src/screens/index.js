@@ -20,3 +20,4 @@ export * from "./chat/chat";
 export * from "./chatCard/chatCard";
 export * from "./newChat/newChat";
 export * from "./dashboard/dashboard";
+export * from "./post/post";
