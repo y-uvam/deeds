@@ -15,3 +15,4 @@ export * from "./footerComponent/foterComponent";
 export * from "./nextButton/nextButton";
 export * from "./CustomSwitch/CustomSwitch";
 export * from "./splash/splash";
+export * from "./reels/ReelsList";

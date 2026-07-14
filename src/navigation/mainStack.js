@@ -8,7 +8,6 @@ import {
   Browse,
   Chat,
   ChatCard,
-  Dashboard,
   NewChat,
   Editprofile,
   Followers,
@@ -25,6 +24,7 @@ import {
   SignUp,
   Splash,
   YourActivity,
+  Reels,
 } from "../screens";
 import { BottomTab } from "./bottomTab";
 
@@ -69,8 +69,8 @@ const MainStack = () => {
       <Screen name={routesConstants.yourActivity} component={YourActivity} />
       <Screen name={routesConstants.chatCard} component={ChatCard} />
       <Screen name={routesConstants.newChat} component={NewChat} />
-      <Screen name={routesConstants.dashboard} component={Dashboard} />
       <Screen name={routesConstants.post} component={Post} />
+      <Screen name={routesConstants.reels} component={Reels} />
       <Screen
         name={routesConstants.accountPrivacy}
         component={AccountPrivacy}

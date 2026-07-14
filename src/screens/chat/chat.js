@@ -22,7 +22,7 @@ const ChatItem = memo(({ item }) => (
   <TouchableOpacity
     style={styles.chatRow}
     activeOpacity={0.7}
-    onPress={() => navigate(routesConstants.dashboard)}
+    onPress={() => navigate(routesConstants.chatCard)}
   >
     <View style={styles.avatarWrapper}>
       <Image source={item.image || appImages.dummyuser} style={styles.avatar} />

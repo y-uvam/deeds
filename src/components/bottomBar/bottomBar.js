@@ -8,6 +8,7 @@ import {
   Platform,
 } from "react-native";
 import { useFocusEffect, useNavigationState } from "@react-navigation/native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { navigate } from "../../navigation/navigationServices";
 import { appImages } from "../../assets";
 import { scales, colors } from "../../utils";
@@ -21,7 +22,8 @@ const PLUS_TAB_ID = 3;
 const TABS = [
   { id: 1, icon: appImages.dashboard, route: routesConstants.Home },
   { id: 2, icon: appImages.browse, route: routesConstants.Browse },
-  { id: 3, icon: appImages.plus, route: null }, // center plus button
+  { id: 3, icon: appImages.reels, route: routesConstants.reels }, // center plus button
+  // { id: 3, icon: appImages.plus, route: null }, // center plus button
   { id: 4, icon: appImages.chat, route: routesConstants.Chat },
   { id: 5, icon: appImages.dummyuser, route: routesConstants.Profile },
 ];
@@ -146,8 +148,9 @@ const PlusButton = ({ onPress }) => {
 };
 
 export const BottomBar = () => {
+  const insets = useSafeAreaInsets();
+  const bottomInset = insets.bottom;
   const [selectedIndex, setSelectedIndex] = useState(1);
-  const [menuVisible, setMenuVisible] = useState(false);
 
   const currentRouteName = useNavigationState(
     (state) => state.routes[state.index].name,
@@ -161,37 +164,46 @@ export const BottomBar = () => {
   );
 
   const handleTabPress = (tab) => {
-    if (tab.id === PLUS_TAB_ID) {
-      setMenuVisible(true);
-      return;
-    }
     setSelectedIndex(tab.id);
     navigate(tab.route);
   };
 
   return (
     <>
-      <View style={styles.container} pointerEvents="box-none">
-        {/* Blur background */}
-        <BlurView
-          style={StyleSheet.absoluteFill}
-          blurType="dark"
-          blurAmount={20}
-          reducedTransparencyFallbackColor="rgba(10,10,20,0.92)"
+      <View
+        style={[
+          styles.container,
+          {
+            height: BAR_HEIGHT + bottomInset,
+            justifyContent: "flex-start",
+          },
+        ]}
+        pointerEvents="box-none"
+      >
+        <View
+          style={[
+            styles.overlay,
+            currentRouteName === routesConstants.reels && {
+              backgroundColor: "rgba(0, 0, 0, 0.2)",
+            },
+          ]}
         />
-        {/* Semi-transparent overlay */}
-        <View style={styles.overlay} />
-        {/* Top border line */}
-        <View style={styles.topBorder} />
+        <View
+          style={[
+            styles.topBorder,
+            currentRouteName === routesConstants.reels && {
+              backgroundColor: "transparent",
+            },
+          ]}
+        />
 
-        {/* Tab row */}
-        <View style={styles.row}>
+        <View style={[styles.row, { paddingBottom: 0 }]}>
           {TABS.map((tab) => {
-            if (tab.id === PLUS_TAB_ID) {
-              return (
-                <PlusButton key={tab.id} onPress={() => handleTabPress(tab)} />
-              );
-            }
+            // if (tab.id === PLUS_TAB_ID) {
+            //   return (
+            //     <PlusButton key={tab.id} onPress={() => handleTabPress(tab)} />
+            //   );
+            // }
             return (
               <TabItem
                 key={tab.id}
@@ -203,8 +215,6 @@ export const BottomBar = () => {
           })}
         </View>
       </View>
-
-      <CreateMenu visible={menuVisible} onClose={() => setMenuVisible(false)} />
     </>
   );
 };

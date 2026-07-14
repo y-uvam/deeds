@@ -23,6 +23,6 @@ export const routesConstants = {
   aiCall: "AiCall",
   chatCard: "ChatCard",
   newChat: "NewChat",
-  dashboard: "Dashboard",
   post: "Post",
+  reels: "Reels",
 };

@@ -1,5 +1,5 @@
 import { routesConstants } from "./routeConstants";
-import { Home, Browse, Notification, Profile, Chat } from "../screens";
+import { Home, Browse, Notification, Profile, Chat, Reels } from "../screens";
 import { BottomBar } from "../components";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 
@@ -14,6 +14,7 @@ export const BottomTab = () => {
     >
       <Tab.Screen name={routesConstants.Home} component={Home} />
       <Tab.Screen name={routesConstants.Browse} component={Browse} />
+      <Tab.Screen name={routesConstants.reels} component={Reels} />
       <Tab.Screen
         name={routesConstants.Notification}
         component={Notification}

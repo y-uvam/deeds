@@ -57,6 +57,7 @@ export const commonText = {
   notification: "Notification",
   help: "Help",
   blocked: "Blocked",
+  bites: "Bites",
 };
 export const validationConstants = {
   noInternet: "Please check your internet connection.",

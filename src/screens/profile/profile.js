@@ -215,7 +215,7 @@ export const Profile = () => {
           onPress={() => handleTabPress(1)}
         >
           <Image
-            source={appImages.play}
+            source={appImages.reels}
             style={[
               styles.tabIconNew,
               activeTab === 1 && styles.tabIconNewActive,
@@ -224,7 +224,7 @@ export const Profile = () => {
           <Text
             style={[styles.tabText, activeTab === 1 && styles.tabTextActive]}
           >
-            {commonText.reels}
+            {commonText.bites}
           </Text>
         </TouchableOpacity>
         <TouchableOpacity

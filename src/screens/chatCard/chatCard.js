@@ -58,15 +58,22 @@ const MessageBubble = ({ message }) => {
       ]}
     >
       <View
-        style={[
-          styles.bubble,
-          isMe ? styles.myBubble : styles.otherBubble,
-        ]}
+        style={[styles.bubble, isMe ? styles.myBubble : styles.otherBubble]}
       >
-        <Text style={[styles.messageText, isMe ? styles.myMessageText : styles.otherMessageText]}>
+        <Text
+          style={[
+            styles.messageText,
+            isMe ? styles.myMessageText : styles.otherMessageText,
+          ]}
+        >
           {message.text}
         </Text>
-        <Text style={[styles.timeText, isMe ? styles.myTimeText : styles.otherTimeText]}>
+        <Text
+          style={[
+            styles.timeText,
+            isMe ? styles.myTimeText : styles.otherTimeText,
+          ]}
+        >
           {message.time}
         </Text>
       </View>
@@ -89,33 +96,39 @@ export const ChatCard = () => {
   const flatListRef = useRef(null);
 
   const sendMessage = (text) => {
-    const finalMsg = typeof text === 'string' ? text : message;
+    const finalMsg = typeof text === "string" ? text : message;
     if (finalMsg.trim().length === 0) return;
 
     const newMessage = {
       id: Date.now().toString(),
       text: finalMsg.trim(),
       sender: "me",
-      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      time: new Date().toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+      }),
     };
 
-    setMessages(prev => [...prev, newMessage]);
-    if (typeof text !== 'string') setMessage("");
-    
+    setMessages((prev) => [...prev, newMessage]);
+    if (typeof text !== "string") setMessage("");
+
     setTimeout(() => {
       flatListRef.current?.scrollToEnd({ animated: true });
     }, 100);
   };
 
-  const renderItem = useCallback(({ item }) => <MessageBubble message={item} />, []);
+  const renderItem = useCallback(
+    ({ item }) => <MessageBubble message={item} />,
+    [],
+  );
 
   return (
     <AppBackground>
-      <Header 
-        label="Alex Johnson" 
-        showBackButton={true} 
+      <Header
+        label="Alex Johnson"
+        showBackButton={true}
         onBackPress={() => goBack()}
-        rightIcon={appImages.threeDots} 
+        rightIcon={appImages.threeDots}
       />
 
       <FlatList
@@ -125,52 +138,40 @@ export const ChatCard = () => {
         renderItem={renderItem}
         contentContainerStyle={styles.listContent}
         showsVerticalScrollIndicator={false}
-        onContentSizeChange={() => flatListRef.current?.scrollToEnd({ animated: false })}
+        onContentSizeChange={() =>
+          flatListRef.current?.scrollToEnd({ animated: false })
+        }
       />
 
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         keyboardVerticalOffset={Platform.OS === "ios" ? scales(10) : 0}
       >
-        <View style={styles.quickRepliesContainer}>
-          <FlatList
-            horizontal
-            data={QUICK_REPLIES}
-            renderItem={({ item }) => (
-              <TouchableOpacity 
-                style={styles.quickReplyChip}
-                onPress={() => sendMessage(item)}
-              >
-                <Text style={styles.quickReplyText}>{item}</Text>
-              </TouchableOpacity>
-            )}
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.quickReplyList}
-          />
-        </View>
-
         <View style={styles.inputWrapper}>
           <TouchableOpacity style={styles.attachBtn}>
             <Image source={appImages.plus} style={styles.icon} />
           </TouchableOpacity>
-          
+
           <View style={styles.inputContainer}>
             <TextInput
               style={styles.input}
               placeholder="Type a message..."
-              placeholderTextColor="rgba(255,255,255,0.4)"
+              placeholderTextColor={colors.gray}
               value={message}
               onChangeText={setMessage}
               multiline
             />
           </View>
 
-          <TouchableOpacity 
-            style={[styles.sendBtn, !message.trim() && styles.sendBtnDisabled]} 
+          <TouchableOpacity
+            style={[styles.sendBtn, !message.trim() && styles.sendBtnDisabled]}
             onPress={sendMessage}
             disabled={!message.trim()}
           >
-            <Image source={appImages.send} style={[styles.icon, { tintColor: colors.white }]} />
+            <Image
+              source={appImages.send}
+              style={[styles.icon, { tintColor: colors.white }]}
+            />
           </TouchableOpacity>
         </View>
         <Spacer height={Platform.OS === "ios" ? scales(30) : scales(10)} />
@@ -232,37 +233,11 @@ const styles = StyleSheet.create({
   otherTimeText: {
     color: "rgba(255,255,255,0.4)",
   },
-  quickRepliesContainer: {
-    backgroundColor: colors.black,
-    paddingVertical: scales(10),
-    borderTopWidth: 1,
-    borderTopColor: "rgba(255,255,255,0.05)",
-  },
-  quickReplyList: {
-    paddingHorizontal: scales(15),
-    gap: scales(10),
-  },
-  quickReplyChip: {
-    backgroundColor: "rgba(255,255,255,0.1)",
-    paddingHorizontal: scales(15),
-    paddingVertical: scales(8),
-    borderRadius: scales(20),
-    borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.1)",
-  },
-  quickReplyText: {
-    color: colors.white,
-    fontSize: scales(13),
-    fontFamily: fontFamily.medium,
-  },
   inputWrapper: {
     flexDirection: "row",
     alignItems: "flex-end",
     paddingHorizontal: scales(15),
     paddingVertical: scales(10),
-    backgroundColor: colors.black,
-    borderTopWidth: 1,
-    borderTopColor: "rgba(255,255,255,0.05)",
   },
   attachBtn: {
     width: scales(44),

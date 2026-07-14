@@ -21,8 +21,9 @@ import Animated, {
 } from "react-native-reanimated";
 import { appImages, fontFamily } from "../../assets";
 import { colors, scales } from "../../utils";
-import { goBack } from "../../navigation/navigationServices";
+import { goBack, navigate } from "../../navigation/navigationServices";
 import { BlurView } from "@react-native-community/blur";
+import { routesConstants } from "../../navigation/routeConstants";
 
 const { width } = Dimensions.get("window");
 const AnimatedTouchableOpacity =
@@ -164,6 +165,8 @@ export const Header = ({
   rightIcon,
   onRightPress,
   isHome,
+  leftButton,
+  leftButtonPress,
 }) => {
   const containerTranslateY = useSharedValue(-50);
   const containerOpacity = useSharedValue(0);
@@ -197,10 +200,10 @@ export const Header = ({
     <View style={styles.root}>
       <Animated.View style={[styles.container, containerStyle]}>
         <View style={styles.sideContainer}>
-          {showBackButton && (
+          {(showBackButton || leftButton) && (
             <RoundIconButton
-              icon={appImages.backarrow}
-              onPress={() => goBack()}
+              icon={leftButton ? leftButton : appImages.backarrow}
+              onPress={() => (leftButtonPress ? leftButtonPress : goBack())}
             />
           )}
         </View>
@@ -214,7 +217,12 @@ export const Header = ({
             <RoundIconButton icon={rightIcon} onPress={onRightPress} />
           ) : (
             isHome && (
-              <RoundIconButton icon={appImages.bell} onPress={() => {}} />
+              <RoundIconButton
+                icon={appImages.bell}
+                onPress={() => {
+                  navigate(routesConstants.Notification);
+                }}
+              />
             )
           )}
         </View>

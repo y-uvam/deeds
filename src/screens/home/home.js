@@ -9,6 +9,7 @@ import {
 import { colors, scales } from "../../utils";
 import { appImages } from "../../assets";
 import { useState } from "react";
+import { navigate, routesConstants } from "../../navigation";
 
 const DATA = [
   {
@@ -36,7 +37,13 @@ export const Home = () => {
 
   return (
     <AppBackground>
-      <Header isHome={true} />
+      <Header
+        isHome={true}
+        leftButton={appImages.plus}
+        leftButtonPress={() => {
+          navigate(routesConstants.Home);
+        }}
+      />
       <FlatList
         data={DATA}
         renderItem={({ item }) => <PostItem item={item} />}
