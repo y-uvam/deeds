@@ -24,4 +24,6 @@ export const colors = {
   lightGreen: "#00C896",
   pink: "#E040FB",
   background: "#051424",
+  transparentWhite5: "rgba(255, 255, 255, 0.05)",
+  transparentWhite10: "rgba(255, 255, 255, 0.1)",
 };
