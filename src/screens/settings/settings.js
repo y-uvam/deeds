@@ -59,11 +59,7 @@ export const Settings = () => {
             label="Help and support"
             onPress={() => {}}
           />
-          <NextButton
-            leftIcon={appImages.i}
-            label="About"
-            onPress={() => {}}
-          />
+          <NextButton leftIcon={appImages.i} label="About" onPress={() => {}} />
         </Section>
 
         <Section title="Login and deactivation">

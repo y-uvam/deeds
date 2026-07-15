@@ -17,6 +17,8 @@ import {
 import { colors, commonText, scales } from "../../utils";
 import { appImages, fontFamily } from "../../assets";
 import { navigate, routesConstants } from "../../navigation";
+import Animated from "react-native-reanimated";
+import { useTabBarScrollHandler } from "../../context/TabBarContext";
 
 const ChatItem = memo(({ item }) => (
   <TouchableOpacity
@@ -52,8 +54,11 @@ const ChatItem = memo(({ item }) => (
   </TouchableOpacity>
 ));
 
+const AnimatedFlatList = Animated.createAnimatedComponent(FlatList);
+
 export const Chat = () => {
   const [search, setSearch] = useState("");
+  const scrollHandler = useTabBarScrollHandler();
 
   const chatData = [
     {
@@ -117,13 +122,15 @@ export const Chat = () => {
 
       <Spacer height={scales(10)} />
 
-      <FlatList
+      <AnimatedFlatList
         data={chatData}
         keyExtractor={(item) => item.id}
         renderItem={renderItem}
         contentContainerStyle={styles.listContent}
         showsVerticalScrollIndicator={false}
         ItemSeparatorComponent={() => <View style={styles.separator} />}
+        onScroll={scrollHandler}
+        scrollEventThrottle={16}
       />
     </AppBackground>
   );

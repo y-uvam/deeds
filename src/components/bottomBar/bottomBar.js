@@ -1,12 +1,5 @@
-import React, { useRef, useEffect, useState } from "react";
-import {
-  Animated,
-  Image,
-  Pressable,
-  StyleSheet,
-  View,
-  Platform,
-} from "react-native";
+import React, { useEffect, useState } from "react";
+import { Image, Pressable, StyleSheet, View, Dimensions } from "react-native";
 import { useFocusEffect, useNavigationState } from "@react-navigation/native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { navigate } from "../../navigation/navigationServices";
@@ -14,72 +7,105 @@ import { appImages } from "../../assets";
 import { scales, colors } from "../../utils";
 import { routesConstants } from "../../navigation/routeConstants";
 import { BlurView } from "@react-native-community/blur";
-import { CreateMenu } from "./CreateMenu";
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withSpring,
+  withTiming,
+  interpolate,
+  Extrapolation,
+  Easing,
+} from "react-native-reanimated";
+import { useTabBar } from "../../context/TabBarContext";
+
+const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
 const ICON_SIZE = scales(24);
-const PLUS_TAB_ID = 3;
+const ITEM_SIZE = scales(48);
+const PADDING = scales(4);
 
 const TABS = [
   { id: 1, icon: appImages.dashboard, route: routesConstants.Home },
   { id: 2, icon: appImages.browse, route: routesConstants.Browse },
-  { id: 3, icon: appImages.reels, route: routesConstants.reels }, // center plus button
-  // { id: 3, icon: appImages.plus, route: null }, // center plus button
+  { id: 3, icon: appImages.reels, route: routesConstants.reels },
   { id: 4, icon: appImages.chat, route: routesConstants.Chat },
   { id: 5, icon: appImages.dummyuser, route: routesConstants.Profile },
 ];
 
-// Simple icon-only tab item (Instagram style)
-const TabItem = ({ tab, isFocused, onPress }) => {
-  const scaleAnim = useRef(new Animated.Value(1)).current;
-  const dotOpacity = useRef(new Animated.Value(isFocused ? 1 : 0)).current;
+const GAP = scales(16);
+const EXPANDED_WIDTH = ITEM_SIZE * TABS.length + GAP * (TABS.length - 1) + PADDING * 2;
+const COLLAPSED_WIDTH = ITEM_SIZE + PADDING * 2;
+const BAR_HEIGHT = ITEM_SIZE + PADDING * 2;
+const LEFT_MARGIN = scales(20);
+
+// Calculate exact positions for icons to avoid Flexbox stretching during animation
+const INNER_WIDTH = EXPANDED_WIDTH - PADDING * 2;
+const STEP = (INNER_WIDTH - ITEM_SIZE) / (TABS.length - 1);
+
+const TabItem = ({ tab, index, isFocused, onPress, isCollapsed }) => {
+  const isProfile = tab.id === 5;
+  const scale = useSharedValue(1);
 
   useEffect(() => {
-    Animated.parallel([
-      Animated.spring(scaleAnim, {
-        toValue: isFocused ? 1.15 : 1,
-        tension: 300,
-        friction: 15,
-        useNativeDriver: true,
-      }),
-      Animated.timing(dotOpacity, {
-        toValue: isFocused ? 1 : 0,
-        duration: 200,
-        useNativeDriver: true,
-      }),
-    ]).start();
+    scale.value = withTiming(isFocused ? 1.12 : 1, { duration: 250 });
   }, [isFocused]);
 
   const handlePressIn = () => {
-    Animated.spring(scaleAnim, {
-      toValue: 0.88,
-      tension: 300,
-      friction: 10,
-      useNativeDriver: true,
-    }).start();
+    scale.value = withTiming(0.85, { duration: 150 });
   };
-
   const handlePressOut = () => {
-    Animated.spring(scaleAnim, {
-      toValue: isFocused ? 1.15 : 1,
-      tension: 300,
-      friction: 15,
-      useNativeDriver: true,
-    }).start();
+    scale.value = withTiming(isFocused ? 1.12 : 1, { duration: 150 });
   };
 
-  // Profile tab: use circular image, no tint
-  const isProfile = tab.id === 5;
+  const animatedStyle = useAnimatedStyle(() => {
+    const expandedX = PADDING + index * STEP;
+    const collapsedX = PADDING;
+
+    const translateX = interpolate(
+      isCollapsed.value,
+      [0, 1],
+      [expandedX, collapsedX],
+      Extrapolation.CLAMP,
+    );
+
+    const opacity = isFocused
+      ? 1
+      : interpolate(
+          isCollapsed.value,
+          [0, 0.5, 1],
+          [1, 0, 0],
+          Extrapolation.CLAMP,
+        );
+
+    const collapseScale = isFocused
+      ? 1
+      : interpolate(
+          isCollapsed.value,
+          [0, 0.8, 1],
+          [1, 0.5, 0],
+          Extrapolation.CLAMP,
+        );
+
+    return {
+      position: "absolute",
+      top: PADDING,
+      left: 0, // position based on translateX
+      width: ITEM_SIZE,
+      height: ITEM_SIZE,
+      opacity,
+      zIndex: isFocused ? 10 : 1,
+      transform: [{ translateX }, { scale: scale.value * collapseScale }],
+    };
+  });
 
   return (
-    <Pressable
-      onPress={onPress}
-      onPressIn={handlePressIn}
-      onPressOut={handlePressOut}
-      style={styles.tabTouchable}
-      hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-    >
-      <Animated.View
-        style={[styles.iconWrapper, { transform: [{ scale: scaleAnim }] }]}
+    <Animated.View style={animatedStyle}>
+      <Pressable
+        onPress={onPress}
+        onPressIn={handlePressIn}
+        onPressOut={handlePressOut}
+        hitSlop={8}
+        style={styles.iconWrapper}
       >
         <Image
           source={tab.icon}
@@ -91,66 +117,16 @@ const TabItem = ({ tab, isFocused, onPress }) => {
           ]}
           resizeMode="contain"
         />
-      </Animated.View>
-
-      {/* Active dot indicator */}
-      {/* <Animated.View style={[styles.activeDot, { opacity: dotOpacity }]} /> */}
-    </Pressable>
-  );
-};
-
-// Center plus button — elevated circular, gradient-like appearance
-const PlusButton = ({ onPress }) => {
-  const scaleAnim = useRef(new Animated.Value(1)).current;
-
-  const handlePressIn = () => {
-    Animated.spring(scaleAnim, {
-      toValue: 0.9,
-      tension: 300,
-      friction: 10,
-      useNativeDriver: true,
-    }).start();
-  };
-
-  const handlePressOut = () => {
-    Animated.spring(scaleAnim, {
-      toValue: 1,
-      tension: 300,
-      friction: 15,
-      useNativeDriver: true,
-    }).start();
-  };
-
-  return (
-    <Pressable
-      onPress={onPress}
-      onPressIn={handlePressIn}
-      onPressOut={handlePressOut}
-      style={styles.plusTouchable}
-      hitSlop={{ top: 5, bottom: 5, left: 5, right: 5 }}
-    >
-      <Animated.View
-        style={[styles.plusButton, { transform: [{ scale: scaleAnim }] }]}
-      >
-        {/* Outer glow ring */}
-        <View style={styles.plusGlowRing} />
-        {/* Main circle */}
-        <View style={styles.plusCircle}>
-          <Image
-            source={appImages.plus}
-            style={styles.plusIcon}
-            resizeMode="contain"
-          />
-        </View>
-      </Animated.View>
-    </Pressable>
+      </Pressable>
+    </Animated.View>
   );
 };
 
 export const BottomBar = () => {
   const insets = useSafeAreaInsets();
-  const bottomInset = insets.bottom;
+  const { isCollapsed } = useTabBar();
   const [selectedIndex, setSelectedIndex] = useState(1);
+  const activeIndex = useSharedValue(0);
 
   const currentRouteName = useNavigationState(
     (state) => state.routes[state.index].name,
@@ -158,109 +134,142 @@ export const BottomBar = () => {
 
   useFocusEffect(
     React.useCallback(() => {
-      const tab = TABS.find((t) => t.route === currentRouteName);
-      if (tab) setSelectedIndex(tab.id);
+      const tabIndex = TABS.findIndex((t) => t.route === currentRouteName);
+      if (tabIndex !== -1) {
+        setSelectedIndex(TABS[tabIndex].id);
+        activeIndex.value = withTiming(tabIndex, {
+          duration: 350,
+          easing: Easing.out(Easing.quad),
+        });
+      }
     }, [currentRouteName]),
   );
 
   const handleTabPress = (tab) => {
     setSelectedIndex(tab.id);
     navigate(tab.route);
+    // Expand when user taps a tab
+    isCollapsed.value = withTiming(0, {
+      duration: 350,
+      easing: Easing.out(Easing.quad),
+    });
   };
 
-  return (
-    <>
-      <View
-        style={[
-          styles.container,
-          {
-            height: BAR_HEIGHT + bottomInset,
-            justifyContent: "flex-start",
-          },
-        ]}
-        pointerEvents="box-none"
-      >
-        <View
-          style={[
-            styles.overlay,
-            currentRouteName === routesConstants.reels && {
-              backgroundColor: "rgba(0, 0, 0, 0.2)",
-            },
-          ]}
-        />
-        <View
-          style={[
-            styles.topBorder,
-            currentRouteName === routesConstants.reels && {
-              backgroundColor: "transparent",
-            },
-          ]}
-        />
+  const animatedContainerStyle = useAnimatedStyle(() => {
+    const width = interpolate(
+      isCollapsed.value,
+      [0, 1],
+      [EXPANDED_WIDTH, COLLAPSED_WIDTH],
+      Extrapolation.CLAMP,
+    );
+    const collapsedCenterX = LEFT_MARGIN + COLLAPSED_WIDTH / 2;
+    const expandedCenterX = SCREEN_WIDTH / 2;
+    const translateX = interpolate(
+      isCollapsed.value,
+      [0, 1],
+      [0, collapsedCenterX - expandedCenterX],
+      Extrapolation.CLAMP,
+    );
+    return { width, transform: [{ translateX }] };
+  });
 
-        <View style={[styles.row, { paddingBottom: 0 }]}>
-          {TABS.map((tab) => {
-            // if (tab.id === PLUS_TAB_ID) {
-            //   return (
-            //     <PlusButton key={tab.id} onPress={() => handleTabPress(tab)} />
-            //   );
-            // }
-            return (
+  const animatedIndicatorStyle = useAnimatedStyle(() => {
+    const expandedX = PADDING + activeIndex.value * STEP;
+    const collapsedX = PADDING;
+
+    const translateX = interpolate(
+      isCollapsed.value,
+      [0, 1],
+      [expandedX, collapsedX],
+      Extrapolation.CLAMP,
+    );
+
+    return { transform: [{ translateX }] };
+  });
+
+  const bottomInset = insets.bottom + scales(14);
+
+  return (
+    <View
+      style={[styles.wrapper, { bottom: bottomInset }]}
+      pointerEvents="box-none"
+    >
+      <Animated.View style={[styles.container, animatedContainerStyle]}>
+        <View style={styles.blurContainer}>
+          <BlurView
+            style={StyleSheet.absoluteFill}
+            blurType="dark"
+            blurAmount={5}
+            reducedTransparencyFallbackColor={colors.background}
+          />
+          <View style={styles.innerContent}>
+            <Animated.View
+              style={[styles.activeIndicator, animatedIndicatorStyle]}
+            />
+            {TABS.map((tab, index) => (
               <TabItem
                 key={tab.id}
                 tab={tab}
+                index={index}
                 isFocused={selectedIndex === tab.id}
                 onPress={() => handleTabPress(tab)}
+                isCollapsed={isCollapsed}
               />
-            );
-          })}
+            ))}
+          </View>
+          <View style={[StyleSheet.absoluteFill, styles.borderOverlay]} pointerEvents="none" />
         </View>
-      </View>
-    </>
+
+      </Animated.View>
+    </View>
   );
 };
 
-const BAR_HEIGHT = scales(60);
-const PLUS_SIZE = scales(52);
-const PLUS_ELEVATION = scales(18); // how much above the bar center the button sits
-
 const styles = StyleSheet.create({
-  container: {
+  wrapper: {
     position: "absolute",
-    bottom: 0,
     left: 0,
     right: 0,
-    height: BAR_HEIGHT + scales(28), // extra room for safe area & plus button
-    justifyContent: "flex-end",
-  },
-  overlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: colors.background,
-  },
-  topBorder: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    height: StyleSheet.hairlineWidth,
-    backgroundColor: "rgba(255,255,255,0.12)",
-  },
-  row: {
     height: BAR_HEIGHT,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-around",
-    paddingHorizontal: scales(8),
-    paddingBottom: Platform.OS === "ios" ? scales(12) : scales(6),
-  },
-
-  // Regular tab
-  tabTouchable: {
-    flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    height: "100%",
+    zIndex: 9999,
+  },
+  container: {
+    height: BAR_HEIGHT,
+    borderRadius: BAR_HEIGHT / 2,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.4,
+    shadowRadius: 14,
+    elevation: 12,
+  },
+  blurContainer: {
+    flex: 1,
+    borderRadius: BAR_HEIGHT / 2,
+    overflow: "hidden",
+  },
+  borderOverlay: {
+    borderRadius: BAR_HEIGHT / 2,
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.12)",
+  },
+  innerContent: {
+    flex: 1,
+    position: "relative", // Absolute children
+  },
+  activeIndicator: {
+    position: "absolute",
+    top: PADDING,
+    left: 0,
+    width: ITEM_SIZE,
+    height: ITEM_SIZE,
+    borderRadius: ITEM_SIZE / 2,
+    backgroundColor: "rgba(255,255,255,0.12)",
   },
   iconWrapper: {
+    width: ITEM_SIZE,
+    height: ITEM_SIZE,
     alignItems: "center",
     justifyContent: "center",
   },
@@ -269,60 +278,10 @@ const styles = StyleSheet.create({
     height: ICON_SIZE,
   },
   profileIcon: {
-    width: ICON_SIZE + scales(2),
-    height: ICON_SIZE + scales(2),
-    borderRadius: (ICON_SIZE + scales(2)) / 2,
-    borderWidth: 1.5,
-    borderColor: "rgba(255,255,255,0.3)",
-  },
-  activeDot: {
-    width: scales(4),
-    height: scales(4),
-    borderRadius: scales(2),
-    backgroundColor: colors.white,
-    marginTop: scales(4),
-  },
-
-  // Center plus button
-  plusTouchable: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    height: "100%",
-    // Lift it above the bar
-    marginBottom: PLUS_ELEVATION,
-  },
-  plusButton: {
-    alignItems: "center",
-    justifyContent: "center",
-    width: PLUS_SIZE,
-    height: PLUS_SIZE,
-  },
-  plusGlowRing: {
-    position: "absolute",
-    width: PLUS_SIZE + scales(8),
-    height: PLUS_SIZE + scales(8),
-    borderRadius: (PLUS_SIZE + scales(8)) / 2,
-    borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.18)",
-    backgroundColor: "transparent",
-  },
-  plusCircle: {
-    width: PLUS_SIZE,
-    height: PLUS_SIZE,
-    borderRadius: PLUS_SIZE / 2,
-    backgroundColor: colors.white,
-    alignItems: "center",
-    justifyContent: "center",
-    shadowColor: colors.white,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.35,
-    shadowRadius: 12,
-    elevation: 10,
-  },
-  plusIcon: {
-    width: scales(20),
-    height: scales(20),
-    tintColor: colors.black,
+    width: ICON_SIZE + scales(4),
+    height: ICON_SIZE + scales(4),
+    borderRadius: (ICON_SIZE + scales(4)) / 2,
+    borderWidth: 2,
+    borderColor: "rgba(255,255,255,0.35)",
   },
 });

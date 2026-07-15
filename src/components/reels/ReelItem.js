@@ -85,6 +85,12 @@ export const ReelItem = memo(({ item, isActive, isMuted, onToggleMute }) => {
         <View
           style={[styles.topProfileContainer, { top: insets.top + scales(0) }]}
         >
+          <BlurView
+            style={[StyleSheet.absoluteFill, styles.blurView]}
+            blurType="dark"
+            blurAmount={5}
+            reducedTransparencyFallbackColor={colors.background}
+          />
           <Image source={appImages.dummyuser} style={styles.profileImage} />
           <View style={styles.topProfileText}>
             <Text style={styles.username}>
@@ -169,10 +175,12 @@ const styles = StyleSheet.create({
     right: scales(16),
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "rgba(0,0,0,0.3)",
     padding: scales(8),
     borderRadius: scales(25),
     paddingRight: scales(16),
+  },
+  blurView: {
+    borderRadius: scales(25),
   },
   profileImage: {
     width: scales(40),

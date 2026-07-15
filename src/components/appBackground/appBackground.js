@@ -3,7 +3,12 @@ import LottieView from "lottie-react-native";
 import { animations } from "../../animations/animations";
 import { colors, topInset } from "../../utils";
 
-export const AppBackground = ({ children, style, isTopInset = true, showAuthAnimation = false }) => {
+export const AppBackground = ({
+  children,
+  style,
+  isTopInset = true,
+  showAuthAnimation = false,
+}) => {
   return (
     <View style={styles.container}>
       {showAuthAnimation && (

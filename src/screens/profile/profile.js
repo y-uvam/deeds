@@ -15,8 +15,11 @@ import { useSelector } from "react-redux";
 import { fontFamily, appImages } from "../../assets";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { navigate, routesConstants } from "../../navigation";
+import AnimatedRN from "react-native-reanimated";
+import { useTabBarScrollHandler } from "../../context/TabBarContext";
 
 const { width } = Dimensions.get("window");
+const AnimatedFlatList = AnimatedRN.createAnimatedComponent(FlatList);
 
 const POSTS = Array.from({ length: 5 }, (_, i) => ({
   id: `post_${i}`,
@@ -44,10 +47,10 @@ const HIGHLIGHTS = [
 export const Profile = () => {
   const insets = useSafeAreaInsets();
   const profileData = useSelector((state) => state.persist.profileData);
-  const scrollY = useRef(new Animated.Value(0)).current;
   const [activeTab, setActiveTab] = useState(0);
   const tabAnim = useRef(new Animated.Value(0)).current;
   const [loading, setLoading] = useState(true);
+  const scrollHandler = useTabBarScrollHandler();
 
   React.useEffect(() => {
     const timer = setTimeout(() => {
@@ -276,7 +279,7 @@ export const Profile = () => {
 
   return (
     <AppBackground>
-      <FlatList
+      <AnimatedFlatList
         data={getGridData()}
         keyExtractor={(item) => item.id}
         numColumns={3}
@@ -286,10 +289,7 @@ export const Profile = () => {
         removeClippedSubviews={false}
         initialNumToRender={15}
         contentContainerStyle={styles.listContent}
-        onScroll={Animated.event(
-          [{ nativeEvent: { contentOffset: { y: scrollY } } }],
-          { useNativeDriver: false },
-        )}
+        onScroll={scrollHandler}
         scrollEventThrottle={16}
       />
     </AppBackground>

@@ -2,13 +2,18 @@ import { routesConstants } from "./routeConstants";
 import { Home, Browse, Notification, Profile, Chat, Reels } from "../screens";
 import { BottomBar } from "../components";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { View } from "react-native";
 
 const Tab = createBottomTabNavigator();
 
 export const BottomTab = () => {
   return (
     <Tab.Navigator
-      tabBar={(props) => <BottomBar {...props} />}
+      tabBar={(props) => (
+        <View style={{ height: 0 }}>
+          <BottomBar {...props} />
+        </View>
+      )}
       screenOptions={{ headerShown: false }}
       backBehavior="history"
     >

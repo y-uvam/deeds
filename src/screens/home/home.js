@@ -1,15 +1,15 @@
-import { FlatList, Image, StyleSheet, Text, View } from "react-native";
+import { FlatList, StyleSheet } from "react-native";
 import {
-  Spacer,
-  CustomSwitch,
   PostItem,
   AppBackground,
   Header,
 } from "../../components";
-import { colors, scales } from "../../utils";
+import { scales } from "../../utils";
 import { appImages } from "../../assets";
-import { useState } from "react";
 import { navigate, routesConstants } from "../../navigation";
+import { useTabBarScrollHandler } from "../../context/TabBarContext";
+import { useCallback } from "react";
+import Animated from "react-native-reanimated";
 
 const DATA = [
   {
@@ -30,10 +30,31 @@ const DATA = [
     pickupLoc: "789 Broadway, West Side",
     dropLoc: "101 Fifth Ave, Midtown",
   },
+  {
+    id: "3",
+    price: "$400",
+    pickupTime: "45 mins",
+    type: "Round Trip",
+    date: "Friday",
+    pickupLoc: "55 Ocean Blvd, Beachside",
+    dropLoc: "22 Hill Rd, Northside",
+  },
+  {
+    id: "4",
+    price: "$180",
+    pickupTime: "20 mins",
+    type: "One Way",
+    date: "Saturday",
+    pickupLoc: "9 Lake St, Westend",
+    dropLoc: "77 River Ave, Eastside",
+  },
 ];
 
+const AnimatedFlatList = Animated.createAnimatedComponent(FlatList);
+
 export const Home = () => {
-  const [isOnline, setIsOnline] = useState(false);
+  const scrollHandler = useTabBarScrollHandler();
+  const renderItem = useCallback(({ item }) => <PostItem item={item} />, []);
 
   return (
     <AppBackground>
@@ -44,24 +65,22 @@ export const Home = () => {
           navigate(routesConstants.Home);
         }}
       />
-      <FlatList
+      <AnimatedFlatList
         data={DATA}
-        renderItem={({ item }) => <PostItem item={item} />}
+        renderItem={renderItem}
         keyExtractor={(item) => item.id}
         contentContainerStyle={style.listContent}
         showsVerticalScrollIndicator={false}
+        onScroll={scrollHandler}
+        scrollEventThrottle={16}
       />
     </AppBackground>
   );
 };
 
 const style = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-
   listContent: {
-    paddingBottom: scales(300),
+    paddingBottom: scales(120),
     gap: scales(20),
   },
 });

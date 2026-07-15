@@ -10,6 +10,7 @@ import store, {persistor} from './src/redux/store/store';
 import {setProfileData} from './src/redux/slices/persistedSlice';
 import {useEffect} from 'react';
 import FlashMessageComponent from './src/helper/FlashMessage';
+import {TabBarProvider} from './src/context/TabBarContext';
 function AppContent() {
   const isDarkMode = useColorScheme() === 'dark';
   const dispatch = useDispatch();
@@ -32,14 +33,15 @@ function AppContent() {
     <GestureHandlerRootView style={{flex: 1}}>
       <SafeAreaProvider>
         <BottomSheetModalProvider>
-          <View style={styles.container}>
-            <StatusBar
-              barStyle={isDarkMode ? 'dark-content' : 'light-content'}
-            />
-            <Routes />
-            <FlashMessageComponent />
-          </View>
-          {/* <View style={{height:bottomInset}} /> */}
+          <TabBarProvider>
+            <View style={styles.container}>
+              <StatusBar
+                barStyle={isDarkMode ? 'dark-content' : 'light-content'}
+              />
+              <Routes />
+              <FlashMessageComponent />
+            </View>
+          </TabBarProvider>
         </BottomSheetModalProvider>
       </SafeAreaProvider>
     </GestureHandlerRootView>

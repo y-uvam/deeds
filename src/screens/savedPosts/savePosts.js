@@ -1,5 +1,12 @@
 import React, { useState } from "react";
-import { StyleSheet, View, Image, FlatList, TouchableOpacity, Dimensions } from "react-native";
+import {
+  StyleSheet,
+  View,
+  Image,
+  FlatList,
+  TouchableOpacity,
+  Dimensions,
+} from "react-native";
 import { AppBackground, Header, CustomSearch } from "../../components";
 import { colors, scales } from "../../utils";
 import { appImages } from "../../assets";
@@ -8,7 +15,9 @@ const { width } = Dimensions.get("window");
 const COLUMN_COUNT = 3;
 const SPACING = scales(6);
 const PADDING_HORIZONTAL = scales(16);
-const ITEM_SIZE = (width - PADDING_HORIZONTAL * 2 - SPACING * (COLUMN_COUNT - 1)) / COLUMN_COUNT;
+const ITEM_SIZE =
+  (width - PADDING_HORIZONTAL * 2 - SPACING * (COLUMN_COUNT - 1)) /
+  COLUMN_COUNT;
 
 const dummyData = Array.from({ length: 18 }).map((_, i) => ({
   id: String(i),
@@ -39,7 +48,7 @@ export const SavedPosts = () => {
         placeholder="Search"
         containerStyle={styles.searchContainer}
       />
-      
+
       <FlatList
         data={dummyData}
         keyExtractor={(item) => item.id}

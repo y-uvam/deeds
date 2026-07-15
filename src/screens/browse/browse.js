@@ -13,6 +13,8 @@ import { CustomSearch, Spacer, CustomSkeleton } from "../../components";
 import { colors, scales, commonText } from "../../utils";
 import { appImages, fontFamily } from "../../assets";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import Animated from "react-native-reanimated";
+import { useTabBarScrollHandler } from "../../context/TabBarContext";
 
 const { width } = Dimensions.get("window");
 const COLUMN_WIDTH = (width - 4.2) / 3;
@@ -96,8 +98,11 @@ const GridImage = ({ item, style }) => {
   );
 };
 
+const AnimatedFlatList = Animated.createAnimatedComponent(FlatList);
+
 export const Browse = () => {
   const insets = useSafeAreaInsets();
+  const scrollHandler = useTabBarScrollHandler();
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
   const [activeCategory, setActiveCategory] = useState("1");
@@ -258,7 +263,7 @@ export const Browse = () => {
   return (
     <View style={styles.container}>
       <StatusBar barStyle="light-content" />
-      <FlatList
+      <AnimatedFlatList
         data={blocks}
         keyExtractor={(item) => item.id}
         ListHeaderComponent={listHeader}
@@ -266,6 +271,8 @@ export const Browse = () => {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={[styles.listContent, { paddingTop: insets.top }]}
         initialNumToRender={8}
+        onScroll={scrollHandler}
+        scrollEventThrottle={16}
       />
     </View>
   );
