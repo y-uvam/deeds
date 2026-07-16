@@ -153,7 +153,7 @@ export const ReelItem = memo(({ item, isActive, isMuted, onToggleMute }) => {
         >
           <View style={styles.muteIndicatorCircle}>
             <Image
-              src={isMuted ? appImages.play : appImages.pause}
+              source={isMuted ? appImages.play : appImages.pause}
               style={styles.play}
             />
           </View>
@@ -178,6 +178,7 @@ const styles = StyleSheet.create({
     padding: scales(8),
     borderRadius: scales(25),
     paddingRight: scales(16),
+    overflow: "hidden",
   },
   blurView: {
     borderRadius: scales(25),

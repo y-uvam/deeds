@@ -2,139 +2,9 @@ import { StyleSheet } from "react-native";
 import { colors, scales, width } from "../../utils";
 import { fontFamily } from "../../assets";
 
-const DOT_SIZE = scales(6);
-const DOT_ACTIVE_WIDTH = scales(14);
-
 export const styles = StyleSheet.create({
-  container: {
-    borderRadius: scales(20),
-    overflow: "hidden",
-    paddingBottom: scales(12),
-  },
-  postImage: {
-    // width: "100%",
-    height: scales(300),
-  },
-  animLikeOverlay: {
-    position: "absolute",
-    top: "25%",
-    left: scales(20),
-    width: scales(140),
-    height: scales(140),
-    zIndex: 10,
-    pointerEvents: "none",
-  },
-  animSaveOverlay: {
-    position: "absolute",
-    top: "25%",
-    right: scales(20),
-    width: scales(140),
-    height: scales(140),
-    zIndex: 10,
-    pointerEvents: "none",
-  },
-  badgeWrapper: {
-    position: "absolute",
-    top: scales(10),
-    right: scales(12),
-    borderRadius: scales(20),
-    overflow: "hidden",
-    alignItems: "center",
-  },
-  blurBadge: {
-    paddingHorizontal: scales(10),
-    paddingVertical: scales(4),
-    borderRadius: scales(20),
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  badgeText: {
-    color: colors.white,
-    fontFamily: fontFamily.semiBold,
-    fontSize: scales(12),
-    textAlign: "center",
-    marginTop: scales(2),
-  },
-
-  dotsRow: {
-    flexDirection: "row",
-    justifyContent: "center",
-    gap: scales(5),
-    marginTop: scales(8),
-  },
-  dot: {
-    width: scales(6),
-    height: scales(6),
-    borderRadius: scales(3),
-    backgroundColor: colors.gray,
-  },
-  dotActive: {
-    backgroundColor: colors.blue,
-    width: scales(18),
-    borderRadius: scales(3),
-  },
-  actionsRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingHorizontal: scales(14),
-    marginTop: scales(10),
-  },
-  actionsLeft: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: scales(20),
-  },
-  actionContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: scales(6),
-  },
-  iconLike: {
-    width: scales(24),
-    height: scales(22),
-    resizeMode: "contain",
-  },
-  iconComment: {
-    width: scales(24),
-    height: scales(24),
-    resizeMode: "contain",
-  },
-  iconShare: {
-    width: scales(24),
-    height: scales(22),
-    resizeMode: "contain",
-  },
-  iconSave: {
-    width: scales(20),
-    height: scales(24),
-    resizeMode: "contain",
-  },
-  actionText: {
-    fontFamily: fontFamily.medium,
-    fontSize: scales(13),
-    color: colors.white,
-  },
-
-  // ── Description ──
-  descriptionContainer: {
-    paddingHorizontal: scales(14),
-    marginTop: scales(8),
-  },
-  descriptionText: {
-    fontFamily: fontFamily.regular,
-    fontSize: scales(13),
-    color: colors.white,
-    lineHeight: scales(20),
-  },
-  viewMoreText: {
-    fontFamily: fontFamily.semiBold,
-    fontSize: scales(13),
-    color: colors.gray,
-    marginTop: scales(2),
-  },
-  root: {
-    width: width,
+  card: {
+    marginBottom: scales(2),
   },
   slideWrapper: {
     width,
@@ -147,21 +17,14 @@ export const styles = StyleSheet.create({
   },
   postImage: {
     width,
-    height: width * 1.1,
-  },
-  imageEdgeFade: {
-    ...StyleSheet.absoluteFillObject,
-    borderTopLeftRadius: 0,
-    borderTopRightRadius: 0,
+    height: width * 1.05,
   },
   heartOverlay: {
     position: "absolute",
     alignSelf: "center",
-    justifyContent: "center",
-    alignItems: "center",
   },
   heartEmoji: {
-    fontSize: scales(80),
+    fontSize: scales(90),
   },
   badgeWrapper: {
     position: "absolute",
@@ -176,24 +39,24 @@ export const styles = StyleSheet.create({
   badgeInner: {
     paddingHorizontal: scales(10),
     paddingVertical: scales(4),
-    backgroundColor: "rgba(0,0,0,0.25)",
+    backgroundColor: colors.transparentBlack25,
     borderRadius: scales(12),
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: "rgba(255,255,255,0.15)",
+    borderColor: colors.transparentWhite15,
   },
   badgeText: {
     color: colors.white,
     fontSize: scales(12),
-    fontWeight: "700",
+    fontFamily: fontFamily.bold,
     letterSpacing: 0.5,
   },
   badgeSeparator: {
-    color: "rgba(255,255,255,0.4)",
-    fontWeight: "400",
+    color: colors.transparentWhite40,
+    fontFamily: fontFamily.regular,
   },
   dotsRow: {
     position: "absolute",
-    bottom: scales(14),
+    bottom: scales(12),
     alignSelf: "center",
     borderRadius: scales(12),
     overflow: "hidden",
@@ -206,21 +69,122 @@ export const styles = StyleSheet.create({
     alignItems: "center",
     paddingHorizontal: scales(10),
     paddingVertical: scales(6),
-    backgroundColor: "rgba(0,0,0,0.3)",
+    backgroundColor: colors.transparentBlack30,
     borderRadius: scales(12),
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: "rgba(255,255,255,0.12)",
+    borderColor: colors.transparentWhite12,
   },
-  dot: {
-    width: DOT_SIZE,
-    height: DOT_SIZE,
-    borderRadius: DOT_SIZE / 2,
-    backgroundColor: colors.white,
-    marginHorizontal: scales(2),
-    opacity: 0.3,
+  animOverlay: {
+    position: "absolute",
+    top: "25%",
+    left: scales(20),
+    width: scales(130),
+    height: scales(130),
+    zIndex: 10,
+    pointerEvents: "none",
   },
-  dotActive: {
-    width: DOT_ACTIVE_WIDTH,
-    opacity: 1,
+  profileHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: scales(14),
+    paddingTop: scales(12),
+    paddingBottom: scales(4),
+  },
+  profileLeft: {
+    flexDirection: "row",
+    alignItems: "center",
+    flex: 1,
+  },
+  avatarRing: {
+    width: scales(42),
+    height: scales(42),
+    borderRadius: scales(21),
+    padding: scales(2),
+    borderWidth: 2,
+    borderColor: colors.storyRing,
+    marginRight: scales(10),
+  },
+  avatar: {
+    width: "100%",
+    height: "100%",
+    borderRadius: scales(19),
+  },
+  profileInfo: {
+    flex: 1,
+  },
+  profileName: {
+    color: colors.white,
+    fontFamily: fontFamily.bold,
+    fontSize: scales(14),
+  },
+  profileMeta: {
+    color: colors.transparentWhite40,
+    fontFamily: fontFamily.regular,
+    fontSize: scales(11),
+    marginTop: scales(1),
+  },
+  moreBtn: {
+    width: scales(36),
+    height: scales(36),
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  moreIcon: {
+    width: scales(18),
+    height: scales(18),
+    resizeMode: "contain",
+  },
+  descriptionContainer: {
+    paddingHorizontal: scales(16),
+    paddingTop: scales(6),
+    paddingBottom: scales(10),
+  },
+  descriptionText: {
+    fontFamily: fontFamily.regular,
+    fontSize: scales(13),
+    color: colors.transparentWhite85,
+    lineHeight: scales(20),
+  },
+  viewMoreText: {
+    fontFamily: fontFamily.semiBold,
+    fontSize: scales(13),
+    color: colors.transparentWhite40,
+    marginTop: scales(3),
+  },
+  actionBarWrapper: {
+    borderRadius: 20,
+    width: "90%",
+    alignSelf: "center",
+    overflow: "hidden",
+  },
+  actionBarInner: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-evenly",
+    paddingVertical: scales(12),
+    backgroundColor: colors.transparentWhite5,
+  },
+  actionBtn: {
+    alignItems: "center",
+    justifyContent: "center",
+    flexDirection: "row",
+    gap: scales(10),
+  },
+  actionIcon: {
+    width: scales(22),
+    height: scales(22),
+    resizeMode: "contain",
+  },
+  actionLabel: {
+    color: colors.white,
+    fontFamily: fontFamily.semiBold,
+    fontSize: scales(12),
+    marginTop: scales(3),
+  },
+  actionDivider: {
+    width: StyleSheet.hairlineWidth,
+    height: scales(22),
+    backgroundColor: colors.transparentWhite15,
   },
 });

@@ -61,9 +61,7 @@ export const Home = () => {
       <Header
         isHome={true}
         leftButton={appImages.plus}
-        leftButtonPress={() => {
-          navigate(routesConstants.Home);
-        }}
+        leftButtonPress={() => navigate(routesConstants.contentType)}
       />
       <AnimatedFlatList
         data={DATA}

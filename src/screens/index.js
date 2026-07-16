@@ -21,3 +21,7 @@ export * from "./chatCard/chatCard";
 export * from "./newChat/newChat";
 export * from "./post/post";
 export * from "./reels/reels";
+export * from "./createPost/contentType";
+export * from "./createPost/selectMedia";
+export * from "./createPost/upload";
+export * from "./createPost/metadata";

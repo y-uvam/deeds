@@ -203,7 +203,7 @@ export const Header = ({
           {(showBackButton || leftButton) && (
             <RoundIconButton
               icon={leftButton ? leftButton : appImages.backarrow}
-              onPress={() => (leftButtonPress ? leftButtonPress : goBack())}
+              onPress={() => (leftButtonPress ? leftButtonPress() : goBack())}
             />
           )}
         </View>

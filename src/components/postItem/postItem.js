@@ -1,4 +1,4 @@
-import React, { useRef, useState, useCallback, useEffect } from "react";
+import React, { useRef, useState, useCallback } from "react";
 import {
   FlatList,
   Image,
@@ -7,8 +7,6 @@ import {
   TouchableOpacity,
   TouchableWithoutFeedback,
   View,
-  Dimensions,
-  Animated as RNNAnimated,
 } from "react-native";
 import Animated, {
   useSharedValue,
@@ -22,85 +20,33 @@ import Animated, {
 import { BlurView } from "@react-native-community/blur";
 import LottieView from "lottie-react-native";
 import { colors, scales, width } from "../../utils";
-import { ProfileComponent } from "../profileComponent/profileComponent";
 import { useSelector } from "react-redux";
 import { appImages, fontFamily } from "../../assets";
 import { animations } from "../../animations/animations";
-import { styles } from "./styles";
 import { navigate } from "../../navigation/navigationServices";
 import { routesConstants } from "../../navigation/routeConstants";
+import { styles } from "./styles";
+import { Spacer } from "../spacer/spacer";
 
-const ActionButton = ({ icon, iconStyle, count, onPress, activeColor }) => {
-  const scaleAnim = useRef(new RNNAnimated.Value(1)).current;
-  const [active, setActive] = useState(false);
+const DOT_SIZE = scales(5);
+const DOT_ACTIVE_WIDTH = scales(16);
 
-  const handlePress = () => {
-    const nextState = !active;
-    setActive(nextState);
-    if (onPress) onPress(nextState);
-    RNNAnimated.sequence([
-      RNNAnimated.spring(scaleAnim, {
-        toValue: 1.45,
-        useNativeDriver: true,
-        speed: 40,
-        bounciness: 18,
-      }),
-      RNNAnimated.spring(scaleAnim, {
-        toValue: 1,
-        useNativeDriver: true,
-        speed: 30,
-        bounciness: 10,
-      }),
-    ]).start();
-  };
-
-  return (
-    <TouchableOpacity
-      onPress={handlePress}
-      style={styles.actionContainer}
-      activeOpacity={0.8}
-    >
-      <RNNAnimated.Image
-        source={icon}
-        style={[
-          iconStyle,
-          {
-            transform: [{ scale: scaleAnim }],
-            tintColor: active && activeColor ? activeColor : undefined,
-          },
-        ]}
-      />
-      {count !== undefined && (
-        <Text style={styles.actionText}>{active ? count + 1 : count}</Text>
-      )}
-    </TouchableOpacity>
-  );
-};
-
-const DOT_SIZE = scales(6);
-const DOT_ACTIVE_WIDTH = scales(18);
-
-const AnimatedDot = ({ index, currentIndex, total }) => {
-  const distance = Math.abs(index - currentIndex);
+const AnimatedDot = ({ index, currentIndex }) => {
   const isActive = index === currentIndex;
-
   const dotWidth = useSharedValue(isActive ? DOT_ACTIVE_WIDTH : DOT_SIZE);
-  const dotOpacity = useSharedValue(isActive ? 1 : distance === 1 ? 0.4 : 0.2);
-  const dotScale = useSharedValue(isActive ? 1 : distance <= 1 ? 0.85 : 0.7);
+  const dotOpacity = useSharedValue(
+    isActive ? 1 : Math.abs(index - currentIndex) === 1 ? 0.4 : 0.2,
+  );
 
   React.useEffect(() => {
-    const dist = Math.abs(index - currentIndex);
     const active = index === currentIndex;
+    const dist = Math.abs(index - currentIndex);
     dotWidth.value = withSpring(active ? DOT_ACTIVE_WIDTH : DOT_SIZE, {
       damping: 15,
       stiffness: 120,
     });
     dotOpacity.value = withTiming(active ? 1 : dist === 1 ? 0.4 : 0.2, {
       duration: 250,
-    });
-    dotScale.value = withSpring(active ? 1 : dist <= 1 ? 0.85 : 0.7, {
-      damping: 14,
-      stiffness: 100,
     });
   }, [currentIndex]);
 
@@ -110,11 +56,49 @@ const AnimatedDot = ({ index, currentIndex, total }) => {
     borderRadius: DOT_SIZE / 2,
     backgroundColor: colors.white,
     opacity: dotOpacity.value,
-    transform: [{ scale: dotScale.value }],
-    marginHorizontal: 2,
+    marginHorizontal: scales(2),
   }));
 
   return <Animated.View style={style} />;
+};
+
+const ActionButton = ({ icon, count, onPress, active, activeColor, label }) => {
+  const scale = useSharedValue(1);
+
+  const handlePress = () => {
+    scale.value = withSequence(
+      withSpring(0.82, { damping: 20, stiffness: 300 }),
+      withSpring(1, { damping: 14, stiffness: 200 }),
+    );
+    onPress?.();
+  };
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: scale.value }],
+  }));
+
+  return (
+    <TouchableOpacity
+      onPress={handlePress}
+      style={styles.actionBtn}
+      activeOpacity={0.9}
+    >
+      <Animated.Image
+        source={icon}
+        style={[
+          styles.actionIcon,
+          animatedStyle,
+          active && activeColor
+            ? { tintColor: activeColor }
+            : { tintColor: colors.white },
+        ]}
+        resizeMode="contain"
+      />
+      {(count !== undefined || label) && (
+        <Text style={styles.actionLabel}>{label ?? count}</Text>
+      )}
+    </TouchableOpacity>
+  );
 };
 
 const SlideItem = ({ item, index, scrollX, onDoubleTap }) => {
@@ -128,13 +112,13 @@ const SlideItem = ({ item, index, scrollX, onDoubleTap }) => {
     const scale = interpolate(
       scrollX.value,
       inputRange,
-      [0.92, 1, 0.92],
+      [0.96, 1, 0.96],
       Extrapolation.CLAMP,
     );
     const opacity = interpolate(
       scrollX.value,
       inputRange,
-      [0.5, 1, 0.5],
+      [0.65, 1, 0.65],
       Extrapolation.CLAMP,
     );
     return { transform: [{ scale }], opacity };
@@ -149,7 +133,7 @@ const SlideItem = ({ item, index, scrollX, onDoubleTap }) => {
     const now = Date.now();
     if (now - lastTap.current < 300) {
       heartScale.value = withSequence(
-        withSpring(1.3, { damping: 8, stiffness: 120 }),
+        withSpring(1.4, { damping: 8, stiffness: 120 }),
         withTiming(1, { duration: 200 }),
         withTiming(0, { duration: 400 }),
       );
@@ -168,9 +152,7 @@ const SlideItem = ({ item, index, scrollX, onDoubleTap }) => {
       <View style={styles.slideWrapper}>
         <Animated.View style={[styles.imageContainer, animStyle]}>
           <Image source={item} style={styles.postImage} resizeMode="cover" />
-          <View style={styles.imageEdgeFade} pointerEvents="none" />
         </Animated.View>
-
         <Animated.View
           style={[styles.heartOverlay, heartStyle]}
           pointerEvents="none"
@@ -182,29 +164,20 @@ const SlideItem = ({ item, index, scrollX, onDoubleTap }) => {
   );
 };
 
-const ImageCarousel = ({ images = [] }) => {
+const ImageCarousel = ({ images = [], onDoubleTap }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const scrollX = useSharedValue(0);
   const flatListRef = useRef(null);
 
   const onScroll = useCallback((e) => {
     scrollX.value = e.nativeEvent.contentOffset.x;
-    const index = Math.round(e.nativeEvent.contentOffset.x / width);
-    setCurrentIndex(index);
+    setCurrentIndex(Math.round(e.nativeEvent.contentOffset.x / width));
   }, []);
-
-  const visibleDots =
-    images.length <= 7
-      ? images
-      : images.slice(
-          Math.max(0, Math.min(currentIndex - 3, images.length - 7)),
-          Math.max(7, Math.min(currentIndex + 4, images.length)),
-        );
 
   if (!images.length) return null;
 
   return (
-    <View style={styles.root}>
+    <View>
       <FlatList
         ref={flatListRef}
         data={images}
@@ -217,10 +190,14 @@ const ImageCarousel = ({ images = [] }) => {
         decelerationRate="fast"
         bounces={false}
         renderItem={({ item, index }) => (
-          <SlideItem item={item} index={index} scrollX={scrollX} />
+          <SlideItem
+            item={item}
+            index={index}
+            scrollX={scrollX}
+            onDoubleTap={onDoubleTap}
+          />
         )}
       />
-
       {images.length > 1 && (
         <>
           <View style={styles.badgeWrapper}>
@@ -239,7 +216,6 @@ const ImageCarousel = ({ images = [] }) => {
               </View>
             </BlurView>
           </View>
-
           <View style={styles.dotsRow}>
             <BlurView
               style={styles.dotsBlur}
@@ -248,23 +224,9 @@ const ImageCarousel = ({ images = [] }) => {
               reducedTransparencyFallbackColor="#000"
             >
               <View style={styles.dotsInner}>
-                {visibleDots.map((_, i) => {
-                  const realIndex =
-                    images.length <= 7
-                      ? i
-                      : Math.max(
-                          0,
-                          Math.min(currentIndex - 3, images.length - 7),
-                        ) + i;
-                  return (
-                    <AnimatedDot
-                      key={realIndex}
-                      index={realIndex}
-                      currentIndex={currentIndex}
-                      total={images.length}
-                    />
-                  );
-                })}
+                {images.map((_, i) => (
+                  <AnimatedDot key={i} index={i} currentIndex={currentIndex} />
+                ))}
               </View>
             </BlurView>
           </View>
@@ -276,8 +238,7 @@ const ImageCarousel = ({ images = [] }) => {
 
 const Description = ({ text }) => {
   const [expanded, setExpanded] = useState(false);
-  const LIMIT = 100;
-  const isTruncatable = text?.length > LIMIT;
+  const isTruncatable = text?.length > 100;
 
   return (
     <View style={styles.descriptionContainer}>
@@ -288,7 +249,7 @@ const Description = ({ text }) => {
         {text}
       </Text>
       {isTruncatable && (
-        <TouchableOpacity onPress={() => setExpanded((prev) => !prev)}>
+        <TouchableOpacity onPress={() => setExpanded((p) => !p)}>
           <Text style={styles.viewMoreText}>
             {expanded ? "View less" : "View more"}
           </Text>
@@ -300,25 +261,30 @@ const Description = ({ text }) => {
 
 export const PostItem = ({
   images = [appImages.post],
-  description = "Living life one deed at a time 🌟 Grateful for the small moments that make everything worthwhile. Life is beautiful when you choose to see the good in everything around you.",
+  description = "Living life one deed at a time 🌟 Grateful for the small moments that make everything worthwhile.",
   likes = 248,
   comments = 36,
   shares = 12,
 }) => {
   const profileData = useSelector((state) => state.persist.profileData);
-
+  const [liked, setLiked] = useState(false);
+  const [saved, setSaved] = useState(false);
   const [showLikeAnim, setShowLikeAnim] = useState(false);
   const [showSaveAnim, setShowSaveAnim] = useState(false);
 
-  const handleLikePress = (isActive) => {
-    if (isActive) {
+  const handleLike = () => {
+    const next = !liked;
+    setLiked(next);
+    if (next) {
       setShowLikeAnim(true);
       setTimeout(() => setShowLikeAnim(false), 2500);
     }
   };
 
-  const handleSavePress = (isActive) => {
-    if (isActive) {
+  const handleSave = () => {
+    const next = !saved;
+    setSaved(next);
+    if (next) {
       setShowSaveAnim(true);
       setTimeout(() => setShowSaveAnim(false), 2500);
     }
@@ -328,24 +294,47 @@ export const PostItem = ({
     <TouchableOpacity
       activeOpacity={0.97}
       onPress={() =>
-        navigate(routesConstants.post, { images, description, likes, comments, shares })
+        navigate(routesConstants.post, {
+          images,
+          description,
+          likes,
+          comments,
+          shares,
+        })
       }
     >
-      <View style={styles.container}>
-        <ProfileComponent
-          userId={profileData?._id}
-          name={profileData?.name}
-          profileImage={profileData?.profileImage}
-        />
+      <View style={styles.card}>
+        <View style={styles.profileHeader}>
+          <TouchableOpacity
+            style={styles.profileLeft}
+            onPress={() => navigate(routesConstants.Profile)}
+            activeOpacity={0.8}
+          >
+            <View style={styles.avatarRing}>
+              <Image
+                source={profileData?.profileImage || appImages.dummyuser}
+                style={styles.avatar}
+              />
+            </View>
+            <View style={styles.profileInfo}>
+              <Text style={styles.profileName}>
+                {profileData?.name || "Yuvam Dhanda"}
+              </Text>
+              <Text style={styles.profileMeta}>Just now · 🌍</Text>
+            </View>
+          </TouchableOpacity>
+        </View>
 
-        <View style={{ marginTop: scales(10), position: "relative" }}>
-          <ImageCarousel images={images} />
+        <Description text={description} />
+
+        <View>
+          <ImageCarousel images={images} onDoubleTap={handleLike} />
           {showLikeAnim && (
             <LottieView
               source={animations.like}
               autoPlay
               loop={false}
-              style={styles.animLikeOverlay}
+              style={styles.animOverlay}
             />
           )}
           {showSaveAnim && (
@@ -353,40 +342,40 @@ export const PostItem = ({
               source={animations.save}
               autoPlay
               loop={false}
-              style={styles.animSaveOverlay}
+              style={[
+                styles.animOverlay,
+                { right: scales(20), left: undefined },
+              ]}
             />
           )}
         </View>
 
-        <View style={styles.actionsRow}>
-          <View style={styles.actionsLeft}>
+        <Spacer height={scales(20)} />
+        <View style={styles.actionBarWrapper}>
+          <View style={styles.actionBarInner}>
             <ActionButton
-              icon={appImages.like}
-              iconStyle={styles.iconLike}
-              count={likes}
+              icon={appImages.heart}
+              count={liked ? likes + 1 : likes}
+              active={liked}
               activeColor={colors.red}
-              onPress={handleLikePress}
+              onPress={handleLike}
             />
+            <View style={styles.actionDivider} />
             <ActionButton
               icon={appImages.comment}
-              iconStyle={styles.iconComment}
               count={comments}
+              onPress={() => {}}
             />
+            <View style={styles.actionDivider} />
             <ActionButton
-              icon={appImages.share}
-              iconStyle={styles.iconShare}
-              count={shares}
+              icon={appImages.send}
+              label="Share"
+              onPress={() => {}}
             />
+            <View style={styles.actionDivider} />
+            <ActionButton icon={appImages.threeDots} onPress={() => {}} />
           </View>
-          <ActionButton
-            icon={appImages.save}
-            iconStyle={styles.iconSave}
-            activeColor={colors.blue}
-            onPress={handleSavePress}
-          />
         </View>
-
-        <Description text={description} />
       </View>
     </TouchableOpacity>
   );

@@ -77,8 +77,16 @@ export const Profile = () => {
 
   const renderCoverPhoto = () => {
     return (
-      <View style={[styles.coverContainer]}>
-        <View style={styles.headerActions}>
+      <View
+        style={[styles.coverContainer, { height: scales(150) + insets.top }]}
+      >
+        <Image
+          source={profileData?.coverImage || { uri: "https://picsum.photos/" }}
+          style={styles.coverImage}
+          resizeMode="cover"
+        />
+        <View style={styles.coverOverlay} />
+        <View style={[styles.headerActions, { top: insets.top + scales(10) }]}>
           <View style={styles.rightHeaderActions}>
             <TouchableOpacity style={styles.iconCircle}>
               <Image
@@ -278,7 +286,7 @@ export const Profile = () => {
   }
 
   return (
-    <AppBackground>
+    <AppBackground isTopInset={false}>
       <AnimatedFlatList
         data={getGridData()}
         keyExtractor={(item) => item.id}
@@ -303,7 +311,7 @@ const styles = StyleSheet.create({
   },
   coverContainer: {
     width: "100%",
-    height: scales(30),
+    height: scales(150),
     position: "relative",
   },
   coverImage: {
@@ -359,7 +367,7 @@ const styles = StyleSheet.create({
   avatarWrapper: {
     width: scales(100),
     height: scales(100),
-    borderRadius: scales(35),
+    borderRadius: scales(50),
     backgroundColor: colors.profileCardBg,
     padding: scales(4),
     marginRight: "auto",
@@ -427,7 +435,7 @@ const styles = StyleSheet.create({
   },
   statsCardRow: {
     flexDirection: "row",
-    backgroundColor: colors.profileStatsBg,
+    backgroundColor: colors.transparentWhite5,
     borderRadius: scales(20),
     paddingVertical: scales(15),
     justifyContent: "space-evenly",
@@ -485,7 +493,7 @@ const styles = StyleSheet.create({
   tabsWrapper: {
     flexDirection: "row",
     marginHorizontal: scales(16),
-    backgroundColor: colors.profileTabsBg,
+    backgroundColor: colors.transparentWhite5,
     borderRadius: scales(30),
     padding: scales(4),
     position: "relative",
@@ -496,7 +504,7 @@ const styles = StyleSheet.create({
     bottom: scales(4),
     left: scales(4),
     width: (width - scales(32)) / 3 - scales(8),
-    backgroundColor: colors.profileDivider,
+    backgroundColor: colors.transparentWhite10,
     borderRadius: scales(25),
   },
   tabPress: {

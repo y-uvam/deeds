@@ -25,5 +25,14 @@ export const colors = {
   pink: "#E040FB",
   background: "#051424",
   transparentWhite5: "rgba(255, 255, 255, 0.05)",
+  transparentWhite8: "rgba(255, 255, 255, 0.08)",
   transparentWhite10: "rgba(255, 255, 255, 0.1)",
+  transparentWhite12: "rgba(255, 255, 255, 0.12)",
+  transparentWhite15: "rgba(255, 255, 255, 0.15)",
+  transparentWhite40: "rgba(255, 255, 255, 0.4)",
+  transparentWhite85: "rgba(255, 255, 255, 0.85)",
+  transparentBlack15: "rgba(0, 0, 0, 0.15)",
+  transparentBlack25: "rgba(0, 0, 0, 0.25)",
+  transparentBlack30: "rgba(0, 0, 0, 0.3)",
 };
+
