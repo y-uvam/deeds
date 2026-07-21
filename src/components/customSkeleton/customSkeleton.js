@@ -43,6 +43,71 @@ const LAYOUTS = {
       ],
     },
   ],
+  comment: [
+    {
+      key: "main",
+      flexDirection: "row",
+      alignItems: "flex-start",
+      marginBottom: scales(20),
+      children: [
+        {
+          key: "avatar",
+          width: scales(36),
+          height: scales(36),
+          borderRadius: scales(18),
+          marginRight: scales(12),
+        },
+        {
+          key: "content",
+          flex: 1,
+          paddingRight: scales(10),
+          children: [
+            {
+              key: "username",
+              width: width * 0.3,
+              height: scales(12),
+              borderRadius: scales(4),
+              marginBottom: scales(8),
+            },
+            {
+              key: "commentText",
+              width: width * 0.65,
+              height: scales(12),
+              borderRadius: scales(4),
+              marginBottom: scales(10),
+            },
+            {
+              key: "reply",
+              width: width * 0.2,
+              height: scales(10),
+              borderRadius: scales(4),
+            },
+          ],
+        },
+        {
+          key: "likeBtn",
+          width: scales(40),
+          alignItems: "center",
+          paddingTop: scales(4),
+          children: [
+            {
+              key: "heart",
+              width: scales(16),
+              height: scales(16),
+              borderRadius: scales(8),
+              marginBottom: scales(6),
+            },
+            {
+              key: "count",
+              width: scales(20),
+              height: scales(8),
+              borderRadius: scales(4),
+            },
+          ],
+        },
+      ],
+    },
+  ],
   card: [
     {
       key: "header",
@@ -401,8 +466,8 @@ export const CustomSkeleton = ({
             styles.skeletonContainer,
             count > 1 && styles.repeated,
           ]}
-          boneColor={colors.darkblack}
-          highlightColor={colors.offwhite}
+          boneColor={colors.profileBtnBg || "#2C2C2E"}
+          highlightColor={colors.profileDivider || "#3A3A3C"}
           animationType="shiver"
           layout={resolvedLayout}
           animationDirection="diagonalDownRight"

@@ -52,6 +52,7 @@ if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   include("/Users/yuvam/Documents/ReactNative/deeds/android/app/.cxx/Debug/6x116d1v/armeabi-v7a/rnreanimated_autolinked_build/cmake_install.cmake")
   include("/Users/yuvam/Documents/ReactNative/deeds/android/app/.cxx/Debug/6x116d1v/armeabi-v7a/safeareacontext_autolinked_build/cmake_install.cmake")
   include("/Users/yuvam/Documents/ReactNative/deeds/android/app/.cxx/Debug/6x116d1v/armeabi-v7a/rnscreens_autolinked_build/cmake_install.cmake")
+  include("/Users/yuvam/Documents/ReactNative/deeds/android/app/.cxx/Debug/6x116d1v/armeabi-v7a/rnsvg_autolinked_build/cmake_install.cmake")
   include("/Users/yuvam/Documents/ReactNative/deeds/android/app/.cxx/Debug/6x116d1v/armeabi-v7a/rnworklets_autolinked_build/cmake_install.cmake")
 
 endif()

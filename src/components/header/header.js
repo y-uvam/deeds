@@ -167,6 +167,8 @@ export const Header = ({
   isHome,
   leftButton,
   leftButtonPress,
+  filterIcon = false,
+  onFilterPress,
 }) => {
   const containerTranslateY = useSharedValue(-50);
   const containerOpacity = useSharedValue(0);
@@ -225,6 +227,18 @@ export const Header = ({
               />
             )
           )}
+          {filterIcon && (
+            <RoundIconButton
+              icon={appImages.filter}
+              onPress={() => {
+                if (onFilterPress) {
+                  onFilterPress();
+                } else {
+                  console.log("Filter icon pressed");
+                }
+              }}
+            />
+          )}
         </View>
       </Animated.View>
 
@@ -256,6 +270,8 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "flex-end",
     justifyContent: "center",
+    flexDirection: "row",
+    gap: scales(10),
   },
   centerContainer: {
     flex: 3,

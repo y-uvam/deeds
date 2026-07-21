@@ -33,7 +33,7 @@ export const CustomButton = ({
         ]}
       >
         {loader ? (
-          <ActivityIndicator size="small" color={colors.white} />
+          <ActivityIndicator size="small" color={colors.darkblack || "#000"} />
         ) : (
           <Text style={[styles.label, { ...labelStyle }]}>{label}</Text>
         )}
@@ -44,16 +44,16 @@ export const CustomButton = ({
 
 const styles = StyleSheet.create({
   button: {
-    backgroundColor: colors.blue,
-    paddingVertical: 18,
-    borderRadius: 10,
+    backgroundColor: colors.button,
+    paddingVertical: scales(16),
+    borderRadius: scales(20),
     justifyContent: "center",
     alignItems: "center",
   },
   label: {
     color: colors.white,
-    fontSize: scales(15),
-    fontWeight: "700",
-    fontFamily: fontFamily.regular,
+    fontSize: scales(16),
+    fontFamily: fontFamily.semiBold,
+    letterSpacing: 0.5,
   },
 });

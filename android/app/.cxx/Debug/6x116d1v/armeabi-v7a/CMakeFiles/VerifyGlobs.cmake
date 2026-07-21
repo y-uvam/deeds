@@ -291,6 +291,44 @@ if(NOT "${NEW_GLOB}" STREQUAL "${OLD_GLOB}")
   file(TOUCH_NOCREATE "/Users/yuvam/Documents/ReactNative/deeds/android/app/.cxx/Debug/6x116d1v/armeabi-v7a/CMakeFiles/cmake.verify_globs")
 endif()
 
+# rnsvg_SRCS at /Users/yuvam/Documents/ReactNative/deeds/node_modules/react-native-svg/android/src/main/jni/CMakeLists.txt:10 (file)
+file(GLOB NEW_GLOB LIST_DIRECTORIES true "/Users/yuvam/Documents/ReactNative/deeds/node_modules/react-native-svg/android/src/main/jni/*.cpp")
+set(OLD_GLOB
+  "/Users/yuvam/Documents/ReactNative/deeds/node_modules/react-native-svg/android/src/main/jni/rnsvg.cpp"
+  )
+if(NOT "${NEW_GLOB}" STREQUAL "${OLD_GLOB}")
+  message("-- GLOB mismatch!")
+  file(TOUCH_NOCREATE "/Users/yuvam/Documents/ReactNative/deeds/android/app/.cxx/Debug/6x116d1v/armeabi-v7a/CMakeFiles/cmake.verify_globs")
+endif()
+
+# rnsvg_SRCS at /Users/yuvam/Documents/ReactNative/deeds/node_modules/react-native-svg/android/src/main/jni/CMakeLists.txt:10 (file)
+file(GLOB NEW_GLOB LIST_DIRECTORIES true "/Users/yuvam/Documents/ReactNative/deeds/node_modules/react-native-svg/android/src/main/jni/../../../../common/cpp/react/renderer/components/rnsvg/*.cpp")
+set(OLD_GLOB
+  "/Users/yuvam/Documents/ReactNative/deeds/node_modules/react-native-svg/android/src/main/jni/../../../../common/cpp/react/renderer/components/rnsvg/RNSVGImageShadowNode.cpp"
+  "/Users/yuvam/Documents/ReactNative/deeds/node_modules/react-native-svg/android/src/main/jni/../../../../common/cpp/react/renderer/components/rnsvg/RNSVGImageState.cpp"
+  "/Users/yuvam/Documents/ReactNative/deeds/node_modules/react-native-svg/android/src/main/jni/../../../../common/cpp/react/renderer/components/rnsvg/RNSVGLayoutableShadowNode.cpp"
+  "/Users/yuvam/Documents/ReactNative/deeds/node_modules/react-native-svg/android/src/main/jni/../../../../common/cpp/react/renderer/components/rnsvg/RNSVGShadowNodes.cpp"
+  )
+if(NOT "${NEW_GLOB}" STREQUAL "${OLD_GLOB}")
+  message("-- GLOB mismatch!")
+  file(TOUCH_NOCREATE "/Users/yuvam/Documents/ReactNative/deeds/android/app/.cxx/Debug/6x116d1v/armeabi-v7a/CMakeFiles/cmake.verify_globs")
+endif()
+
+# rnsvg_codegen_SRCS at /Users/yuvam/Documents/ReactNative/deeds/node_modules/react-native-svg/android/src/main/jni/CMakeLists.txt:11 (file)
+file(GLOB NEW_GLOB LIST_DIRECTORIES true "/Users/yuvam/Documents/ReactNative/deeds/node_modules/react-native-svg/android/src/main/jni/../../../build/generated/source/codegen/jni/react/renderer/components/rnsvg/*cpp")
+set(OLD_GLOB
+  "/Users/yuvam/Documents/ReactNative/deeds/node_modules/react-native-svg/android/src/main/jni/../../../build/generated/source/codegen/jni/react/renderer/components/rnsvg/ComponentDescriptors.cpp"
+  "/Users/yuvam/Documents/ReactNative/deeds/node_modules/react-native-svg/android/src/main/jni/../../../build/generated/source/codegen/jni/react/renderer/components/rnsvg/EventEmitters.cpp"
+  "/Users/yuvam/Documents/ReactNative/deeds/node_modules/react-native-svg/android/src/main/jni/../../../build/generated/source/codegen/jni/react/renderer/components/rnsvg/Props.cpp"
+  "/Users/yuvam/Documents/ReactNative/deeds/node_modules/react-native-svg/android/src/main/jni/../../../build/generated/source/codegen/jni/react/renderer/components/rnsvg/ShadowNodes.cpp"
+  "/Users/yuvam/Documents/ReactNative/deeds/node_modules/react-native-svg/android/src/main/jni/../../../build/generated/source/codegen/jni/react/renderer/components/rnsvg/States.cpp"
+  "/Users/yuvam/Documents/ReactNative/deeds/node_modules/react-native-svg/android/src/main/jni/../../../build/generated/source/codegen/jni/react/renderer/components/rnsvg/rnsvgJSI-generated.cpp"
+  )
+if(NOT "${NEW_GLOB}" STREQUAL "${OLD_GLOB}")
+  message("-- GLOB mismatch!")
+  file(TOUCH_NOCREATE "/Users/yuvam/Documents/ReactNative/deeds/android/app/.cxx/Debug/6x116d1v/armeabi-v7a/CMakeFiles/cmake.verify_globs")
+endif()
+
 # react_codegen_SRCS at /Users/yuvam/Documents/ReactNative/deeds/node_modules/react-native-worklets/android/build/generated/source/codegen/jni/CMakeLists.txt:9 (file)
 file(GLOB NEW_GLOB LIST_DIRECTORIES true "/Users/yuvam/Documents/ReactNative/deeds/node_modules/react-native-worklets/android/build/generated/source/codegen/jni/*.cpp")
 set(OLD_GLOB

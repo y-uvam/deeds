@@ -66,9 +66,9 @@ export const CustomSearch = ({
     onCancelProp?.();
   };
 
-  const inputWidth = cancelAnim.interpolate({
+  const searchMargin = cancelAnim.interpolate({
     inputRange: [0, 1],
-    outputRange: [width - scales(32), width - scales(100)],
+    outputRange: [0, scales(70)],
   });
 
   const cancelOpacity = cancelAnim.interpolate({
@@ -84,7 +84,10 @@ export const CustomSearch = ({
   return (
     <View style={[styles.mainContainer, containerStyle]}>
       <Animated.View
-        style={[styles.searchWrapper, { width: inputWidth, borderColor }]}
+        style={[
+          styles.searchWrapper,
+          { flex: 1, marginRight: searchMargin, borderColor },
+        ]}
       >
         {/* <BlurView
           style={StyleSheet.absoluteFill}

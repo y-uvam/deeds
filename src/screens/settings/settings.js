@@ -1,17 +1,10 @@
-import React, { useState } from "react";
 import { View, Text, StyleSheet, ScrollView } from "react-native";
-import {
-  AppBackground,
-  CustomSearch,
-  Header,
-  NextButton,
-} from "../../components";
+import { AppBackground, Header, NextButton } from "../../components";
 import { colors, scales, commonText } from "../../utils";
 import { appImages, fontFamily } from "../../assets";
+import { navigate, routesConstants } from "../../navigation";
 
 export const Settings = () => {
-  const [searchText, setSearchText] = useState("");
-
   const Section = ({ title, children }) => (
     <View style={styles.sectionContainer}>
       <Text style={styles.sectionTitle}>{title}</Text>
@@ -23,59 +16,84 @@ export const Settings = () => {
     <AppBackground>
       <Header label={commonText.settings} showBackButton={true} />
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        <CustomSearch
-          value={searchText}
-          onChangeText={setSearchText}
-          placeholder="Search"
-          containerStyle={styles.searchContainer}
-        />
-
         <Section title="Activity">
-          <NextButton
-            leftIcon={appImages.dummyuser}
-            label="Personal information"
-            onPress={() => {}}
-          />
           <NextButton
             leftIcon={appImages.saved}
             label="Saved"
-            onPress={() => {}}
+            onPress={() => {
+              navigate(routesConstants.savedPosts);
+            }}
+          />
+          <NextButton
+            leftIcon={appImages.yourActivity}
+            label="Your Activity"
+            onPress={() => {
+              navigate(routesConstants.yourActivity);
+            }}
+          />
+          <NextButton
+            leftIcon={appImages.mention}
+            label="Tags and Mentions"
+            onPress={() => {
+              navigate(routesConstants.mentions);
+            }}
           />
           <NextButton
             leftIcon={appImages.blocked}
             label={commonText.blocked}
-            onPress={() => {}}
+            onPress={() => {
+              navigate(routesConstants.blocked);
+            }}
           />
         </Section>
 
-        <Section title="Support and security">
+        <Section title="Manage Account">
           <NextButton
             leftIcon={appImages.lock}
-            label="Password and security"
-            onPress={() => {}}
+            label="Account Privacy"
+            onPress={() => {
+              navigate(routesConstants.accountPrivacy);
+            }}
           />
           <NextButton
-            leftIcon={appImages.chat}
-            label="Help and support"
-            onPress={() => {}}
+            leftIcon={appImages.accountPrivacy}
+            label="Device Permissions"
+            onPress={() => {
+              navigate(routesConstants.devicePermissions);
+            }}
           />
-          <NextButton leftIcon={appImages.i} label="About" onPress={() => {}} />
+          <NextButton
+            leftIcon={appImages.changePassword}
+            label="Change Password"
+            onPress={() => {
+              navigate(routesConstants.changePassword);
+            }}
+          />
+          <NextButton
+            leftIcon={appImages.monetize}
+            label="Monetization"
+            onPress={() => {
+              navigate(routesConstants.monetization);
+            }}
+          />
+          <NextButton
+            leftIcon={appImages.dataUsage}
+            label="Data Usage"
+            onPress={() => {
+              navigate(routesConstants.dataUsage);
+            }}
+          />
         </Section>
 
         <Section title="Login and deactivation">
           <NextButton
-            leftIcon={appImages.dummyuser}
-            label="Login another account"
-            onPress={() => {}}
-          />
-          <NextButton
-            leftIcon={appImages.backarrow}
-            label="Log out"
+            leftIcon={appImages.logout}
+            label="Log Out"
             onPress={() => {}}
           />
           <NextButton
             leftIcon={appImages.bin}
-            label="Deactivate and delete"
+            label="Deactivate Account"
             onPress={() => {}}
           />
         </Section>

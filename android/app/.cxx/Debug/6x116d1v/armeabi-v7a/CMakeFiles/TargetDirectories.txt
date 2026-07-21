@@ -25,6 +25,9 @@
 /Users/yuvam/Documents/ReactNative/deeds/android/app/.cxx/Debug/6x116d1v/armeabi-v7a/rnscreens_autolinked_build/CMakeFiles/react_codegen_rnscreens.dir
 /Users/yuvam/Documents/ReactNative/deeds/android/app/.cxx/Debug/6x116d1v/armeabi-v7a/rnscreens_autolinked_build/CMakeFiles/edit_cache.dir
 /Users/yuvam/Documents/ReactNative/deeds/android/app/.cxx/Debug/6x116d1v/armeabi-v7a/rnscreens_autolinked_build/CMakeFiles/rebuild_cache.dir
+/Users/yuvam/Documents/ReactNative/deeds/android/app/.cxx/Debug/6x116d1v/armeabi-v7a/rnsvg_autolinked_build/CMakeFiles/react_codegen_rnsvg.dir
+/Users/yuvam/Documents/ReactNative/deeds/android/app/.cxx/Debug/6x116d1v/armeabi-v7a/rnsvg_autolinked_build/CMakeFiles/edit_cache.dir
+/Users/yuvam/Documents/ReactNative/deeds/android/app/.cxx/Debug/6x116d1v/armeabi-v7a/rnsvg_autolinked_build/CMakeFiles/rebuild_cache.dir
 /Users/yuvam/Documents/ReactNative/deeds/android/app/.cxx/Debug/6x116d1v/armeabi-v7a/rnworklets_autolinked_build/CMakeFiles/react_codegen_rnworklets.dir
 /Users/yuvam/Documents/ReactNative/deeds/android/app/.cxx/Debug/6x116d1v/armeabi-v7a/rnworklets_autolinked_build/CMakeFiles/edit_cache.dir
 /Users/yuvam/Documents/ReactNative/deeds/android/app/.cxx/Debug/6x116d1v/armeabi-v7a/rnworklets_autolinked_build/CMakeFiles/rebuild_cache.dir

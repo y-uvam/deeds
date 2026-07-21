@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, forwardRef } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
-import { AppBackground, Header, Spacer, CustomButton } from "../../components";
+import { CustomBottomSheet, Spacer, CustomButton } from "../../components";
 import { colors, scales } from "../../utils";
 import { fontFamily, appImages } from "../../assets";
 import { navigate } from "../../navigation/navigationServices";
@@ -18,14 +18,14 @@ const CONTENT_TYPES = [
     id: "movie",
     label: "Projects",
     subtitle: "Long-form video content",
-    icon: appImages.play,
+    icon: appImages.slate,
     accent: colors.purple,
   },
   {
     id: "story",
     label: "Slates",
     subtitle: "Share your thoughts with the world",
-    icon: appImages.comment,
+    icon: appImages.project,
     accent: colors.blue,
   },
 ];
@@ -62,19 +62,24 @@ const TypeCard = ({ item, isSelected, onPress }) => (
   </TouchableOpacity>
 );
 
-export const ContentType = () => {
+export const ContentTypeSheet = forwardRef((props, ref) => {
   const [selected, setSelected] = useState(null);
 
   const handleNext = () => {
     if (!selected) return;
+    ref.current?.dismiss();
     navigate(routesConstants.selectMedia, { contentType: selected });
   };
 
   return (
-    <AppBackground>
-      <Header label="Create" showBackButton />
-      <Spacer height={scales(10)} />
-
+    <CustomBottomSheet
+      ref={ref}
+      snapPoints={["60%"]}
+      enablePanDownToClose={true}
+      useBlur={true}
+      showCloseButton={true}
+      title="Create"
+    >
       <View style={styles.content}>
         <Text style={styles.heading}>What are you creating?</Text>
         <Text style={styles.subheading}>Choose a type to get started</Text>
@@ -97,14 +102,14 @@ export const ContentType = () => {
           disable={!selected}
         />
       </View>
-    </AppBackground>
+      <Spacer height={scales(20)} />
+    </CustomBottomSheet>
   );
-};
+});
 
 const styles = StyleSheet.create({
   content: {
     flex: 1,
-    paddingHorizontal: scales(20),
   },
   heading: {
     color: colors.white,
@@ -169,7 +174,6 @@ const styles = StyleSheet.create({
     borderRadius: scales(5),
   },
   footer: {
-    paddingHorizontal: scales(20),
-    paddingBottom: scales(30),
+    // paddingBottom: scales(30),
   },
 });

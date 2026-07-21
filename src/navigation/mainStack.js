@@ -25,10 +25,14 @@ import {
   Splash,
   YourActivity,
   Reels,
-  ContentType,
   SelectMedia,
   Upload,
   MetaData,
+  ChangePassword,
+  DataUsage,
+  DevicePermissions,
+  TagsAndMentions,
+  Monetization,
 } from "../screens";
 import { BottomTab } from "./bottomTab";
 
@@ -75,10 +79,20 @@ const MainStack = () => {
       <Screen name={routesConstants.newChat} component={NewChat} />
       <Screen name={routesConstants.post} component={Post} />
       <Screen name={routesConstants.reels} component={Reels} />
-      <Screen name={routesConstants.contentType} component={ContentType} />
       <Screen name={routesConstants.selectMedia} component={SelectMedia} />
       <Screen name={routesConstants.upload} component={Upload} />
       <Screen name={routesConstants.metadata} component={MetaData} />
+      <Screen
+        name={routesConstants.changePassword}
+        component={ChangePassword}
+      />
+      <Screen name={routesConstants.dataUsage} component={DataUsage} />
+      <Screen
+        name={routesConstants.devicePermissions}
+        component={DevicePermissions}
+      />
+      <Screen name={routesConstants.mentions} component={TagsAndMentions} />
+      <Screen name={routesConstants.monetization} component={Monetization} />
       <Screen
         name={routesConstants.accountPrivacy}
         component={AccountPrivacy}

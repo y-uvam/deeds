@@ -51,5 +51,16 @@ export const appImages = {
   car: require("../icons/car.png"),
   reels: require("../icons/reels.png"),
   pause: require("../icons/pause.png"),
+  filter: require("../icons/filter.png"),
+  accountPrivacy: require("../icons/accountPrivacy.png"),
+  changePassword: require("../icons/changePassword.png"),
+  dataUsage: require("../icons/dataUsage.png"),
+  mention: require("../icons/mention.png"),
+  mic: require("../icons/mic.png"),
+  monetize: require("../icons/monetize.png"),
+  logout: require("../icons/logout.png"),
+  slate: require("../icons/slates.png"),
+  project: require("../icons/project.png"),
+
   earnings: require("../icons/earnings_illustration.png"),
 };

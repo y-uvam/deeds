@@ -1,5 +1,6 @@
 export const colors = {
   white: "#FFFFFF",
+  button: "#05142485",
   blue: "#0088FF",
   gray: "#666666",
   black: "#000000",
@@ -35,4 +36,3 @@ export const colors = {
   transparentBlack25: "rgba(0, 0, 0, 0.25)",
   transparentBlack30: "rgba(0, 0, 0, 0.3)",
 };
-

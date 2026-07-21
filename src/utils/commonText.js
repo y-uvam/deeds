@@ -1,3 +1,5 @@
+import { DevicePermissions } from "../screens/devicePermissions/devicePermissions";
+
 export const commonText = {
   welcomeMessage: "Welcome Back, Buddy !",
   letstart: "Let's Get You Back In",
@@ -58,6 +60,11 @@ export const commonText = {
   help: "Help",
   blocked: "Blocked",
   bites: "Bites",
+  DevicePermissions: "Device Permissions",
+  ChangePassword: "Change Password",
+  dataUsage: "Data Usage",
+  monetization: "Monetization",
+  tagsAndMentions: "Tags and Mentions",
 };
 export const validationConstants = {
   noInternet: "Please check your internet connection.",

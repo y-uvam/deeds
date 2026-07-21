@@ -27,6 +27,7 @@ import { navigate } from "../../navigation/navigationServices";
 import { routesConstants } from "../../navigation/routeConstants";
 import { styles } from "./styles";
 import { Spacer } from "../spacer/spacer";
+import { CommentSheet } from "../commentSheet/commentSheet";
 
 const DOT_SIZE = scales(5);
 const DOT_ACTIVE_WIDTH = scales(16);
@@ -271,6 +272,8 @@ export const PostItem = ({
   const [saved, setSaved] = useState(false);
   const [showLikeAnim, setShowLikeAnim] = useState(false);
   const [showSaveAnim, setShowSaveAnim] = useState(false);
+  
+  const commentSheetRef = useRef(null);
 
   const handleLike = () => {
     const next = !liked;
@@ -364,7 +367,7 @@ export const PostItem = ({
             <ActionButton
               icon={appImages.comment}
               count={comments}
-              onPress={() => {}}
+              onPress={() => commentSheetRef.current?.present()}
             />
             <View style={styles.actionDivider} />
             <ActionButton
@@ -377,6 +380,7 @@ export const PostItem = ({
           </View>
         </View>
       </View>
+      <CommentSheet ref={commentSheetRef} />
     </TouchableOpacity>
   );
 };

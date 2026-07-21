@@ -1,14 +1,11 @@
 import { FlatList, StyleSheet } from "react-native";
-import {
-  PostItem,
-  AppBackground,
-  Header,
-} from "../../components";
+import { PostItem, AppBackground, Header, Filter } from "../../components";
 import { scales } from "../../utils";
 import { appImages } from "../../assets";
 import { navigate, routesConstants } from "../../navigation";
+import { ContentTypeSheet } from "../../screens";
 import { useTabBarScrollHandler } from "../../context/TabBarContext";
-import { useCallback } from "react";
+import { useCallback, useRef } from "react";
 import Animated from "react-native-reanimated";
 
 const DATA = [
@@ -54,6 +51,9 @@ const AnimatedFlatList = Animated.createAnimatedComponent(FlatList);
 
 export const Home = () => {
   const scrollHandler = useTabBarScrollHandler();
+  const filterRef = useRef(null);
+  const contentTypeRef = useRef(null);
+
   const renderItem = useCallback(({ item }) => <PostItem item={item} />, []);
 
   return (
@@ -61,7 +61,9 @@ export const Home = () => {
       <Header
         isHome={true}
         leftButton={appImages.plus}
-        leftButtonPress={() => navigate(routesConstants.contentType)}
+        leftButtonPress={() => contentTypeRef.current?.present()}
+        onFilterPress={() => filterRef.current?.present()}
+        filterIcon={true}
       />
       <AnimatedFlatList
         data={DATA}
@@ -72,6 +74,11 @@ export const Home = () => {
         onScroll={scrollHandler}
         scrollEventThrottle={16}
       />
+      <Filter
+        ref={filterRef}
+        onFilterChange={(filters) => console.log("Applied Filters:", filters)}
+      />
+      <ContentTypeSheet ref={contentTypeRef} />
     </AppBackground>
   );
 };

@@ -1,23 +1,39 @@
 import React, { forwardRef, useMemo, useCallback } from "react";
-import { StyleSheet, View, Text, Keyboard } from "react-native";
+import {
+  StyleSheet,
+  View,
+  Text,
+  Keyboard,
+  TouchableOpacity,
+  Image,
+} from "react-native";
 import {
   BottomSheetModal,
   BottomSheetBackdrop,
   BottomSheetScrollView,
 } from "@gorhom/bottom-sheet";
 import { colors, scales } from "../../utils";
-import { fontFamily } from "../../assets";
+import { fontFamily, appImages } from "../../assets";
 import { BlurView } from "@react-native-community/blur";
 
-const CustomBackground = ({ style }) => {
+const CustomBackground = ({ style, blur }) => {
   return (
     <View style={[style, styles.background]}>
-      {/* <BlurView
-        style={StyleSheet.absoluteFill}
-        blurType="light"
-        blurAmount={1}
-        reducedTransparencyFallbackColor="white"
-      /> */}
+      {blur ? (
+        <BlurView
+          style={[StyleSheet.absoluteFill, { overflow: "hidden" }]}
+          blurType="dark"
+          blurAmount={20}
+          reducedTransparencyFallbackColor="#121212"
+        />
+      ) : (
+        <View
+          style={[
+            StyleSheet.absoluteFill,
+            { backgroundColor: colors.darkblack || "#1E1E1E" },
+          ]}
+        />
+      )}
     </View>
   );
 };
@@ -31,6 +47,8 @@ export const CustomBottomSheet = forwardRef(
       enablePanDownToClose = false,
       title,
       subtitle,
+      useBlur = false,
+      showCloseButton = false,
     },
     ref,
   ) => {
@@ -42,10 +60,16 @@ export const CustomBottomSheet = forwardRef(
           {...props}
           disappearsOnIndex={-1}
           appearsOnIndex={0}
-          opacity={0}
+          opacity={0.5}
+          pressBehavior="close"
         />
       ),
       [],
+    );
+
+    const renderBackground = useCallback(
+      (props) => <CustomBackground {...props} blur={useBlur} />,
+      [useBlur],
     );
 
     return (
@@ -53,11 +77,11 @@ export const CustomBottomSheet = forwardRef(
         ref={ref}
         snapPoints={points}
         onChange={onSheetChanges}
-        backgroundComponent={CustomBackground}
+        backgroundComponent={renderBackground}
+        backdropComponent={renderBackdrop}
         handleComponent={null}
         enableDynamicSizing={true}
         enablePanDownToClose={false}
-        backdropComponent={renderBackdrop}
         keyboardBehavior="interactive"
         keyboardBlurBehavior="restore"
         style={styles.sheet}
@@ -71,10 +95,21 @@ export const CustomBottomSheet = forwardRef(
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
-          {(title || subtitle) && (
+          {(title || subtitle || showCloseButton) && (
             <View style={styles.headerContainer}>
-              {!!title && <Text style={styles.title}>{title}</Text>}
-              {!!subtitle && <Text style={styles.subtitle}>{subtitle}</Text>}
+              <View style={styles.headerTextContainer}>
+                {!!title && <Text style={styles.title}>{title}</Text>}
+                {!!subtitle && <Text style={styles.subtitle}>{subtitle}</Text>}
+              </View>
+              {showCloseButton && (
+                <TouchableOpacity
+                  onPress={() => ref.current?.dismiss()}
+                  style={styles.closeButton}
+                  activeOpacity={0.7}
+                >
+                  <Image source={appImages.close} style={styles.closeIcon} />
+                </TouchableOpacity>
+              )}
             </View>
           )}
 
@@ -93,8 +128,6 @@ const styles = StyleSheet.create({
     backgroundColor: "transparent",
     borderTopRightRadius: 30,
     borderTopLeftRadius: 30,
-    borderColor: colors.white,
-    borderWidth: 1,
     overflow: "hidden",
   },
   handleIndicator: {},
@@ -104,7 +137,25 @@ const styles = StyleSheet.create({
     paddingBottom: scales(30),
   },
   headerContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     marginBottom: scales(20),
+  },
+  headerTextContainer: {
+    flex: 1,
+  },
+  closeButton: {
+    width: scales(24),
+    height: scales(24),
+    justifyContent: "center",
+    alignItems: "center",
+    marginLeft: scales(10),
+  },
+  closeIcon: {
+    width: "100%",
+    height: "100%",
+    tintColor: colors.white,
   },
   title: {
     fontSize: scales(24),

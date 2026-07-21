@@ -25,8 +25,12 @@ export const routesConstants = {
   newChat: "NewChat",
   post: "Post",
   reels: "Reels",
-  contentType: "ContentType",
   selectMedia: "SelectMedia",
   upload: "Upload",
   metadata: "MetaData",
+  changePassword: "ChangePassword",
+  dataUsage: "DataUsage",
+  devicePermissions: "DevicePermissions",
+  mentions: "Mentions",
+  monetization: "Monetization",
 };
