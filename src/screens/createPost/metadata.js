@@ -21,7 +21,14 @@ import { fontFamily, appImages } from "../../assets";
 import { navigate } from "../../navigation/navigationServices";
 import { routesConstants } from "../../navigation/routeConstants";
 
-const TAG_SUGGESTIONS = ["#wellness", "#growth", "#motivation", "#lifestyle", "#art", "#travel"];
+const TAG_SUGGESTIONS = [
+  "#wellness",
+  "#growth",
+  "#motivation",
+  "#lifestyle",
+  "#art",
+  "#travel",
+];
 
 const SectionLabel = ({ label }) => (
   <Text style={styles.sectionLabel}>{label}</Text>
@@ -40,11 +47,28 @@ const TagChip = ({ tag, isSelected, onPress }) => (
 );
 
 const MediaPreviewStrip = ({ media }) => (
-  <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.previewStrip}>
+  <ScrollView
+    horizontal
+    showsHorizontalScrollIndicator={false}
+    style={styles.previewStrip}
+  >
     {media.map((item, i) => (
       <View key={item.id} style={styles.previewThumb}>
         <Image source={{ uri: item.uri }} style={styles.previewImage} />
-        {i === 0 && <View style={styles.coverBadge}><Text style={styles.coverText}>Cover</Text></View>}
+        {item.type === "video" && (
+          <View style={styles.previewVideoBadge}>
+            <Image
+              source={appImages.play}
+              style={styles.previewPlayIcon}
+              tintColor={colors.white}
+            />
+          </View>
+        )}
+        {i === 0 && (
+          <View style={styles.coverBadge}>
+            <Text style={styles.coverText}>Cover</Text>
+          </View>
+        )}
       </View>
     ))}
   </ScrollView>
@@ -60,26 +84,13 @@ const getBitesFields = (form, set) => (
       multiline
       height={90}
     />
-    <SectionLabel label="Tags" />
-    <View style={styles.tagsRow}>
-      {TAG_SUGGESTIONS.map((tag) => (
-        <TagChip
-          key={tag}
-          tag={tag}
-          isSelected={form.tags?.includes(tag)}
-          onPress={() => {
-            const tags = form.tags ?? [];
-            set({
-              ...form,
-              tags: tags.includes(tag) ? tags.filter((t) => t !== tag) : [...tags, tag],
-            });
-          }}
-        />
-      ))}
-    </View>
     <SectionLabel label="Audio" />
     <TouchableOpacity style={styles.audioRow} activeOpacity={0.8}>
-      <Image source={appImages.play} style={styles.audioIcon} tintColor={colors.blue} />
+      <Image
+        source={appImages.play}
+        style={styles.audioIcon}
+        tintColor={colors.blue}
+      />
       <Text style={styles.audioLabel}>Add audio / music</Text>
     </TouchableOpacity>
   </>
@@ -112,7 +123,9 @@ const getMovieFields = (form, set) => (
             const tags = form.tags ?? [];
             set({
               ...form,
-              tags: tags.includes(tag) ? tags.filter((t) => t !== tag) : [...tags, tag],
+              tags: tags.includes(tag)
+                ? tags.filter((t) => t !== tag)
+                : [...tags, tag],
             });
           }}
         />
@@ -123,11 +136,19 @@ const getMovieFields = (form, set) => (
       {["Public", "Followers", "Private"].map((opt) => (
         <TouchableOpacity
           key={opt}
-          style={[styles.visOpt, form.visibility === opt && styles.visOptSelected]}
+          style={[
+            styles.visOpt,
+            form.visibility === opt && styles.visOptSelected,
+          ]}
           onPress={() => set({ ...form, visibility: opt })}
           activeOpacity={0.8}
         >
-          <Text style={[styles.visText, form.visibility === opt && styles.visTextSelected]}>
+          <Text
+            style={[
+              styles.visText,
+              form.visibility === opt && styles.visTextSelected,
+            ]}
+          >
             {opt}
           </Text>
         </TouchableOpacity>
@@ -148,7 +169,13 @@ const getStoryFields = (form, set) => (
     />
     <SectionLabel label="Mood" />
     <View style={styles.tagsRow}>
-      {["🔥 Trending", "💡 Insightful", "😂 Funny", "❤️ Heartfelt", "🌍 Awareness"].map((m) => (
+      {[
+        "🔥 Trending",
+        "💡 Insightful",
+        "😂 Funny",
+        "❤️ Heartfelt",
+        "🌍 Awareness",
+      ].map((m) => (
         <TagChip
           key={m}
           tag={m}
@@ -166,7 +193,12 @@ const getStoryFields = (form, set) => (
           onPress={() => set({ ...form, replies: opt })}
           activeOpacity={0.8}
         >
-          <Text style={[styles.visText, form.replies === opt && styles.visTextSelected]}>
+          <Text
+            style={[
+              styles.visText,
+              form.replies === opt && styles.visTextSelected,
+            ]}
+          >
             {opt}
           </Text>
         </TouchableOpacity>
@@ -177,7 +209,10 @@ const getStoryFields = (form, set) => (
 
 export const MetaData = ({ route }) => {
   const { contentType, media = [] } = route.params ?? {};
-  const [form, setForm] = useState({ visibility: "Public", replies: "Everyone" });
+  const [form, setForm] = useState({
+    visibility: "Public",
+    replies: "Everyone",
+  });
 
   const handlePost = useCallback(() => {
     navigate(routesConstants.upload, { contentType, media, metadata: form });
@@ -185,10 +220,14 @@ export const MetaData = ({ route }) => {
 
   const renderFields = () => {
     switch (contentType?.id) {
-      case "bites": return getBitesFields(form, setForm);
-      case "movie": return getMovieFields(form, setForm);
-      case "story": return getStoryFields(form, setForm);
-      default: return null;
+      case "bites":
+        return getBitesFields(form, setForm);
+      case "movie":
+        return getMovieFields(form, setForm);
+      case "story":
+        return getStoryFields(form, setForm);
+      default:
+        return null;
     }
   };
 
@@ -233,6 +272,22 @@ const styles = StyleSheet.create({
     borderRadius: scales(10),
     marginRight: scales(8),
     overflow: "hidden",
+  },
+  previewVideoBadge: {
+    position: "absolute",
+    top: scales(4),
+    left: scales(4),
+    backgroundColor: colors.transparentBlack30,
+    borderRadius: scales(10),
+    width: scales(20),
+    height: scales(20),
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  previewPlayIcon: {
+    width: scales(8),
+    height: scales(8),
+    resizeMode: "contain",
   },
   previewImage: {
     width: "100%",

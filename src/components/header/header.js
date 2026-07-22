@@ -126,6 +126,10 @@ export const HeaderPill = ({ label, isLogo }) => {
   const scale = useSharedValue(0.85);
   const opacity = useSharedValue(0);
   const translateY = useSharedValue(-12);
+  const scrollX = useSharedValue(0);
+
+  const [containerWidth, setContainerWidth] = React.useState(0);
+  const [textWidth, setTextWidth] = React.useState(0);
 
   useEffect(() => {
     scale.value = withDelay(200, withSpring(1, { damping: 12, stiffness: 90 }));
@@ -136,25 +140,79 @@ export const HeaderPill = ({ label, isLogo }) => {
     );
   }, []);
 
+  useEffect(() => {
+    if (isLogo || !containerWidth || !textWidth) return;
+
+    const overflow = textWidth - containerWidth;
+    if (overflow > 4) {
+      const scrollDuration = Math.max(2500, overflow * 30);
+      scrollX.value = 0;
+      scrollX.value = withDelay(
+        1200,
+        withRepeat(
+          withSequence(
+            withTiming(-overflow, {
+              duration: scrollDuration,
+              easing: Easing.inOut(Easing.ease),
+            }),
+            withDelay(1200, withTiming(-overflow, { duration: 0 })),
+            withDelay(
+              500,
+              withTiming(0, {
+                duration: scrollDuration,
+                easing: Easing.inOut(Easing.ease),
+              }),
+            ),
+          ),
+          -1,
+          false,
+        ),
+      );
+    } else {
+      scrollX.value = 0;
+    }
+  }, [containerWidth, textWidth, label, isLogo]);
+
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: scale.value }, { translateY: translateY.value }],
     opacity: opacity.value,
   }));
 
+  const textAnimatedStyle = useAnimatedStyle(() => ({
+    transform: [{ translateX: scrollX.value }],
+  }));
+
+  if (isLogo) {
+    return (
+      <Animated.View style={[styles.headerPillWrapper, animatedStyle]}>
+        <HeaderLogo />
+      </Animated.View>
+    );
+  }
+
+  const isOverflowing = containerWidth > 0 && textWidth > containerWidth + 4;
+
   return (
     <Animated.View style={[styles.headerPillWrapper, animatedStyle]}>
-      {/* <BlurView
-        style={StyleSheet.absoluteFill}
-        blurType="dark"
-        blurAmount={30}
-        reducedTransparencyFallbackColor="transparent"
-      />
-      <View style={[StyleSheet.absoluteFill, styles.pillOverlay]} /> */}
-      {isLogo ? (
-        <HeaderLogo />
-      ) : (
-        <Text style={styles.headerLabel}>{label}</Text>
-      )}
+      <View
+        style={[
+          styles.pillTextContainer,
+          isOverflowing && styles.pillTextContainerOverflow,
+        ]}
+        onLayout={(e) => setContainerWidth(e.nativeEvent.layout.width)}
+      >
+        <Animated.View style={textAnimatedStyle}>
+          <Text
+            style={styles.headerLabel}
+            numberOfLines={1}
+            adjustsFontSizeToFit={!isOverflowing}
+            minimumFontScale={0.75}
+            onLayout={(e) => setTextWidth(e.nativeEvent.layout.width)}
+          >
+            {label}
+          </Text>
+        </Animated.View>
+      </View>
     </Animated.View>
   );
 };
@@ -299,13 +357,21 @@ const styles = StyleSheet.create({
   },
   headerPillWrapper: {
     height: scales(40),
-    paddingHorizontal: scales(22),
+    paddingHorizontal: scales(16),
     borderRadius: scales(20),
-    // borderWidth: StyleSheet.hairlineWidth,
-    // borderColor: "rgba(255,255,255,0.12)",
+    maxWidth: "100%",
     overflow: "hidden",
     justifyContent: "center",
     alignItems: "center",
+  },
+  pillTextContainer: {
+    maxWidth: "100%",
+    overflow: "hidden",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  pillTextContainerOverflow: {
+    alignItems: "flex-start",
   },
   pillOverlay: {
     backgroundColor: "rgba(255,255,255,0.04)",

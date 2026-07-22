@@ -30,3 +30,5 @@ export * from "./dataUsage/dataUsage";
 export * from "./devicePermissions/devicePermissions";
 export * from "./mentions/mentions";
 export * from "./monetization/monetization";
+export * from "./movie/movie";
+export * from "./ratings/ratings";

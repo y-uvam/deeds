@@ -61,6 +61,7 @@ export const appImages = {
   logout: require("../icons/logout.png"),
   slate: require("../icons/slates.png"),
   project: require("../icons/project.png"),
+  star: require("../icons/star.png"),
 
   earnings: require("../icons/earnings_illustration.png"),
 };

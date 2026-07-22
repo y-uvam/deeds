@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import {
   View,
   Text,
@@ -17,11 +17,11 @@ import { routesConstants } from "../../navigation/routeConstants";
 const { width } = Dimensions.get("window");
 const THUMB_SIZE = (width - scales(52)) / 3;
 
-const MOCK_MEDIA = Array.from({ length: 15 }, (_, i) => ({
+const MOCK_MEDIA = Array.from({ length: 18 }, (_, i) => ({
   id: String(i),
   uri: `https://picsum.photos/seed/${i + 10}/300/300`,
-  type: i % 5 === 0 ? "video" : "image",
-  duration: i % 5 === 0 ? "0:34" : null,
+  type: i % 3 === 0 ? "video" : "image",
+  duration: i % 3 === 0 ? `0:${15 + ((i * 7) % 45)}` : null,
 }));
 
 const MediaThumb = ({ item, isSelected, selectionIndex, onPress }) => (
@@ -33,7 +33,11 @@ const MediaThumb = ({ item, isSelected, selectionIndex, onPress }) => (
     <Image source={{ uri: item.uri }} style={styles.thumbImage} />
     {item.type === "video" && (
       <View style={styles.videoBadge}>
-        <Image source={appImages.play} style={styles.playIcon} tintColor={colors.white} />
+        <Image
+          source={appImages.play}
+          style={styles.playIcon}
+          tintColor={colors.white}
+        />
         <Text style={styles.durationText}>{item.duration}</Text>
       </View>
     )}
@@ -49,8 +53,18 @@ const MediaThumb = ({ item, isSelected, selectionIndex, onPress }) => (
 
 export const SelectMedia = ({ route }) => {
   const { contentType } = route.params ?? {};
-  const isMulti = contentType?.id !== "story";
+
+  // Slates ("story") allows selecting multiple items; Bites ("bites") and Projects ("movie") allow selecting 1 video
+  const isMulti = contentType?.id === "story" || contentType?.id === "slates";
   const [selected, setSelected] = useState([]);
+
+  // Filter media items to show only videos for Bites and Projects; show images & videos for Slates
+  const mediaData = useMemo(() => {
+    if (contentType?.id === "bites" || contentType?.id === "movie") {
+      return MOCK_MEDIA.filter((item) => item.type === "video");
+    }
+    return MOCK_MEDIA;
+  }, [contentType?.id]);
 
   const handleSelect = (item) => {
     if (!isMulti) {
@@ -75,18 +89,18 @@ export const SelectMedia = ({ route }) => {
       <Header label="Select Media" showBackButton />
 
       <View style={styles.info}>
-        <Text style={styles.infoLabel}>
-          {contentType?.label ?? "Content"}
-        </Text>
-        {isMulti && (
+        <Text style={styles.infoLabel}>{contentType?.label ?? "Content"}</Text>
+        {isMulti ? (
+          <Text style={styles.infoCount}>{selected.length} / 10 selected</Text>
+        ) : (
           <Text style={styles.infoCount}>
-            {selected.length} / 10 selected
+            {selected.length ? "1 video selected" : "Select 1 video"}
           </Text>
         )}
       </View>
 
       <FlatList
-        data={MOCK_MEDIA}
+        data={mediaData}
         keyExtractor={(item) => item.id}
         numColumns={3}
         contentContainerStyle={styles.grid}
@@ -98,7 +112,7 @@ export const SelectMedia = ({ route }) => {
             <MediaThumb
               item={item}
               isSelected={idx !== -1}
-              selectionIndex={idx + 1}
+              selectionIndex={isMulti ? idx + 1 : 1}
               onPress={() => handleSelect(item)}
             />
           );

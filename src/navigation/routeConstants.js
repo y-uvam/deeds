@@ -33,4 +33,6 @@ export const routesConstants = {
   devicePermissions: "DevicePermissions",
   mentions: "Mentions",
   monetization: "Monetization",
+  movie: "Movie",
+  ratings: "Ratings",
 };

@@ -466,8 +466,8 @@ export const CustomSkeleton = ({
             styles.skeletonContainer,
             count > 1 && styles.repeated,
           ]}
-          boneColor={colors.profileBtnBg || "#2C2C2E"}
-          highlightColor={colors.profileDivider || "#3A3A3C"}
+          boneColor={colors.profileBtnBg}
+          highlightColor={colors.profileDivider}
           animationType="shiver"
           layout={resolvedLayout}
           animationDirection="diagonalDownRight"

@@ -94,7 +94,6 @@ export const styles = StyleSheet.create({
   profileLeft: {
     flexDirection: "row",
     alignItems: "center",
-    flex: 1,
   },
   avatarRing: {
     width: scales(42),

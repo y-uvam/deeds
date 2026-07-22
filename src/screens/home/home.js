@@ -17,6 +17,7 @@ const DATA = [
     date: "Today",
     pickupLoc: "123 Main St, Downtown",
     dropLoc: "456 Park Ave, Uptown",
+    postType: "project",
   },
   {
     id: "2",
@@ -26,6 +27,7 @@ const DATA = [
     date: "Tomorrow",
     pickupLoc: "789 Broadway, West Side",
     dropLoc: "101 Fifth Ave, Midtown",
+    postType: "bite",
   },
   {
     id: "3",
@@ -35,6 +37,7 @@ const DATA = [
     date: "Friday",
     pickupLoc: "55 Ocean Blvd, Beachside",
     dropLoc: "22 Hill Rd, Northside",
+    postType: "project",
   },
   {
     id: "4",
@@ -44,6 +47,7 @@ const DATA = [
     date: "Saturday",
     pickupLoc: "9 Lake St, Westend",
     dropLoc: "77 River Ave, Eastside",
+    postType: "slate",
   },
 ];
 

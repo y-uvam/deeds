@@ -33,8 +33,10 @@ import {
   DevicePermissions,
   TagsAndMentions,
   Monetization,
+  Movie,
 } from "../screens";
 import { BottomTab } from "./bottomTab";
+import { Ratings } from "../screens/ratings/ratings";
 
 const { Navigator, Screen } = createStackNavigator();
 
@@ -93,6 +95,8 @@ const MainStack = () => {
       />
       <Screen name={routesConstants.mentions} component={TagsAndMentions} />
       <Screen name={routesConstants.monetization} component={Monetization} />
+      <Screen name={routesConstants.movie} component={Movie} />
+      <Screen name={routesConstants.ratings} component={Ratings} />
       <Screen
         name={routesConstants.accountPrivacy}
         component={AccountPrivacy}

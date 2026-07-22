@@ -65,6 +65,7 @@ export const commonText = {
   dataUsage: "Data Usage",
   monetization: "Monetization",
   tagsAndMentions: "Tags and Mentions",
+  ratings: "Ratings",
 };
 export const validationConstants = {
   noInternet: "Please check your internet connection.",

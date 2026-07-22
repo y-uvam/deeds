@@ -261,6 +261,7 @@ const Description = ({ text }) => {
 };
 
 export const PostItem = ({
+  item,
   images = [appImages.post],
   description = "Living life one deed at a time 🌟 Grateful for the small moments that make everything worthwhile.",
   likes = 248,
@@ -272,7 +273,7 @@ export const PostItem = ({
   const [saved, setSaved] = useState(false);
   const [showLikeAnim, setShowLikeAnim] = useState(false);
   const [showSaveAnim, setShowSaveAnim] = useState(false);
-  
+
   const commentSheetRef = useRef(null);
 
   const handleLike = () => {
@@ -296,15 +297,19 @@ export const PostItem = ({
   return (
     <TouchableOpacity
       activeOpacity={0.97}
-      onPress={() =>
-        navigate(routesConstants.post, {
-          images,
-          description,
-          likes,
-          comments,
-          shares,
-        })
-      }
+      onPress={() => {
+        if (item?.postType === "project") {
+          navigate(routesConstants.movie);
+        } else {
+          navigate(routesConstants.post, {
+            images,
+            description,
+            likes,
+            comments,
+            shares,
+          });
+        }
+      }}
     >
       <View style={styles.card}>
         <View style={styles.profileHeader}>
@@ -319,13 +324,13 @@ export const PostItem = ({
                 style={styles.avatar}
               />
             </View>
-            <View style={styles.profileInfo}>
-              <Text style={styles.profileName}>
-                {profileData?.name || "Yuvam Dhanda"}
-              </Text>
-              <Text style={styles.profileMeta}>Just now · 🌍</Text>
-            </View>
           </TouchableOpacity>
+          <View style={styles.profileInfo}>
+            <Text style={styles.profileName}>
+              {profileData?.name || "Yuvam Dhanda"}
+            </Text>
+            <Text style={styles.profileMeta}>Just now · 🌍</Text>
+          </View>
         </View>
 
         <Description text={description} />
