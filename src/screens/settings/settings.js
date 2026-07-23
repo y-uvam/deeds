@@ -62,13 +62,13 @@ export const Settings = () => {
               navigate(routesConstants.devicePermissions);
             }}
           />
-          <NextButton
+          {/* <NextButton
             leftIcon={appImages.changePassword}
             label="Change Password"
             onPress={() => {
               navigate(routesConstants.changePassword);
             }}
-          />
+          /> */}
           <NextButton
             leftIcon={appImages.monetize}
             label="Monetization"

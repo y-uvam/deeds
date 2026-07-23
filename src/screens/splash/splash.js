@@ -269,7 +269,7 @@ export const Splash = () => {
     masterOpacity.value = withTiming(0, { duration: 1000 }, (done) => {
       if (done) {
         runOnJS(navigation.replace)(
-          routesConstants.BottomTabs,
+          routesConstants.intro,
           // userData?.email ? routesConstants.BottomTabs : routesConstants.Login,
         );
       }

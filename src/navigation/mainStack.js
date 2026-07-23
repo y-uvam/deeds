@@ -11,29 +11,25 @@ import {
   NewChat,
   Editprofile,
   Followers,
-  Forgotpassword,
   Home,
   Login,
   Notification,
-  OTP,
   Post,
   Profile,
-  ResetPassword,
   SavedPosts,
   Settings,
-  SignUp,
   Splash,
   YourActivity,
   Reels,
   SelectMedia,
   Upload,
   MetaData,
-  ChangePassword,
   DataUsage,
   DevicePermissions,
   TagsAndMentions,
   Monetization,
   Movie,
+  Intro,
 } from "../screens";
 import { BottomTab } from "./bottomTab";
 import { Ratings } from "../screens/ratings/ratings";
@@ -58,13 +54,6 @@ const MainStack = () => {
       />
       <Screen name={routesConstants.Login} component={Login} />
       <Screen name={routesConstants.BottomTabs} component={BottomTab} />
-      <Screen name={routesConstants.OTP} component={OTP} />
-      <Screen name={routesConstants.ResetPassword} component={ResetPassword} />
-      <Screen
-        name={routesConstants.ForgotPassword}
-        component={Forgotpassword}
-      />
-      <Screen name={routesConstants.SignUp} component={SignUp} />
       <Screen name={routesConstants.Home} component={Home} />
       <Screen name={routesConstants.Profile} component={Profile} />
       <Screen name={routesConstants.Settings} component={Settings} />
@@ -84,10 +73,6 @@ const MainStack = () => {
       <Screen name={routesConstants.selectMedia} component={SelectMedia} />
       <Screen name={routesConstants.upload} component={Upload} />
       <Screen name={routesConstants.metadata} component={MetaData} />
-      <Screen
-        name={routesConstants.changePassword}
-        component={ChangePassword}
-      />
       <Screen name={routesConstants.dataUsage} component={DataUsage} />
       <Screen
         name={routesConstants.devicePermissions}
@@ -97,6 +82,7 @@ const MainStack = () => {
       <Screen name={routesConstants.monetization} component={Monetization} />
       <Screen name={routesConstants.movie} component={Movie} />
       <Screen name={routesConstants.ratings} component={Ratings} />
+      <Screen name={routesConstants.intro} component={Intro} />
       <Screen
         name={routesConstants.accountPrivacy}
         component={AccountPrivacy}
