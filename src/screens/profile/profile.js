@@ -81,7 +81,7 @@ export const Profile = () => {
         style={[styles.coverContainer, { height: scales(150) + insets.top }]}
       >
         <Image
-          source={profileData?.coverImage || { uri: "https://picsum.photos/" }}
+          source={appImages.poster1 || { uri: "https://picsum.photos/" }}
           style={styles.coverImage}
           resizeMode="cover"
         />

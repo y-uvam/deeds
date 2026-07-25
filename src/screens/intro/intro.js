@@ -1,197 +1,224 @@
-import React, { useState, useCallback, useRef } from "react";
+import React, { useCallback } from "react";
 import {
   Dimensions,
-  Image,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View,
+  StatusBar,
+  useWindowDimensions,
 } from "react-native";
+import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import Animated, {
-  Easing,
-  interpolateColor,
+  Extrapolation,
+  interpolate,
   runOnJS,
   useAnimatedStyle,
   useSharedValue,
   withSpring,
-  withTiming,
 } from "react-native-reanimated";
-import LottieView from "lottie-react-native";
-import { animations } from "../../animations/animations";
+import LinearGradient from "react-native-linear-gradient";
 import { appImages, fontFamily } from "../../assets";
 import { colors, scales, topInset } from "../../utils";
-import { replace } from "../../navigation/navigationServices";
+import { navigate, replace } from "../../navigation/navigationServices";
 import { routesConstants } from "../../navigation/routeConstants";
+import { animations } from "../../animations/animations";
 
 const { width: SCREEN_W } = Dimensions.get("window");
 
 const SLIDES = [
   {
-    id: 1,
-    title: "Your Creative\nUniverse Awaits",
+    key: "creative",
+    title: "The New Era of Storytelling",
     subtitle:
-      "Discover a world where every story becomes something extraordinary.",
+      "Escape the algorithm. A dedicated ecosystem to host, discover, and fund independent films.",
+    bgImage: appImages.intro2,
+    animation: animations.newEra,
   },
   {
-    id: 2,
-    title: "Create Together,\nShine Together",
+    key: "together",
+    title: "The Global Stage",
     subtitle:
-      "Connect with directors, producers, and artists who share your vision.",
+      "Host digital premieres, submit your work to exclusive in-app film festivals, and cast your Projects directly to the big screen.",
+    bgImage: appImages.intro3,
+    animation: animations.global,
   },
   {
-    id: 3,
-    title: "Your Stage.\nYour Story.",
+    key: "stage",
+    title: "Build Your Legacy",
     subtitle:
-      "Step into the spotlight. Share bites, projects, and slates with an audience ready to be moved.",
+      "Tag your crew, share the revenue. Every upload builds a verified visual resume, and every view funds the entire production team.",
+    bgImage: appImages.intro1,
+    animation: animations.yourLegacy,
+  },
+  {
+    key: "network",
+    title: "Network Without the Noise",
+    subtitle:
+      "Connect with filmmakers globally through real-time chat, collaborative project sharing, and daily cinematic challenges.",
+    bgImage: appImages.poster1,
+    animation: animations.noNoise,
   },
 ];
 
-const DOT_INACTIVE = scales(7);
-const DOT_ACTIVE = scales(22);
+const SPRING_CFG = { damping: 20, stiffness: 150, mass: 0.8 };
+const N = SLIDES.length;
 
-const AnimatedDot = ({ index, dotProgress }) => {
+const BackgroundImage = ({ index, image, scrollX }) => {
   const animStyle = useAnimatedStyle(() => {
-    const dist = Math.max(0, 1 - Math.abs(dotProgress.value - index));
+    const opacity = interpolate(
+      scrollX.value,
+      [index - 1, index, index + 1],
+      [0, 1, 0],
+      Extrapolation.CLAMP,
+    );
+    const scale = interpolate(
+      scrollX.value,
+      [index - 1, index, index + 1],
+      [1.32, 1.25, 1.32],
+      Extrapolation.CLAMP,
+    );
     return {
-      width: DOT_INACTIVE + dist * (DOT_ACTIVE - DOT_INACTIVE),
-      backgroundColor: interpolateColor(
-        dist,
-        [0, 1],
-        [colors.transparentWhite15, colors.blue],
-      ),
+      opacity,
+      transform: [{ scale }],
     };
   });
 
-  return <Animated.View style={[styles.dot, animStyle]} />;
+  return (
+    <Animated.Image
+      source={image}
+      style={[StyleSheet.absoluteFillObject, styles.heroImage, animStyle]}
+      resizeMode="cover"
+    />
+  );
 };
 
-export const Intro = () => {
-  const [slideIndex, setSlideIndex] = useState(0);
-  const [isAnimating, setIsAnimating] = useState(false);
+const AnimatedBackground = ({ scrollX }) => (
+  <View style={styles.heroContainer}>
+    {SLIDES.map((slide, i) => (
+      <BackgroundImage
+        key={slide.key}
+        index={i}
+        image={slide.bgImage}
+        scrollX={scrollX}
+      />
+    ))}
+    <LinearGradient
+      colors={["transparent", colors.background + "aa", colors.background]}
+      locations={[0, 0.5, 1]}
+      style={styles.gradientFade}
+    />
+  </View>
+);
 
-  const indexRef = useRef(0);
+const Card = ({ slide, index, scrollX }) => {
+  const { width } = useWindowDimensions();
 
-  const translateX = useSharedValue(0);
-  const opacity = useSharedValue(1);
-  const dotProgress = useSharedValue(0);
+  const cardStyle = useAnimatedStyle(() => {
+    const pos = index - scrollX.value;
+    const opacity = interpolate(
+      pos,
+      [-0.75, 0, 0.75],
+      [0, 1, 0],
+      Extrapolation.CLAMP,
+    );
+    const scale = interpolate(
+      pos,
+      [-1, 0, 1],
+      [0.85, 1, 0.85],
+      Extrapolation.CLAMP,
+    );
+    const translateX = interpolate(
+      pos,
+      [-1, 0, 1],
+      [-width * 0.7, 0, width * 0.7],
+      Extrapolation.CLAMP,
+    );
+    return {
+      opacity,
+      transform: [{ translateX }, { scale }],
+    };
+  });
 
-  const bringInContent = useCallback(
-    (nextIndex, fromRight = true) => {
-      translateX.value = fromRight ? SCREEN_W * 0.08 : -SCREEN_W * 0.08;
-      opacity.value = 0;
-      dotProgress.value = withTiming(nextIndex, {
-        duration: 380,
-        easing: Easing.inOut(Easing.ease),
-      });
-      translateX.value = withSpring(0, { damping: 20, stiffness: 120 });
-      opacity.value = withTiming(1, { duration: 400 });
-      setIsAnimating(false);
-    },
-    [translateX, opacity, dotProgress],
+  return (
+    <Animated.View style={[styles.card, cardStyle]}>
+      <Text style={styles.title}>{slide.title}</Text>
+      <Text style={styles.subtitle}>{slide.subtitle}</Text>
+    </Animated.View>
   );
+};
 
-  const goForward = useCallback(() => {
-    const next = indexRef.current + 1;
-    if (next >= SLIDES.length) {
-      replace(routesConstants.Login);
-      return;
-    }
-    indexRef.current = next;
-    setSlideIndex(next);
-    bringInContent(next, true);
-  }, [bringInContent]);
+const Dot = ({ index, scrollX }) => {
+  const style = useAnimatedStyle(() => {
+    const pos = Math.abs(index - scrollX.value);
+    return {
+      width: interpolate(pos, [0, 1], [28, 8], Extrapolation.CLAMP),
+      opacity: interpolate(pos, [0, 1], [1, 0.35], Extrapolation.CLAMP),
+      backgroundColor: colors.white,
+      transform: [
+        { scale: interpolate(pos, [0, 1], [1, 0.8], Extrapolation.CLAMP) },
+      ],
+    };
+  });
+  return <Animated.View style={[styles.dot, style]} />;
+};
 
-  const goBack = useCallback(() => {
-    const next = indexRef.current - 1;
-    indexRef.current = next;
-    setSlideIndex(next);
-    bringInContent(next, false);
-  }, [bringInContent]);
+const Dots = ({ scrollX }) => (
+  <View style={styles.dotsRow}>
+    {SLIDES.map((s, i) => (
+      <Dot key={s.key} index={i} scrollX={scrollX} />
+    ))}
+  </View>
+);
 
-  const handleNext = useCallback(() => {
-    if (isAnimating) return;
-    setIsAnimating(true);
-    translateX.value = withTiming(-SCREEN_W * 0.06, { duration: 240 });
-    opacity.value = withTiming(0, { duration: 240 }, (done) => {
-      if (done) runOnJS(goForward)();
-    });
-  }, [isAnimating, translateX, opacity, goForward]);
+export const Intro = () => {
+  const { width } = useWindowDimensions();
+  const scrollX = useSharedValue(0);
+  const startX = useSharedValue(0);
 
-  const handleBack = useCallback(() => {
-    if (isAnimating) return;
-    setIsAnimating(true);
-    translateX.value = withTiming(SCREEN_W * 0.06, { duration: 240 });
-    opacity.value = withTiming(0, { duration: 240 }, (done) => {
-      if (done) runOnJS(goBack)();
-    });
-  }, [isAnimating, translateX, opacity, goBack]);
-
-  const handleGetStarted = useCallback(() => {
-    replace(routesConstants.Login);
+  const finish = useCallback(() => {
+    navigate(routesConstants.Login);
   }, []);
 
-  const animatedContent = useAnimatedStyle(() => ({
-    transform: [{ translateX: translateX.value }],
-    opacity: opacity.value,
-  }));
+  const pan = Gesture.Pan()
+    .onStart(() => {
+      startX.value = scrollX.value;
+    })
+    .onUpdate((e) => {
+      const delta = -e.translationX / width;
+      let next = startX.value + delta;
+      if (next < 0) next = next * 0.35;
+      if (next > N - 1) next = N - 1 + (next - (N - 1)) * 0.35;
+      scrollX.value = next;
+    })
+    .onEnd((e) => {
+      const velocity = -e.velocityX / width;
+      let target = Math.round(scrollX.value + velocity * 0.15);
+      if (target < 0) target = 0;
 
-  const slide = SLIDES[slideIndex] ?? SLIDES[0];
-  const isLast = slideIndex === SLIDES.length - 1;
+      if (target > N - 1) {
+        target = N - 1;
+        scrollX.value = withSpring(target, SPRING_CFG);
+        runOnJS(finish)();
+        return;
+      }
+
+      scrollX.value = withSpring(target, SPRING_CFG);
+    });
 
   return (
     <View style={styles.root}>
-      <LottieView
-        source={animations.background}
-        autoPlay
-        loop
-        style={StyleSheet.absoluteFill}
-        resizeMode="cover"
-      />
-      <View style={styles.overlay} />
+      <StatusBar barStyle="light-content" />
+      <AnimatedBackground scrollX={scrollX} />
 
-      <View style={styles.content}>
-        {slideIndex > 0 && (
-          <TouchableOpacity
-            style={styles.backBtn}
-            activeOpacity={0.7}
-            onPress={handleBack}
-          >
-            <Image
-              style={{ height: 15, width: 15 }}
-              source={appImages.backarrow}
-              tintColor={colors.white}
-            />
-          </TouchableOpacity>
-        )}
-
-        <View style={styles.spacer} />
-
-        <Animated.View style={[styles.textBlock, animatedContent]}>
-          <Text style={styles.title}>{slide.title}</Text>
-          <View style={styles.divider} />
-          <Text style={styles.subtitle}>{slide.subtitle}</Text>
-        </Animated.View>
-
-        <View style={styles.bottomArea}>
-          <View style={styles.dotsRow}>
-            {SLIDES.map((_, i) => (
-              <AnimatedDot key={i} index={i} dotProgress={dotProgress} />
-            ))}
-          </View>
-
-          <TouchableOpacity
-            style={styles.circleBtn}
-            activeOpacity={0.82}
-            onPress={isLast ? handleGetStarted : handleNext}
-          >
-            <Image
-              source={appImages.backarrow}
-              style={styles.circleBtnArrow}
-              tintColor={colors.white}
-            />
-          </TouchableOpacity>
+      <GestureDetector gesture={pan}>
+        <View style={styles.stage}>
+          {SLIDES.map((slide, i) => (
+            <Card key={slide.key} slide={slide} index={i} scrollX={scrollX} />
+          ))}
         </View>
-      </View>
+      </GestureDetector>
+
+      <Dots scrollX={scrollX} />
     </View>
   );
 };
@@ -201,92 +228,67 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.background,
   },
-  overlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: "rgba(4,12,26,0.68)",
-  },
-  content: {
-    flex: 1,
-    paddingTop: topInset + scales(24),
-    paddingHorizontal: scales(28),
-    paddingBottom: scales(44),
-  },
-  backBtn: {
-    alignSelf: "flex-start",
-    width: scales(38),
-    height: scales(38),
-    borderRadius: scales(19),
-    backgroundColor: colors.transparentWhite8,
-    borderWidth: 1,
-    borderColor: colors.transparentWhite12,
+  heroContainer: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    height: "64%",
+    overflow: "hidden",
     alignItems: "center",
     justifyContent: "center",
   },
-  backArrow: {
-    color: colors.transparentWhite85,
-    fontFamily: fontFamily.bold,
-    fontSize: scales(18),
+  heroImage: {
+    width: "100%",
+    height: "100%",
+    alignSelf: "center",
   },
-  spacer: {
+  gradientFade: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    bottom: 0,
+    height: "55%",
+  },
+  stage: {
     flex: 1,
+    // backgroundColor: "red",
   },
-  textBlock: {
-    marginBottom: scales(48),
+  card: {
+    position: "absolute",
+    left: scales(20),
+    right: scales(20),
+    bottom: scales(150),
+    alignItems: "center",
   },
   title: {
     color: colors.white,
-    fontFamily: fontFamily.black,
-    fontSize: scales(38),
-    lineHeight: scales(47),
-    marginBottom: scales(16),
-  },
-  divider: {
-    width: scales(36),
-    height: 2,
-    backgroundColor: colors.blue,
-    borderRadius: 2,
-    marginBottom: scales(16),
-    opacity: 0.85,
+    fontSize: scales(25),
+    fontFamily: fontFamily.bold,
+    letterSpacing: 0.3,
+    textAlign: "center",
+    marginBottom: scales(12),
   },
   subtitle: {
     color: colors.transparentWhite40,
-    fontFamily: fontFamily.regular,
     fontSize: scales(15),
-    lineHeight: scales(24),
-    maxWidth: SCREEN_W * 0.78,
-  },
-  bottomArea: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
+    fontFamily: fontFamily.regular,
+    lineHeight: scales(22),
+    textAlign: "center",
+    maxWidth: SCREEN_W * 0.84,
   },
   dotsRow: {
+    position: "absolute",
+    bottom: scales(48) + topInset * 0.5,
+    left: 0,
+    right: 0,
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "center",
     gap: scales(8),
   },
   dot: {
-    height: scales(7),
+    height: scales(8),
     borderRadius: scales(4),
-  },
-  circleBtn: {
-    width: scales(54),
-    height: scales(54),
-    borderRadius: scales(27),
-    backgroundColor: colors.blue,
-    alignItems: "center",
-    justifyContent: "center",
-    shadowColor: colors.blue,
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.45,
-    shadowRadius: 14,
-    elevation: 8,
-  },
-  circleBtnArrow: {
-    resizeMode: "contain",
-    tintColor: colors.white,
-    height: scales(18),
-    width: scales(18),
-    transform: [{ rotate: "180deg" }],
   },
 });

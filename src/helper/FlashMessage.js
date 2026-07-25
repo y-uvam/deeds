@@ -1,141 +1,119 @@
 import React from "react";
 import { StyleSheet, View, Text, Platform } from "react-native";
-import FlashMessage, { showMessage } from "react-native-flash-message";
+import Toast from "react-native-toast-message";
 import { BlurView } from "@react-native-community/blur";
-import LinearGradient from "react-native-linear-gradient";
 import { colors, scales } from "../utils";
 import { fontFamily } from "../assets";
 
-// Custom FlashMessage Component
+const CustomToastCard = ({ text1, text2, type }) => {
+  let textColor = colors.green;
+
+  if (type === "error" || type === "danger") {
+    textColor = colors.red;
+  } else if (type === "warning") {
+    textColor = colors.yellow;
+  } else if (type === "info") {
+    textColor = colors.blue;
+  }
+
+  return (
+    <View style={styles.toastCardWrapper}>
+      <View style={styles.toastCardContainer}>
+        <BlurView
+          style={[StyleSheet.absoluteFill, { overflow: "hidden" }]}
+          blurType="dark"
+          blurAmount={20}
+          reducedTransparencyFallbackColor="#121212"
+        />
+
+        <View style={styles.toastTextContainer}>
+          {!!text1 && (
+            <Text style={[styles.toastText1, { color: textColor }]}>
+              {text1}
+            </Text>
+          )}
+          {!!text2 && <Text style={styles.toastText2}>{text2}</Text>}
+        </View>
+      </View>
+    </View>
+  );
+};
+
+export const toastConfig = {
+  success: (props) => (
+    <CustomToastCard {...props} type="success" text1={props.text1} text2={props.text2} />
+  ),
+  error: (props) => (
+    <CustomToastCard {...props} type="error" text1={props.text1} text2={props.text2} />
+  ),
+  danger: (props) => (
+    <CustomToastCard {...props} type="danger" text1={props.text1} text2={props.text2} />
+  ),
+  info: (props) => (
+    <CustomToastCard {...props} type="info" text1={props.text1} text2={props.text2} />
+  ),
+  warning: (props) => (
+    <CustomToastCard {...props} type="warning" text1={props.text1} text2={props.text2} />
+  ),
+};
+
 const FlashMessageComponent = () => {
   return (
-    <FlashMessage
-      position="top"
-      duration={3500}
-      animationDuration={450}
-      renderFlashMessage={(message) => {
-        const type = message.message?.type || "info";
-        const bgColor = message.message?.backgroundColor;
-
-        // Custom Gradient Colors based on type
-        let gradientColors = ["#00B4DB", "#0083B0"]; // Default info
-        if (bgColor === colors.red || type === "danger") {
-          gradientColors = ["#FF4B2B", "#FF416C"];
-        } else if (bgColor === colors.green || type === "success") {
-          gradientColors = ["#56AB2F", "#A8E063"];
-        } else if (bgColor === colors.yellow || type === "warning") {
-          gradientColors = ["#F1C40F", "#F39C12"];
-        }
-
-        return (
-          <View style={styles.outerContainer}>
-            <View style={styles.cardContainer}>
-              {/* Premium Glass Effect Background */}
-              <BlurView
-                style={StyleSheet.absoluteFill}
-                blurType="dark"
-                blurAmount={12}
-                reducedTransparencyFallbackColor="black"
-              />
-              
-              <View style={styles.contentWrapper}>
-                {/* Status Indicator Bar */}
-                <LinearGradient
-                  colors={gradientColors}
-                  start={{ x: 0, y: 0 }}
-                  end={{ x: 0, y: 1 }}
-                  style={styles.indicatorBar}
-                />
-                
-                <View style={styles.textContainer}>
-                   <Text style={[styles.titleText, { color: gradientColors[0] }]}>
-                     {type.charAt(0).toUpperCase() + type.slice(1)}
-                   </Text>
-                   <Text style={styles.messageText}>{message.message?.message}</Text>
-                   {!!message.message?.description && (
-                     <Text style={styles.descText}>{message.message.description}</Text>
-                   )}
-                </View>
-              </View>
-            </View>
-          </View>
-        );
-      }}
+    <Toast
+      config={toastConfig}
+      topOffset={Platform.OS === "ios" ? scales(54) : scales(30)}
     />
   );
 };
 
-// Function to show custom messages with enhanced UI
 export const showCustomMessage = (message, type = "info", description = "") => {
-  const typeConfigs = {
-    success: { backgroundColor: colors.green },
-    danger: { backgroundColor: colors.red },
-    info: { backgroundColor: colors.blue },
-    warning: { backgroundColor: colors.yellow },
-  };
+  const toastType = type === "danger" ? "error" : type;
 
-  const config = typeConfigs[type] || typeConfigs.info;
-
-  showMessage({
-    message,
-    description,
-    type,
-    backgroundColor: config.backgroundColor,
-    color: colors.white,
-    hideOnPress: true,
-    animated: true,
+  Toast.show({
+    type: toastType,
+    text1: message,
+    text2: description,
+    visibilityTime: 3500,
+    autoHide: true,
+    topOffset: Platform.OS === "ios" ? scales(54) : scales(30),
   });
 };
 
 const styles = StyleSheet.create({
-  outerContainer: {
-    paddingTop: Platform.OS === "ios" ? scales(50) : scales(20),
-    paddingHorizontal: scales(16),
-    zIndex: 9999999,
+  toastCardWrapper: {
+    width: "88%",
+    alignSelf: "center",
+    shadowColor: colors.black,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.4,
+    shadowRadius: 12,
+    elevation: 16,
   },
-  cardContainer: {
-    borderRadius: scales(20),
+  toastCardContainer: {
+    borderRadius: scales(18),
     overflow: "hidden",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.5,
-    shadowRadius: 15,
-    elevation: 20,
-    backgroundColor: "rgba(25, 25, 25, 0.75)",
+    backgroundColor: "transparent",
     borderWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.12)",
+    borderColor: colors.transparentWhite12,
   },
-  contentWrapper: {
-    flexDirection: "row",
-    alignItems: "stretch", // Ensures children stretch to match container height
-  },
-  indicatorBar: {
-    width: scales(6),
-    borderTopLeftRadius: scales(20),
-    borderBottomLeftRadius: scales(20),
-  },
-  textContainer: {
-    flex: 1,
+  toastTextContainer: {
     paddingVertical: scales(14),
-    paddingHorizontal: scales(18),
+    paddingHorizontal: scales(20),
+    alignItems: "center",
+    justifyContent: "center",
   },
-  titleText: {
-    fontSize: scales(11),
-    fontFamily: fontFamily.bold,
-    letterSpacing: 1.5,
-    marginBottom: scales(4),
-  },
-  messageText: {
+  toastText1: {
     fontSize: scales(14),
     fontFamily: fontFamily.bold,
-    color: colors.white,
-    letterSpacing: 0.3,
+    textAlign: "center",
+    letterSpacing: 0.2,
   },
-  descText: {
+  toastText2: {
     fontSize: scales(12),
-    fontFamily: fontFamily.medium,
-    color: "rgba(255,255,255,0.6)",
-    marginTop: scales(2),
+    fontFamily: fontFamily.regular,
+    color: colors.transparentWhite40,
+    textAlign: "center",
+    marginTop: scales(4),
   },
 });
 

@@ -1,8 +1,8 @@
 import { DevicePermissions } from "../screens/devicePermissions/devicePermissions";
 
 export const commonText = {
-  welcomeMessage: "Welcome Back, Buddy !",
-  letstart: "Let's Get You Back In",
+  welcomeMessage: "Enter the Studio",
+  letstart: "Sign in to access your projects, crew, and daily slates.",
   email: "Email Address",
   enteremailaddress: "Enter your email address",
   password: "Password",

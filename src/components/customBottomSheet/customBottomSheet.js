@@ -49,22 +49,27 @@ export const CustomBottomSheet = forwardRef(
       subtitle,
       useBlur = false,
       showCloseButton = false,
+      enableBackdrop = true,
+      backdropOpacity = 0.5,
     },
     ref,
   ) => {
     const points = useMemo(() => snapPoints, [snapPoints]);
 
     const renderBackdrop = useCallback(
-      (props) => (
-        <BottomSheetBackdrop
-          {...props}
-          disappearsOnIndex={-1}
-          appearsOnIndex={0}
-          opacity={0.5}
-          pressBehavior="close"
-        />
-      ),
-      [],
+      (props) => {
+        if (!enableBackdrop) return null;
+        return (
+          <BottomSheetBackdrop
+            {...props}
+            disappearsOnIndex={-1}
+            appearsOnIndex={0}
+            opacity={backdropOpacity}
+            pressBehavior="close"
+          />
+        );
+      },
+      [enableBackdrop, backdropOpacity],
     );
 
     const renderBackground = useCallback(

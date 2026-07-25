@@ -42,6 +42,8 @@ const MainStack = () => {
       initialRouteName={routesConstants.Splash}
       screenOptions={{
         headerShown: false,
+        gestureEnabled: true,
+        gestureDirection: "horizontal",
         cardStyle: { backgroundColor: colors.white },
       }}
     >

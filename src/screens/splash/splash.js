@@ -13,6 +13,7 @@ import Animated, {
 } from "react-native-reanimated";
 import LottieView from "lottie-react-native";
 import { useNavigation } from "@react-navigation/native";
+import { useSelector } from "react-redux";
 import { routesConstants } from "../../navigation/routeConstants";
 import { colors, scales } from "../../utils";
 import { DataManager } from "../../helper/dataManager";
@@ -252,6 +253,7 @@ const PulseRing = ({ delay, size }) => {
 
 export const Splash = () => {
   const navigation = useNavigation();
+  const isLoggedIn = useSelector((state) => state.persist?.isLoggedIn);
 
   const masterOpacity = useSharedValue(1);
   const logoAreaScale = useSharedValue(0.8);
@@ -264,17 +266,15 @@ export const Splash = () => {
   const dotOpacity = useSharedValue(0);
   const versionOpacity = useSharedValue(0);
 
-  const navigateNextStep = useCallback(async () => {
-    const userData = await DataManager.getUserDetails();
+  const navigateNextStep = useCallback(() => {
     masterOpacity.value = withTiming(0, { duration: 1000 }, (done) => {
       if (done) {
         runOnJS(navigation.replace)(
-          routesConstants.intro,
-          // userData?.email ? routesConstants.BottomTabs : routesConstants.Login,
+          isLoggedIn ? routesConstants.BottomTabs : routesConstants.intro,
         );
       }
     });
-  }, []);
+  }, [isLoggedIn, navigation]);
 
   useEffect(() => {
     logoAreaOpacity.value = withTiming(1, {
@@ -304,7 +304,7 @@ export const Splash = () => {
 
     const timer = setTimeout(navigateNextStep, 2800);
     return () => clearTimeout(timer);
-  }, []);
+  }, [navigateNextStep]);
 
   const masterStyle = useAnimatedStyle(() => ({
     opacity: masterOpacity.value,

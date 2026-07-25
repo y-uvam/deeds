@@ -1,10 +1,24 @@
+import React, { useCallback } from "react";
 import { View, Text, StyleSheet, ScrollView } from "react-native";
 import { AppBackground, Header, NextButton } from "../../components";
 import { colors, scales, commonText } from "../../utils";
 import { appImages, fontFamily } from "../../assets";
-import { navigate, routesConstants } from "../../navigation";
+import { navigate, reset, routesConstants } from "../../navigation";
+import { useDispatch } from "react-redux";
+import { resetPersistStore } from "../../redux/slices/persistedSlice";
+import { showCustomMessage } from "../../helper/FlashMessage";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export const Settings = () => {
+  const dispatch = useDispatch();
+
+  const handleLogout = useCallback(async () => {
+    dispatch(resetPersistStore());
+    await AsyncStorage.clear();
+    showCustomMessage("Logged out successfully.", "info");
+    reset(routesConstants.intro);
+  }, [dispatch]);
+
   const Section = ({ title, children }) => (
     <View style={styles.sectionContainer}>
       <Text style={styles.sectionTitle}>{title}</Text>
@@ -62,13 +76,6 @@ export const Settings = () => {
               navigate(routesConstants.devicePermissions);
             }}
           />
-          {/* <NextButton
-            leftIcon={appImages.changePassword}
-            label="Change Password"
-            onPress={() => {
-              navigate(routesConstants.changePassword);
-            }}
-          /> */}
           <NextButton
             leftIcon={appImages.monetize}
             label="Monetization"
@@ -89,12 +96,12 @@ export const Settings = () => {
           <NextButton
             leftIcon={appImages.logout}
             label="Log Out"
-            onPress={() => {}}
+            onPress={handleLogout}
           />
           <NextButton
             leftIcon={appImages.bin}
             label="Deactivate Account"
-            onPress={() => {}}
+            onPress={handleLogout}
           />
         </Section>
       </ScrollView>

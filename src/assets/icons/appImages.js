@@ -62,6 +62,13 @@ export const appImages = {
   slate: require("../icons/slates.png"),
   project: require("../icons/project.png"),
   star: require("../icons/star.png"),
+  intro1: require("../icons/intro-hero-1.png"),
+  intro2: require("../icons/intro-hero-2.png"),
+  intro3: require("../icons/intro-hero-3.png"),
+  poster1: require("../icons/poster-1.png"),
+  poster2: require("../icons/poster-2.png"),
+  poster3: require("../icons/poster-3.png"),
+  poster4: require("../icons/poster-4.png"),
 
   earnings: require("../icons/earnings_illustration.png"),
 };
