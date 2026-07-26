@@ -2846,6 +2846,34 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
+  - RNShare (12.3.1):
+    - boost
+    - DoubleConversion
+    - fast_float
+    - fmt
+    - glog
+    - hermes-engine
+    - RCT-Folly
+    - RCT-Folly/Fabric
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-jsi
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-renderercss
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - SocketRocket
+    - Yoga
   - RNSVG (15.15.5):
     - boost
     - DoubleConversion
@@ -3080,6 +3108,7 @@ DEPENDENCIES:
   - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
   - RNReanimated (from `../node_modules/react-native-reanimated`)
   - RNScreens (from `../node_modules/react-native-screens`)
+  - RNShare (from `../node_modules/react-native-share`)
   - RNSVG (from `../node_modules/react-native-svg`)
   - RNWorklets (from `../node_modules/react-native-worklets`)
   - SocketRocket (~> 0.7.1)
@@ -3258,6 +3287,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-reanimated"
   RNScreens:
     :path: "../node_modules/react-native-screens"
+  RNShare:
+    :path: "../node_modules/react-native-share"
   RNSVG:
     :path: "../node_modules/react-native-svg"
   RNWorklets:
@@ -3350,6 +3381,7 @@ SPEC CHECKSUMS:
   RNGestureHandler: f97d19585553412302394c42495cdaf499589d34
   RNReanimated: 13bac9adbcb69373652e3ac53bd4c5efbc8e4ac0
   RNScreens: 7f643ee0fd1407dc5085c7795460bd93da113b8f
+  RNShare: bf3fa119b277d4a1729553e870039427bcb80c93
   RNSVG: 7cf280f47bb61ae1eadcbb7f4014533447f1550e
   RNWorklets: 15ae83e146222e29e0a9ee0cf3a2896dc4e8696d
   SocketRocket: d4aabe649be1e368d1318fdf28a022d714d65748

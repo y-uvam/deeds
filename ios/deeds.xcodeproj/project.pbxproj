@@ -26,26 +26,27 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		0E71C77DCB2B4A249CFDCE13 /* UrbanistBoldItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = UrbanistBoldItalic.ttf; path = ../src/assets/fonts/UrbanistBoldItalic.ttf; sourceTree = "<group>"; };
+		0E2C91043015F33C00AEAEFA /* deeds.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = deeds.entitlements; path = deeds/deeds.entitlements; sourceTree = "<group>"; };
+		0E71C77DCB2B4A249CFDCE13 /* UrbanistBoldItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = UrbanistBoldItalic.ttf; path = ../src/assets/fonts/UrbanistBoldItalic.ttf; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* deeds.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = deeds.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = deeds/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = deeds/Info.plist; sourceTree = "<group>"; };
 		13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = PrivacyInfo.xcprivacy; path = deeds/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
-		172E261A3356435894CADC11 /* UrbanistExtraLight.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = UrbanistExtraLight.ttf; path = ../src/assets/fonts/UrbanistExtraLight.ttf; sourceTree = "<group>"; };
+		172E261A3356435894CADC11 /* UrbanistExtraLight.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = UrbanistExtraLight.ttf; path = ../src/assets/fonts/UrbanistExtraLight.ttf; sourceTree = "<group>"; };
 		3B4392A12AC88292D35C810B /* Pods-deeds.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-deeds.debug.xcconfig"; path = "Target Support Files/Pods-deeds/Pods-deeds.debug.xcconfig"; sourceTree = "<group>"; };
-		4DECBC5D24F54D9688AE329C /* UrbanistExtraBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = UrbanistExtraBold.ttf; path = ../src/assets/fonts/UrbanistExtraBold.ttf; sourceTree = "<group>"; };
+		4DECBC5D24F54D9688AE329C /* UrbanistExtraBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = UrbanistExtraBold.ttf; path = ../src/assets/fonts/UrbanistExtraBold.ttf; sourceTree = "<group>"; };
 		5709B34CF0A7D63546082F79 /* Pods-deeds.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-deeds.release.xcconfig"; path = "Target Support Files/Pods-deeds/Pods-deeds.release.xcconfig"; sourceTree = "<group>"; };
-		5AFA91F7EB6E44BF80EF7214 /* UrbanistItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = UrbanistItalic.ttf; path = ../src/assets/fonts/UrbanistItalic.ttf; sourceTree = "<group>"; };
+		5AFA91F7EB6E44BF80EF7214 /* UrbanistItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = UrbanistItalic.ttf; path = ../src/assets/fonts/UrbanistItalic.ttf; sourceTree = "<group>"; };
 		5DCACB8F33CDC322A6C60F78 /* libPods-deeds.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-deeds.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		761780EC2CA45674006654EE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = deeds/AppDelegate.swift; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = deeds/LaunchScreen.storyboard; sourceTree = "<group>"; };
-		89F6AA92DC0F4C82852D1765 /* UrbanistSemiBoldItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = UrbanistSemiBoldItalic.ttf; path = ../src/assets/fonts/UrbanistSemiBoldItalic.ttf; sourceTree = "<group>"; };
-		A8133C8B69044B14A0AAB2F1 /* UrbanistBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = UrbanistBold.ttf; path = ../src/assets/fonts/UrbanistBold.ttf; sourceTree = "<group>"; };
-		A8F78C0210704C60934B7552 /* UrbanistMedium.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = UrbanistMedium.ttf; path = ../src/assets/fonts/UrbanistMedium.ttf; sourceTree = "<group>"; };
-		B42802514DC64B339FE04D60 /* UrbanistSemiBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = UrbanistSemiBold.ttf; path = ../src/assets/fonts/UrbanistSemiBold.ttf; sourceTree = "<group>"; };
-		BCD7166F0D9F4720A9025EDC /* UrbanistLight.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = UrbanistLight.ttf; path = ../src/assets/fonts/UrbanistLight.ttf; sourceTree = "<group>"; };
-		DB9CADAF6F07442DA3D521AF /* fontFamily.js */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = fontFamily.js; path = ../src/assets/fonts/fontFamily.js; sourceTree = "<group>"; };
-		DEB05C9612FF41CDA92A5650 /* UrbanistRegular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = UrbanistRegular.ttf; path = ../src/assets/fonts/UrbanistRegular.ttf; sourceTree = "<group>"; };
+		89F6AA92DC0F4C82852D1765 /* UrbanistSemiBoldItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = UrbanistSemiBoldItalic.ttf; path = ../src/assets/fonts/UrbanistSemiBoldItalic.ttf; sourceTree = "<group>"; };
+		A8133C8B69044B14A0AAB2F1 /* UrbanistBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = UrbanistBold.ttf; path = ../src/assets/fonts/UrbanistBold.ttf; sourceTree = "<group>"; };
+		A8F78C0210704C60934B7552 /* UrbanistMedium.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = UrbanistMedium.ttf; path = ../src/assets/fonts/UrbanistMedium.ttf; sourceTree = "<group>"; };
+		B42802514DC64B339FE04D60 /* UrbanistSemiBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = UrbanistSemiBold.ttf; path = ../src/assets/fonts/UrbanistSemiBold.ttf; sourceTree = "<group>"; };
+		BCD7166F0D9F4720A9025EDC /* UrbanistLight.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = UrbanistLight.ttf; path = ../src/assets/fonts/UrbanistLight.ttf; sourceTree = "<group>"; };
+		DB9CADAF6F07442DA3D521AF /* fontFamily.js */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = fontFamily.js; path = ../src/assets/fonts/fontFamily.js; sourceTree = "<group>"; };
+		DEB05C9612FF41CDA92A5650 /* UrbanistRegular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = UrbanistRegular.ttf; path = ../src/assets/fonts/UrbanistRegular.ttf; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -64,6 +65,7 @@
 		13B07FAE1A68108700A75B9A /* deeds */ = {
 			isa = PBXGroup;
 			children = (
+				0E2C91043015F33C00AEAEFA /* deeds.entitlements */,
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
 				761780EC2CA45674006654EE /* AppDelegate.swift */,
 				13B07FB61A68108700A75B9A /* Info.plist */,
@@ -137,7 +139,6 @@
 				DB9CADAF6F07442DA3D521AF /* fontFamily.js */,
 			);
 			name = Resources;
-			path = "";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -244,9 +245,13 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-deeds/Pods-deeds-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
+			inputPaths = (
+			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-deeds/Pods-deeds-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -283,9 +288,13 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-deeds/Pods-deeds-resources-${CONFIGURATION}-input-files.xcfilelist",
 			);
+			inputPaths = (
+			);
 			name = "[CP] Copy Pods Resources";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-deeds/Pods-deeds-resources-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -312,6 +321,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = deeds/deeds.entitlements;
 				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = deeds/Info.plist;
@@ -340,6 +350,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = deeds/deeds.entitlements;
 				CURRENT_PROJECT_VERSION = 1;
 				INFOPLIST_FILE = deeds/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;

@@ -10,7 +10,6 @@ export const routesConstants = {
   Profile: "Profile",
   editProfile: "EditProfile",
   savedPosts: "SavedPosts",
-  archive: "Archive",
   followers: "Followers",
   blocked: "Blocked",
   yourActivity: "YourActivity",

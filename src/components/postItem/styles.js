@@ -186,4 +186,27 @@ export const styles = StyleSheet.create({
     height: scales(22),
     backgroundColor: colors.transparentWhite15,
   },
+  listItemContainer: {
+    paddingVertical: scales(4),
+    gap: scales(10),
+  },
+  listItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: scales(12),
+    paddingHorizontal: scales(14),
+    borderRadius: scales(14),
+    backgroundColor: colors.transparentWhite5,
+    gap: scales(14),
+  },
+  listImage: {
+    height: scales(20),
+    width: scales(20),
+  },
+  listText: {
+    color: colors.white,
+    fontFamily: fontFamily.semiBold,
+    fontSize: scales(14),
+    letterSpacing: 0.5,
+  },
 });

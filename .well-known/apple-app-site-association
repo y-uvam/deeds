@@ -1,0 +1,15 @@
+{
+  "applinks": {
+    "apps": [],
+    "details": [
+      {
+        "appID": "DEVELOPER_TEAM_ID.com.deeds",
+        "paths": [
+          "/post/*",
+          "/profile/*",
+          "/"
+        ]
+      }
+    ]
+  }
+}

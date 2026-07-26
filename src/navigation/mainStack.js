@@ -3,7 +3,6 @@ import { routesConstants } from "./routeConstants";
 import { colors } from "../utils";
 import {
   AccountPrivacy,
-  Archive,
   Blocked,
   Browse,
   Chat,
@@ -64,7 +63,7 @@ const MainStack = () => {
       <Screen name={routesConstants.Chat} component={Chat} />
       <Screen name={routesConstants.editProfile} component={Editprofile} />
       <Screen name={routesConstants.savedPosts} component={SavedPosts} />
-      <Screen name={routesConstants.archive} component={Archive} />
+
       <Screen name={routesConstants.followers} component={Followers} />
       <Screen name={routesConstants.blocked} component={Blocked} />
       <Screen name={routesConstants.yourActivity} component={YourActivity} />

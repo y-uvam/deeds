@@ -7,7 +7,6 @@ export * from "./home/home";
 export * from "./browse/browse";
 export * from "./profile/profile";
 export * from "./savedPosts/savePosts";
-export * from "./archive/archive";
 export * from "./followers/followers";
 export * from "./blocked/blocked";
 export * from "./yourActivity/yourActivity";

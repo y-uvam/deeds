@@ -23,11 +23,14 @@ import { colors, scales, width } from "../../utils";
 import { useSelector } from "react-redux";
 import { appImages, fontFamily } from "../../assets";
 import { animations } from "../../animations/animations";
+import Share from "react-native-share";
 import { navigate } from "../../navigation/navigationServices";
 import { routesConstants } from "../../navigation/routeConstants";
+import { showCustomMessage } from "../../helper/FlashMessage";
 import { styles } from "./styles";
 import { Spacer } from "../spacer/spacer";
 import { CommentSheet } from "../commentSheet/commentSheet";
+import { CustomBottomSheet } from "../customBottomSheet/customBottomSheet";
 
 const DOT_SIZE = scales(5);
 const DOT_ACTIVE_WIDTH = scales(16);
@@ -275,6 +278,7 @@ export const PostItem = ({
   const [showSaveAnim, setShowSaveAnim] = useState(false);
 
   const commentSheetRef = useRef(null);
+  const moreSheetRef = useRef(null);
 
   const handleLike = () => {
     const next = !liked;
@@ -292,6 +296,45 @@ export const PostItem = ({
       setShowSaveAnim(true);
       setTimeout(() => setShowSaveAnim(false), 2500);
     }
+  };
+
+  const handleSharePost = () => {
+    const postId = item?.id || "1";
+    Share.open({
+      title: "Share Post",
+      message: `Check out this amazing post on Sinema!`,
+      url: `https://sinema.app/post/${postId}`,
+    }).catch((err) => {
+      err && console.log(err);
+    });
+  };
+
+  const ListItem = ({ image, label, onPress, isDestructive }) => {
+    return (
+      <TouchableOpacity
+        onPress={onPress}
+        style={styles.listItem}
+        activeOpacity={0.7}
+      >
+        <Image
+          source={image}
+          style={[
+            styles.listImage,
+            isDestructive && { tintColor: colors.red },
+          ]}
+          resizeMode="contain"
+          tintColor={isDestructive ? colors.red : colors.white}
+        />
+        <Text
+          style={[
+            styles.listText,
+            isDestructive && { color: colors.red },
+          ]}
+        >
+          {label}
+        </Text>
+      </TouchableOpacity>
+    );
   };
 
   return (
@@ -378,14 +421,97 @@ export const PostItem = ({
             <ActionButton
               icon={appImages.send}
               label="Share"
-              onPress={() => {}}
+              onPress={handleSharePost}
             />
             <View style={styles.actionDivider} />
-            <ActionButton icon={appImages.threeDots} onPress={() => {}} />
+            <ActionButton
+              icon={appImages.threeDots}
+              onPress={() => {
+                moreSheetRef.current?.present();
+              }}
+            />
           </View>
         </View>
       </View>
       <CommentSheet ref={commentSheetRef} />
+      <CustomBottomSheet
+        ref={moreSheetRef}
+        snapPoints={["54%"]}
+        useBlur={true}
+        enablePanDownToClose={true}
+        enableBackdrop={true}
+        showCloseButton={true}
+        title="Post Options"
+        subtitle="Select an action for this post"
+      >
+        <View style={styles.listItemContainer}>
+          <ListItem
+            image={saved ? appImages.saved : appImages.save}
+            label={saved ? "Remove from Saved" : "Save Post"}
+            onPress={() => {
+              handleSave();
+              moreSheetRef.current?.dismiss();
+              showCustomMessage(
+                saved ? "Removed from saved posts" : "Saved to your library",
+                "success"
+              );
+            }}
+          />
+          <ListItem
+            image={appImages.send}
+            label="Share Post"
+            onPress={() => {
+              moreSheetRef.current?.dismiss();
+              handleSharePost();
+            }}
+          />
+          <ListItem
+            image={appImages.browse}
+            label="Copy Link"
+            onPress={() => {
+              moreSheetRef.current?.dismiss();
+              showCustomMessage("Post link copied to clipboard", "info");
+            }}
+          />
+          <ListItem
+            image={appImages.follow}
+            label="Follow Creator"
+            onPress={() => {
+              moreSheetRef.current?.dismiss();
+              showCustomMessage("Followed creator", "success");
+            }}
+          />
+          <ListItem
+            image={appImages.bell}
+            label="Mute Creator"
+            onPress={() => {
+              moreSheetRef.current?.dismiss();
+              showCustomMessage("Muted creator posts", "info");
+            }}
+          />
+          <ListItem
+            image={appImages.blocked}
+            label="Block User"
+            isDestructive={true}
+            onPress={() => {
+              moreSheetRef.current?.dismiss();
+              showCustomMessage("Blocked user", "danger");
+            }}
+          />
+          <ListItem
+            image={appImages.bin}
+            label="Report Post"
+            isDestructive={true}
+            onPress={() => {
+              moreSheetRef.current?.dismiss();
+              showCustomMessage(
+                "Report submitted. Thank you for keeping Virtue safe.",
+                "danger"
+              );
+            }}
+          />
+        </View>
+      </CustomBottomSheet>
     </TouchableOpacity>
   );
 };

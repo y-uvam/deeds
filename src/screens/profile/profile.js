@@ -17,6 +17,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { navigate, routesConstants } from "../../navigation";
 import AnimatedRN from "react-native-reanimated";
 import { useTabBarScrollHandler } from "../../context/TabBarContext";
+import Share from "react-native-share";
 
 const { width } = Dimensions.get("window");
 const AnimatedFlatList = AnimatedRN.createAnimatedComponent(FlatList);
@@ -48,6 +49,17 @@ export const Profile = () => {
   const insets = useSafeAreaInsets();
   const profileData = useSelector((state) => state.persist.profileData);
   const [activeTab, setActiveTab] = useState(0);
+
+  const handleShare = () => {
+    const username = profileData?.username || commonText.profileHandle;
+    Share.open({
+      title: "Share Profile",
+      message: `Check out @${username} on Sinema!`,
+      url: `https://sinema.app/profile/${username}`,
+    }).catch((err) => {
+      err && console.log(err);
+    });
+  };
   const tabAnim = useRef(new Animated.Value(0)).current;
   const [loading, setLoading] = useState(true);
   const scrollHandler = useTabBarScrollHandler();
@@ -88,7 +100,7 @@ export const Profile = () => {
         <View style={styles.coverOverlay} />
         <View style={[styles.headerActions, { top: insets.top + scales(10) }]}>
           <View style={styles.rightHeaderActions}>
-            <TouchableOpacity style={styles.iconCircle}>
+            <TouchableOpacity style={styles.iconCircle} onPress={handleShare}>
               <Image
                 source={appImages.share}
                 style={styles.shareIcon}
@@ -151,15 +163,23 @@ export const Profile = () => {
           <Text style={styles.statBoxLabel}>{commonText.posts}</Text>
         </View>
         <View style={styles.statDivider} />
-        <View style={styles.statBox}>
+        <TouchableOpacity
+          style={styles.statBox}
+          onPress={() => navigate(routesConstants.followers, { type: "followers" })}
+          activeOpacity={0.7}
+        >
           <Text style={styles.statBoxValue}>125K</Text>
           <Text style={styles.statBoxLabel}>{commonText.followers}</Text>
-        </View>
+        </TouchableOpacity>
         <View style={styles.statDivider} />
-        <View style={styles.statBox}>
+        <TouchableOpacity
+          style={styles.statBox}
+          onPress={() => navigate(routesConstants.followers, { type: "following" })}
+          activeOpacity={0.7}
+        >
           <Text style={styles.statBoxValue}>450</Text>
           <Text style={styles.statBoxLabel}>{commonText.following}</Text>
-        </View>
+        </TouchableOpacity>
       </View>
     </View>
   );
