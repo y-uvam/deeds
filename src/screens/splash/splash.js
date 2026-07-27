@@ -1,510 +1,218 @@
 import React, { useEffect, useCallback } from "react";
-import { View, StyleSheet, Dimensions, StatusBar, Image } from "react-native";
+import { StyleSheet, Dimensions, StatusBar, View } from "react-native";
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
+  useAnimatedProps,
   withTiming,
-  withDelay,
-  withSpring,
-  withRepeat,
-  withSequence,
   Easing,
   runOnJS,
 } from "react-native-reanimated";
-import LottieView from "lottie-react-native";
+import Svg, { Path } from "react-native-svg";
 import { useNavigation } from "@react-navigation/native";
 import { useSelector } from "react-redux";
 import { routesConstants } from "../../navigation/routeConstants";
-import { colors, scales } from "../../utils";
-import { DataManager } from "../../helper/dataManager";
-import { appImages } from "../../assets/icons/appImages";
+import { AppBackground } from "../../components";
 import { fontFamily } from "../../assets";
-import { animations } from "../../animations/animations";
+import { colors } from "../../utils";
 
-const { width, height } = Dimensions.get("screen");
+const { width } = Dimensions.get("window");
+const AnimatedSvgPath = Animated.createAnimatedComponent(Path);
 
-const LETTERS = [
-  appImages.v,
-  appImages.i,
-  appImages.r,
-  appImages.t,
-  appImages.u,
-  appImages.e,
+// ---------------------------------------------------------------------------
+// SVG paths for "indiemate" — real bold glyph outlines (outer + inner
+// contour per letter, which is what gives the "double stroke" look), traced
+// from the font and pre-transformed into this 0 0 410 100 viewBox.
+// `length` is the exact computed path length (for strokeDasharray).
+// `start`/`end` are this letter's fraction of the overall word length, used
+// to stagger the draw-on so letters reveal left-to-right in sequence, like
+// a single pen stroke, instead of all animating at once.
+// ---------------------------------------------------------------------------
+const PATHS_DATA = [
+  {
+    id: "i1",
+    start: 0.0,
+    end: 0.0611,
+    length: 136.3,
+    d: "M 14.95,72.88 Q 14.95,75.06 13.52,76.53 Q 12.1,78 9.91,78 Q 7.73,78 6.3,76.53 Q 4.87,75.06 4.87,72.88 L 4.87,38.18 Q 4.87,36 6.3,34.53 Q 7.73,33.06 9.91,33.06 Q 12.1,33.06 13.52,34.53 Q 14.95,36 14.95,38.18 L 14.95,72.88 M 9.83,27.6 Q 6.97,27.6 5.8,26.68 Q 4.62,25.75 4.62,23.4 L 4.62,21.8 Q 4.62,19.37 5.92,18.49 Q 7.22,17.6 9.91,17.6 Q 12.85,17.6 14.03,18.53 Q 15.2,19.45 15.2,21.8 L 15.2,23.4 Q 15.2,25.84 13.94,26.72 Q 12.68,27.6 9.83,27.6",
+  },
+  {
+    id: "n1",
+    start: 0.0611,
+    end: 0.1643,
+    length: 230.4,
+    d: "M 49.31,32.22 Q 55.52,32.22 58.76,34.82 Q 61.99,37.43 63.21,41.75 Q 64.43,46.08 64.43,51.37 L 64.43,72.88 Q 64.43,75.06 63,76.53 Q 61.57,78 59.39,78 Q 57.2,78 55.78,76.53 Q 54.35,75.06 54.35,72.88 L 54.35,51.37 Q 54.35,48.6 53.63,46.37 Q 52.92,44.15 51.07,42.8 Q 49.22,41.46 45.78,41.46 Q 42.42,41.46 40.11,42.8 Q 37.8,44.15 36.58,46.37 Q 35.36,48.6 35.36,51.37 L 35.36,72.88 Q 35.36,75.06 33.94,76.53 Q 32.51,78 30.32,78 Q 28.14,78 26.71,76.53 Q 25.28,75.06 25.28,72.88 L 25.28,38.18 Q 25.28,36 26.71,34.53 Q 28.14,33.06 30.32,33.06 Q 32.51,33.06 33.94,34.53 Q 35.36,36 35.36,38.18 L 35.36,41.8 L 34.1,41.54 Q 34.86,40.12 36.29,38.48 Q 37.72,36.84 39.65,35.41 Q 41.58,33.98 44.02,33.1 Q 46.45,32.22 49.31,32.22",
+  },
+  {
+    id: "d1",
+    start: 0.1643,
+    end: 0.3026,
+    length: 308.6,
+    d: "M 112.14,15.84 Q 114.32,15.84 115.75,17.27 Q 117.18,18.7 117.18,20.96 L 117.18,72.88 Q 117.18,75.06 115.75,76.53 Q 114.32,78 112.14,78 Q 109.96,78 108.53,76.53 Q 107.1,75.06 107.1,72.88 L 107.1,68.76 L 108.95,69.52 Q 108.95,70.61 107.77,72.16 Q 106.6,73.72 104.58,75.23 Q 102.56,76.74 99.83,77.79 Q 97.1,78.84 93.91,78.84 Q 88.12,78.84 83.41,75.86 Q 78.71,72.88 75.98,67.63 Q 73.25,62.38 73.25,55.57 Q 73.25,48.68 75.98,43.43 Q 78.71,38.18 83.33,35.2 Q 87.95,32.22 93.58,32.22 Q 97.19,32.22 100.21,33.31 Q 103.24,34.4 105.46,36.08 Q 107.69,37.76 108.91,39.49 Q 110.12,41.21 110.12,42.38 L 107.1,43.48 L 107.1,20.96 Q 107.1,18.78 108.53,17.31 Q 109.96,15.84 112.14,15.84 M 95.17,69.6 Q 98.87,69.6 101.64,67.75 Q 104.41,65.9 105.97,62.71 Q 107.52,59.52 107.52,55.57 Q 107.52,51.54 105.97,48.35 Q 104.41,45.16 101.64,43.31 Q 98.87,41.46 95.17,41.46 Q 91.56,41.46 88.79,43.31 Q 86.02,45.16 84.46,48.35 Q 82.91,51.54 82.91,55.57 Q 82.91,59.52 84.46,62.71 Q 86.02,65.9 88.79,67.75 Q 91.56,69.6 95.17,69.6",
+  },
+  {
+    id: "i2",
+    start: 0.3026,
+    end: 0.3637,
+    length: 136.3,
+    d: "M 137.59,72.88 Q 137.59,75.06 136.16,76.53 Q 134.74,78 132.55,78 Q 130.37,78 128.94,76.53 Q 127.51,75.06 127.51,72.88 L 127.51,38.18 Q 127.51,36 128.94,34.53 Q 130.37,33.06 132.55,33.06 Q 134.74,33.06 136.16,34.53 Q 137.59,36 137.59,38.18 L 137.59,72.88 M 132.47,27.6 Q 129.61,27.6 128.44,26.68 Q 127.26,25.75 127.26,23.4 L 127.26,21.8 Q 127.26,19.37 128.56,18.49 Q 129.86,17.6 132.55,17.6 Q 135.49,17.6 136.67,18.53 Q 137.84,19.45 137.84,21.8 L 137.84,23.4 Q 137.84,25.84 136.58,26.72 Q 135.32,27.6 132.47,27.6",
+  },
+  {
+    id: "e1",
+    start: 0.3637,
+    end: 0.4931,
+    length: 288.6,
+    d: "M 169.09,78.84 Q 161.95,78.84 156.7,75.86 Q 151.45,72.88 148.64,67.75 Q 145.82,62.63 145.82,56.16 Q 145.82,48.6 148.89,43.27 Q 151.96,37.93 156.91,35.08 Q 161.87,32.22 167.41,32.22 Q 171.7,32.22 175.52,33.98 Q 179.34,35.75 182.28,38.81 Q 185.22,41.88 186.94,45.91 Q 188.66,49.94 188.66,54.48 Q 188.58,56.5 187.07,57.76 Q 185.56,59.02 183.54,59.02 L 151.45,59.02 L 148.93,50.62 L 179.76,50.62 L 177.91,52.3 L 177.91,50.03 Q 177.74,47.59 176.19,45.66 Q 174.64,43.73 172.33,42.59 Q 170.02,41.46 167.41,41.46 Q 164.89,41.46 162.71,42.13 Q 160.52,42.8 158.93,44.4 Q 157.33,46 156.41,48.68 Q 155.48,51.37 155.48,55.49 Q 155.48,60.02 157.37,63.17 Q 159.26,66.32 162.25,67.96 Q 165.23,69.6 168.59,69.6 Q 171.7,69.6 173.54,69.1 Q 175.39,68.59 176.53,67.88 Q 177.66,67.16 178.58,66.66 Q 180.1,65.9 181.44,65.9 Q 183.29,65.9 184.51,67.16 Q 185.72,68.42 185.72,70.1 Q 185.72,72.37 183.37,74.22 Q 181.19,76.07 177.24,77.45 Q 173.29,78.84 169.09,78.84",
+  },
+  {
+    id: "m1",
+    start: 0.4931,
+    end: 0.6547,
+    length: 360.6,
+    d: "M 221.09,32.22 Q 227.81,32.22 231,35.45 Q 234.19,38.69 235.2,43.81 L 233.77,43.06 L 234.44,41.71 Q 235.45,39.78 237.55,37.55 Q 239.65,35.33 242.63,33.77 Q 245.62,32.22 249.31,32.22 Q 255.36,32.22 258.51,34.82 Q 261.66,37.43 262.84,41.75 Q 264.01,46.08 264.01,51.37 L 264.01,72.88 Q 264.01,75.06 262.58,76.53 Q 261.16,78 258.97,78 Q 256.79,78 255.36,76.53 Q 253.93,75.06 253.93,72.88 L 253.93,51.37 Q 253.93,48.6 253.26,46.37 Q 252.59,44.15 250.82,42.8 Q 249.06,41.46 245.78,41.46 Q 242.59,41.46 240.32,42.8 Q 238.06,44.15 236.92,46.37 Q 235.79,48.6 235.79,51.37 L 235.79,72.88 Q 235.79,75.06 234.36,76.53 Q 232.93,78 230.75,78 Q 228.56,78 227.14,76.53 Q 225.71,75.06 225.71,72.88 L 225.71,51.37 Q 225.71,48.6 225.04,46.37 Q 224.36,44.15 222.6,42.8 Q 220.84,41.46 217.56,41.46 Q 214.37,41.46 212.1,42.8 Q 209.83,44.15 208.7,46.37 Q 207.56,48.6 207.56,51.37 L 207.56,72.88 Q 207.56,75.06 206.14,76.53 Q 204.71,78 202.52,78 Q 200.34,78 198.91,76.53 Q 197.48,75.06 197.48,72.88 L 197.48,38.18 Q 197.48,36 198.91,34.53 Q 200.34,33.06 202.52,33.06 Q 204.71,33.06 206.14,34.53 Q 207.56,36 207.56,38.18 L 207.56,41.8 L 206.3,41.54 Q 207.06,40.12 208.4,38.48 Q 209.75,36.84 211.68,35.41 Q 213.61,33.98 215.96,33.1 Q 218.32,32.22 221.09,32.22",
+  },
+  {
+    id: "a1",
+    start: 0.6547,
+    end: 0.7783,
+    length: 275.8,
+    d: "M 311.72,32.22 Q 313.91,32.22 315.34,33.65 Q 316.76,35.08 316.76,37.34 L 316.76,72.88 Q 316.76,75.06 315.34,76.53 Q 313.91,78 311.72,78 Q 309.54,78 308.11,76.53 Q 306.68,75.06 306.68,72.88 L 306.68,68.76 L 308.53,69.52 Q 308.53,70.61 307.36,72.16 Q 306.18,73.72 304.16,75.23 Q 302.15,76.74 299.42,77.79 Q 296.69,78.84 293.5,78.84 Q 287.7,78.84 283,75.86 Q 278.29,72.88 275.56,67.63 Q 272.83,62.38 272.83,55.57 Q 272.83,48.68 275.56,43.43 Q 278.29,38.18 282.91,35.2 Q 287.53,32.22 293.16,32.22 Q 296.77,32.22 299.8,33.31 Q 302.82,34.4 305.05,36.08 Q 307.27,37.76 308.49,39.49 Q 309.71,41.21 309.71,42.38 L 306.68,43.48 L 306.68,37.34 Q 306.68,35.16 308.11,33.69 Q 309.54,32.22 311.72,32.22 M 294.76,69.6 Q 298.45,69.6 301.22,67.75 Q 304,65.9 305.55,62.71 Q 307.1,59.52 307.1,55.57 Q 307.1,51.54 305.55,48.35 Q 304,45.16 301.22,43.31 Q 298.45,41.46 294.76,41.46 Q 291.14,41.46 288.37,43.31 Q 285.6,45.16 284.05,48.35 Q 282.49,51.54 282.49,55.57 Q 282.49,59.52 284.05,62.71 Q 285.6,65.9 288.37,67.75 Q 291.14,69.6 294.76,69.6",
+  },
+  {
+    id: "t1",
+    start: 0.7783,
+    end: 0.8706,
+    length: 205.9,
+    d: "M 328.19,33.9 L 348.1,33.9 Q 350.11,33.9 351.46,35.24 Q 352.8,36.59 352.8,38.6 Q 352.8,40.54 351.46,41.84 Q 350.11,43.14 348.1,43.14 L 328.19,43.14 Q 326.17,43.14 324.83,41.8 Q 323.48,40.45 323.48,38.44 Q 323.48,36.5 324.83,35.2 Q 326.17,33.9 328.19,33.9 M 337.18,23.4 Q 339.36,23.4 340.75,24.87 Q 342.13,26.34 342.13,28.52 L 342.13,65.9 Q 342.13,67.08 342.59,67.84 Q 343.06,68.59 343.85,68.93 Q 344.65,69.26 345.58,69.26 Q 346.58,69.26 347.42,68.89 Q 348.26,68.51 349.36,68.51 Q 350.53,68.51 351.5,69.6 Q 352.46,70.69 352.46,72.62 Q 352.46,74.98 349.9,76.49 Q 347.34,78 344.4,78 Q 342.64,78 340.49,77.71 Q 338.35,77.41 336.46,76.28 Q 334.57,75.14 333.31,72.79 Q 332.05,70.44 332.05,66.32 L 332.05,28.52 Q 332.05,26.34 333.52,24.87 Q 334.99,23.4 337.18,23.4",
+  },
+  {
+    id: "e2",
+    start: 0.8706,
+    end: 1.0,
+    length: 288.6,
+    d: "M 383.21,78.84 Q 376.07,78.84 370.82,75.86 Q 365.57,72.88 362.75,67.75 Q 359.94,62.63 359.94,56.16 Q 359.94,48.6 363.01,43.27 Q 366.07,37.93 371.03,35.08 Q 375.98,32.22 381.53,32.22 Q 385.81,32.22 389.63,33.98 Q 393.46,35.75 396.4,38.81 Q 399.34,41.88 401.06,45.91 Q 402.78,49.94 402.78,54.48 Q 402.7,56.5 401.18,57.76 Q 399.67,59.02 397.66,59.02 L 365.57,59.02 L 363.05,50.62 L 393.88,50.62 L 392.03,52.3 L 392.03,50.03 Q 391.86,47.59 390.31,45.66 Q 388.75,43.73 386.44,42.59 Q 384.13,41.46 381.53,41.46 Q 379.01,41.46 376.82,42.13 Q 374.64,42.8 373.04,44.4 Q 371.45,46 370.52,48.68 Q 369.6,51.37 369.6,55.49 Q 369.6,60.02 371.49,63.17 Q 373.38,66.32 376.36,67.96 Q 379.34,69.6 382.7,69.6 Q 385.81,69.6 387.66,69.1 Q 389.51,68.59 390.64,67.88 Q 391.78,67.16 392.7,66.66 Q 394.21,65.9 395.56,65.9 Q 397.4,65.9 398.62,67.16 Q 399.84,68.42 399.84,70.1 Q 399.84,72.37 397.49,74.22 Q 395.3,76.07 391.36,77.45 Q 387.41,78.84 383.21,78.84",
+  },
 ];
 
-const PARTICLES = [
-  { x: width * 0.1, y: height * 0.15, delay: 800, size: 3 },
-  { x: width * 0.85, y: height * 0.12, delay: 1100, size: 2 },
-  { x: width * 0.05, y: height * 0.45, delay: 600, size: 2 },
-  { x: width * 0.92, y: height * 0.55, delay: 950, size: 3 },
-  { x: width * 0.2, y: height * 0.78, delay: 700, size: 2 },
-  { x: width * 0.75, y: height * 0.82, delay: 1200, size: 2.5 },
-  { x: width * 0.5, y: height * 0.08, delay: 850, size: 2 },
-  { x: width * 0.38, y: height * 0.88, delay: 1050, size: 3 },
-  { x: width * 0.65, y: height * 0.22, delay: 750, size: 2 },
-  { x: width * 0.15, y: height * 0.65, delay: 900, size: 2.5 },
-];
-
-const AnimatedLetter = ({ source, index, totalDelay }) => {
-  const opacity = useSharedValue(0);
-  const scale = useSharedValue(0.4);
-  const translateY = useSharedValue(20);
-
-  useEffect(() => {
-    const delay = totalDelay + index * 80;
-    opacity.value = withDelay(
-      delay,
-      withTiming(1, { duration: 400, easing: Easing.out(Easing.cubic) }),
-    );
-    scale.value = withDelay(
-      delay,
-      withSpring(1, { damping: 12, stiffness: 120 }),
-    );
-    translateY.value = withDelay(
-      delay,
-      withSpring(0, { damping: 14, stiffness: 100 }),
-    );
-  }, []);
-
-  const style = useAnimatedStyle(() => ({
-    opacity: opacity.value,
-    transform: [{ scale: scale.value }, { translateY: translateY.value }],
-  }));
+// All letters share the same 0->1 progress value, so every letter draws
+// on at once (in sync), rather than one after another.
+const AnimatedPathItem = ({ d, length, progress }) => {
+  const animatedProps = useAnimatedProps(() => {
+    "worklet";
+    const strokeDashoffset = length * (1 - progress.value);
+    return {
+      strokeDashoffset,
+    };
+  });
 
   return (
-    <Animated.View style={[styles.letterWrapper, style]}>
-      <Image source={source} style={styles.letterImage} resizeMode="contain" />
-    </Animated.View>
+    <>
+      {/* Dim background outline of the full letter shape */}
+      <Path
+        d={d}
+        fill="none"
+        stroke="rgba(255, 255, 255, 0.15)"
+        strokeWidth={1.6}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      {/* Animated drawing stroke, traces the letter's outer + inner contour */}
+      <AnimatedSvgPath
+        d={d}
+        fill="none"
+        stroke="#FFFFFF"
+        strokeWidth={1.6}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeDasharray={`${length} ${length}`}
+        animatedProps={animatedProps}
+      />
+    </>
   );
-};
-
-const GlowOrb = ({
-  delay = 0,
-  size,
-  top,
-  left,
-  color,
-  opacity: maxOpacity = 0.18,
-}) => {
-  const orbOpacity = useSharedValue(0);
-  const orbScale = useSharedValue(0.7);
-
-  useEffect(() => {
-    orbOpacity.value = withDelay(
-      delay,
-      withRepeat(
-        withSequence(
-          withTiming(maxOpacity, {
-            duration: 2000,
-            easing: Easing.inOut(Easing.sin),
-          }),
-          withTiming(maxOpacity * 0.4, {
-            duration: 2000,
-            easing: Easing.inOut(Easing.sin),
-          }),
-        ),
-        -1,
-        true,
-      ),
-    );
-    orbScale.value = withDelay(
-      delay,
-      withRepeat(
-        withSequence(
-          withTiming(1, { duration: 2200, easing: Easing.inOut(Easing.sin) }),
-          withTiming(0.85, {
-            duration: 2200,
-            easing: Easing.inOut(Easing.sin),
-          }),
-        ),
-        -1,
-        true,
-      ),
-    );
-  }, []);
-
-  const style = useAnimatedStyle(() => ({
-    position: "absolute",
-    width: size,
-    height: size,
-    borderRadius: size / 2,
-    backgroundColor: color,
-    top: top - size / 2,
-    left: left - size / 2,
-    opacity: orbOpacity.value,
-    transform: [{ scale: orbScale.value }],
-  }));
-
-  return <Animated.View style={style} />;
-};
-
-const ScanLine = ({ startDelay }) => {
-  const scanY = useSharedValue(-height * 0.1);
-  const scanOpacity = useSharedValue(0);
-
-  useEffect(() => {
-    scanOpacity.value = withDelay(startDelay, withTiming(1, { duration: 200 }));
-    scanY.value = withDelay(
-      startDelay,
-      withTiming(height, { duration: 1800, easing: Easing.inOut(Easing.quad) }),
-    );
-  }, []);
-
-  const style = useAnimatedStyle(() => ({
-    position: "absolute",
-    left: 0,
-    right: 0,
-    top: scanY.value,
-    height: 1.5,
-    opacity: scanOpacity.value,
-  }));
-
-  return (
-    <Animated.View style={style}>
-      <View style={styles.scanLineInner} />
-    </Animated.View>
-  );
-};
-
-const Particle = ({ x, y, delay, size = 2 }) => {
-  const particleOpacity = useSharedValue(0);
-  const particleScale = useSharedValue(0);
-
-  useEffect(() => {
-    particleOpacity.value = withDelay(
-      delay,
-      withRepeat(
-        withSequence(
-          withTiming(0.7, { duration: 600 }),
-          withTiming(0.1, { duration: 1200 }),
-        ),
-        -1,
-        true,
-      ),
-    );
-    particleScale.value = withDelay(
-      delay,
-      withRepeat(
-        withSequence(
-          withSpring(1, { damping: 10, stiffness: 80 }),
-          withTiming(0.3, { duration: 1000 }),
-        ),
-        -1,
-        true,
-      ),
-    );
-  }, []);
-
-  const style = useAnimatedStyle(() => ({
-    position: "absolute",
-    left: x,
-    top: y,
-    width: size,
-    height: size,
-    borderRadius: size / 2,
-    backgroundColor: colors.blue,
-    opacity: particleOpacity.value,
-    transform: [{ scale: particleScale.value }],
-  }));
-
-  return <Animated.View style={style} />;
-};
-
-const PulseRing = ({ delay, size }) => {
-  const scale = useSharedValue(0.5);
-  const opacity = useSharedValue(0);
-
-  useEffect(() => {
-    opacity.value = withDelay(
-      delay,
-      withRepeat(
-        withSequence(
-          withTiming(0.35, { duration: 300 }),
-          withTiming(0, { duration: 1400 }),
-        ),
-        -1,
-        false,
-      ),
-    );
-    scale.value = withDelay(
-      delay,
-      withRepeat(
-        withTiming(1, { duration: 1700, easing: Easing.out(Easing.ease) }),
-        -1,
-        false,
-      ),
-    );
-  }, []);
-
-  const style = useAnimatedStyle(() => ({
-    position: "absolute",
-    width: size,
-    height: size,
-    borderRadius: size / 2,
-    borderWidth: 1.5,
-    borderColor: colors.blue,
-    opacity: opacity.value,
-    transform: [{ scale: scale.value }],
-    alignSelf: "center",
-  }));
-
-  return <Animated.View style={style} />;
 };
 
 export const Splash = () => {
   const navigation = useNavigation();
   const isLoggedIn = useSelector((state) => state.persist?.isLoggedIn);
 
-  const masterOpacity = useSharedValue(1);
-  const logoAreaScale = useSharedValue(0.8);
-  const logoAreaOpacity = useSharedValue(0);
-  const taglineOpacity = useSharedValue(0);
-  const taglineY = useSharedValue(14);
-  const lineWidth = useSharedValue(0);
-  const lineOpacity = useSharedValue(0);
-  const dotScale = useSharedValue(0);
-  const dotOpacity = useSharedValue(0);
-  const versionOpacity = useSharedValue(0);
+  const strokeProgress = useSharedValue(0);
+  const screenOpacity = useSharedValue(1);
 
-  const navigateNextStep = useCallback(() => {
-    masterOpacity.value = withTiming(0, { duration: 1000 }, (done) => {
-      if (done) {
-        runOnJS(navigation.replace)(
-          isLoggedIn ? routesConstants.BottomTabs : routesConstants.intro,
-        );
-      }
-    });
-  }, [isLoggedIn, navigation]);
+  // Handle rapid, immediate navigation after animation completes
+  const handleCompleteAndNavigate = useCallback(() => {
+    screenOpacity.value = withTiming(
+      0,
+      { duration: 200, easing: Easing.out(Easing.ease) },
+      (done) => {
+        if (done) {
+          runOnJS(navigation.replace)(
+            isLoggedIn ? routesConstants.BottomTabs : routesConstants.intro,
+          );
+        }
+      },
+    );
+  }, [isLoggedIn, navigation, screenOpacity]);
 
   useEffect(() => {
-    logoAreaOpacity.value = withTiming(1, {
-      duration: 500,
-      easing: Easing.out(Easing.cubic),
-    });
-    logoAreaScale.value = withSpring(1, { damping: 16, stiffness: 80 });
-    taglineOpacity.value = withDelay(
-      900,
-      withTiming(1, { duration: 600, easing: Easing.out(Easing.cubic) }),
+    // Animate stroke Dashoffset over exactly 4 seconds and transition instantly when finished
+    strokeProgress.value = withTiming(
+      1,
+      {
+        duration: 4000,
+        easing: Easing.inOut(Easing.ease),
+      },
+      (finished) => {
+        if (finished) {
+          runOnJS(handleCompleteAndNavigate)();
+        }
+      },
     );
-    taglineY.value = withDelay(
-      900,
-      withSpring(0, { damping: 18, stiffness: 90 }),
-    );
-    lineWidth.value = withDelay(
-      1000,
-      withSpring(width * 0.55, { damping: 22, stiffness: 60 }),
-    );
-    lineOpacity.value = withDelay(1000, withTiming(1, { duration: 500 }));
-    dotScale.value = withDelay(
-      1200,
-      withSpring(1, { damping: 10, stiffness: 120 }),
-    );
-    dotOpacity.value = withDelay(1200, withTiming(0.8, { duration: 300 }));
-    versionOpacity.value = withDelay(1300, withTiming(0.35, { duration: 600 }));
+  }, [strokeProgress, handleCompleteAndNavigate]);
 
-    const timer = setTimeout(navigateNextStep, 2800);
-    return () => clearTimeout(timer);
-  }, [navigateNextStep]);
-
-  const masterStyle = useAnimatedStyle(() => ({
-    opacity: masterOpacity.value,
+  const screenStyle = useAnimatedStyle(() => ({
     flex: 1,
+    opacity: screenOpacity.value,
   }));
-  const logoAreaStyle = useAnimatedStyle(() => ({
-    opacity: logoAreaOpacity.value,
-    transform: [{ scale: logoAreaScale.value }],
-  }));
+
+  // viewBox is 410 x 100 for the "indiemate" wordmark
+  const svgWidth = Math.min(width * 0.6, 260);
+  const svgHeight = svgWidth * (100 / 410);
 
   return (
-    <View style={styles.root}>
+    <AppBackground showAuthAnimation={true}>
       <StatusBar hidden />
-      <Animated.View style={[StyleSheet.absoluteFill, masterStyle]}>
-        <LottieView
-          source={animations.background}
-          autoPlay
-          loop
-          style={StyleSheet.absoluteFill}
-          resizeMode="cover"
-        />
-        <View style={styles.overlay} />
-
-        <GlowOrb
-          size={width * 0.6}
-          top={height * 0.7}
-          left={width * 0.15}
-          color="#7C3AED"
-          opacity={0.1}
-          delay={400}
-        />
-        <GlowOrb
-          size={width * 0.5}
-          top={height * 0.15}
-          left={width * 0.85}
-          color={colors.blue}
-          opacity={0.08}
-          delay={700}
-        />
-
-        <ScanLine startDelay={200} />
-
-        {PARTICLES.map((p, i) => (
-          <Particle key={i} x={p.x} y={p.y} delay={p.delay} size={p.size} />
-        ))}
-
-        <View style={styles.center}>
-          <Animated.View style={[styles.logoArea, logoAreaStyle]}>
-            <View style={styles.ringContainer}>
-              <PulseRing delay={600} size={scales(140)} />
-              <PulseRing delay={1050} size={scales(190)} />
-              <Image
-                source={appImages.appLogo}
-                style={styles.logo}
-                resizeMode="contain"
+      <View style={styles.overlay} pointerEvents="none" />
+      <Animated.View style={[styles.container, screenStyle]}>
+        <View style={styles.svgWrapper}>
+          <Svg viewBox="0 0 410 100" width={svgWidth} height={svgHeight}>
+            {PATHS_DATA.map((item) => (
+              <AnimatedPathItem
+                key={item.id}
+                d={item.d}
+                length={item.length}
+                progress={strokeProgress}
               />
-            </View>
-          </Animated.View>
-
-          <View style={styles.lettersRow}>
-            {LETTERS.map((img, i) => (
-              <AnimatedLetter key={i} source={img} index={i} totalDelay={400} />
             ))}
-          </View>
-
-          {/* <Animated.Text style={[styles.tagline, taglineStyle]}>
-            Connect · Share · Inspire
-          </Animated.Text> */}
+          </Svg>
         </View>
       </Animated.View>
-    </View>
+    </AppBackground>
   );
 };
 
 const styles = StyleSheet.create({
-  root: {
-    flex: 1,
-    width,
-    height,
-    backgroundColor: colors.background,
-  },
   overlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: "rgba(5, 20, 36, 0.72)",
+    backgroundColor: "rgba(5, 20, 36, 0.25)",
   },
-  topAccent: {
-    position: "absolute",
-    top: 0,
-    left: "15%",
-    right: "15%",
-    height: scales(2),
-    backgroundColor: colors.blue,
-    borderBottomLeftRadius: 4,
-    borderBottomRightRadius: 4,
-    opacity: 0.8,
-    shadowColor: colors.blue,
-    shadowOpacity: 1,
-    shadowRadius: 12,
-    shadowOffset: { width: 0, height: 2 },
-  },
-  bottomAccent: {
-    position: "absolute",
-    bottom: 0,
-    left: "30%",
-    right: "30%",
-    height: scales(1.5),
-    backgroundColor: colors.blue,
-    borderTopLeftRadius: 4,
-    borderTopRightRadius: 4,
-    opacity: 0.5,
-  },
-  scanLineInner: {
-    flex: 1,
-    backgroundColor: colors.blue,
-    opacity: 0.12,
-    shadowColor: colors.blue,
-    shadowOpacity: 0.9,
-    shadowRadius: 6,
-    shadowOffset: { width: 0, height: 0 },
-  },
-  center: {
+  container: {
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    gap: scales(6),
   },
-  logoArea: {
+  svgWrapper: {
     alignItems: "center",
     justifyContent: "center",
-    marginBottom: scales(8),
-  },
-  ringContainer: {
-    alignItems: "center",
-    justifyContent: "center",
-    width: scales(100),
-    height: scales(100),
-  },
-  logo: {
-    width: scales(72),
-    height: scales(72),
-    tintColor: colors.white,
-    position: "absolute",
-    shadowColor: colors.blue,
-    shadowOpacity: 0.8,
-    shadowRadius: 20,
-    shadowOffset: { width: 0, height: 0 },
-  },
-  lettersRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    marginTop: scales(6),
-  },
-  letterWrapper: {
-    marginHorizontal: scales(2),
-  },
-  letterImage: {
-    width: scales(26),
-    height: scales(36),
-    tintColor: colors.white,
-  },
-  decorLine: {
-    height: scales(1),
-    backgroundColor: colors.blue,
-    borderRadius: 1,
-    marginTop: scales(14),
-    opacity: 0.7,
-    shadowColor: colors.blue,
-    shadowOpacity: 1,
-    shadowRadius: 8,
-    shadowOffset: { width: 0, height: 0 },
-    elevation: 4,
-  },
-  tagline: {
-    color: "rgba(255,255,255,0.5)",
-    fontSize: scales(11),
-    fontFamily: fontFamily.regular,
-    letterSpacing: 3,
-    textTransform: "uppercase",
-    marginTop: scales(10),
-  },
-  bottomArea: {
-    alignItems: "center",
-    paddingBottom: scales(48),
-    gap: scales(10),
-  },
-  bottomDot: {
-    width: scales(6),
-    height: scales(6),
-    borderRadius: scales(3),
-    backgroundColor: colors.blue,
-    shadowColor: colors.blue,
-    shadowOpacity: 1,
-    shadowRadius: 10,
-    shadowOffset: { width: 0, height: 0 },
-  },
-  versionText: {
-    color: colors.white,
-    fontSize: scales(10),
-    fontFamily: fontFamily.regular,
-    letterSpacing: 2,
+    marginBottom: 8,
   },
 });

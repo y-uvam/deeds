@@ -64,7 +64,7 @@ const DUMMY_POSTS = Array.from({ length: 24 }, (_, i) => {
     ],
     type: isVideo ? "project" : "post",
     description:
-      "Living life one deed at a time 🌟 Grateful for the small moments that make everything worthwhile. #deeds #community #love",
+      "Living life one indiemate at a time 🌟 Grateful for the small moments that make everything worthwhile. #indiemate #community #love",
     likes: Math.floor(Math.random() * 900) + 50,
     comments: Math.floor(Math.random() * 100) + 2,
     shares: Math.floor(Math.random() * 50) + 1,
