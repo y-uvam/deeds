@@ -55,7 +55,7 @@ const DUMMY_REELS = [
   },
 ];
 
-export const ReelsList = () => {
+export const ReelsList = ({ isPreview = false }) => {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation();
   const [activeVisibleIndex, setActiveVisibleIndex] = useState(0);
@@ -89,8 +89,8 @@ export const ReelsList = () => {
         renderItem={({ item, index }) => (
           <ReelItem
             item={item}
-            isActive={index === activeVisibleIndex}
-            isMuted={isMuted}
+            isActive={!isPreview && index === activeVisibleIndex}
+            isMuted={isMuted || isPreview}
             onToggleMute={handleToggleMute}
           />
         )}

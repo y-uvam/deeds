@@ -14,12 +14,7 @@ import Video from "react-native-video";
 import LottieView from "lottie-react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { BlurView } from "@react-native-community/blur";
-import { useNavigation, StackActions } from "@react-navigation/native";
-import {
-  FlingGestureHandler,
-  Directions,
-  State,
-} from "react-native-gesture-handler";
+import { useNavigation } from "@react-navigation/native";
 import { routesConstants } from "../../navigation";
 import { appImages, fontFamily } from "../../assets";
 import { animations } from "../../animations/animations";
@@ -134,18 +129,8 @@ export const ReelItem = memo(({ item, isActive, isMuted, onToggleMute }) => {
     navigation.navigate(routesConstants.Profile);
   }, [navigation]);
 
-  const onFling = (event) => {
-    if (event.nativeEvent.state === State.ACTIVE) {
-      navigation.dispatch(StackActions.push(routesConstants.Profile));
-    }
-  };
-
   return (
-    <FlingGestureHandler
-      direction={Directions.LEFT}
-      onHandlerStateChange={onFling}
-    >
-      <View style={styles.container}>
+    <View style={styles.container}>
         <Pressable onPress={handlePressVideo} style={StyleSheet.absoluteFill}>
           {isActive && (
             <Video
@@ -373,7 +358,6 @@ export const ReelItem = memo(({ item, isActive, isMuted, onToggleMute }) => {
           </View>
         </CustomBottomSheet>
       </View>
-    </FlingGestureHandler>
   );
 });
 
