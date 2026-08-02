@@ -10,7 +10,6 @@ import {
 } from "react-native";
 import { colors, scales } from "../../utils";
 import { appImages, fontFamily } from "../../assets";
-import { BlurView } from "@react-native-community/blur";
 import { BottomSheetTextInput } from "@gorhom/bottom-sheet";
 
 export const CustomInput = memo(
@@ -20,7 +19,7 @@ export const CustomInput = memo(
     onChangeText,
     placeholder = "",
     isPassword = false,
-    height = 60,
+    height = scales(54),
     isEditable = true,
     multiline = false,
     icon,
@@ -58,15 +57,15 @@ export const CustomInput = memo(
 
     const borderColor = glowAnim.interpolate({
       inputRange: [0, 1],
-      outputRange: [errors ? colors.red : colors.white, colors.blue],
+      outputRange: [errors ? colors.red : colors.transparentWhite15, colors.blue],
     });
-    const overlayColor = glowAnim.interpolate({
+    const backgroundColor = glowAnim.interpolate({
       inputRange: [0, 1],
-      outputRange: ["rgba(0,0,0,0)", "rgba(255,255,255,0.13)"],
+      outputRange: [colors.transparentWhite5, colors.transparentWhite8],
     });
     const shadowOpacity = glowAnim.interpolate({
       inputRange: [0, 1],
-      outputRange: [0, 0.8],
+      outputRange: [0, 0.35],
     });
 
     return (
@@ -81,27 +80,17 @@ export const CustomInput = memo(
 
         <Animated.View style={[styles.glowRing, { shadowOpacity }]}>
           <Animated.View
-            style={[styles.inputContainer, { borderColor, overflow: "hidden" }]}
+            style={[
+              styles.inputContainer,
+              { borderColor, backgroundColor, overflow: "hidden" },
+            ]}
           >
-            <BlurView
-              style={StyleSheet.absoluteFill}
-              blurType="light"
-              blurAmount={4}
-              reducedTransparencyFallbackColor="white"
-            />
-            <Animated.View
-              style={[
-                StyleSheet.absoluteFill,
-                { backgroundColor: overlayColor },
-              ]}
-            />
-
             {icon && (
               <Image
                 source={icon}
                 style={[
                   styles.leftIcon,
-                  { tintColor: isFocused ? colors.blue : colors.white },
+                  { tintColor: isFocused ? colors.blue : colors.profileHandleText },
                 ]}
               />
             )}
@@ -110,13 +99,18 @@ export const CustomInput = memo(
               {...rest}
               style={[
                 styles.input,
-                { height, textAlignVertical: multiline ? "top" : "center" },
+                {
+                  height,
+                  textAlignVertical: multiline ? "top" : "center",
+                  paddingVertical: multiline ? scales(14) : 0,
+                },
                 inputStyle,
               ]}
+              selectionColor={colors.blue}
               value={value}
               onChangeText={onChangeText}
               placeholder={placeholder}
-              placeholderTextColor="rgba(255,255,255,0.4)"
+              placeholderTextColor={colors.transparentWhite40}
               secureTextEntry={secureText}
               autoCapitalize="none"
               autoCorrect={false}
@@ -137,7 +131,7 @@ export const CustomInput = memo(
                   source={secureText ? appImages.eyeclose : appImages.eyeopen}
                   style={[
                     styles.eyeImage,
-                    { tintColor: isFocused ? colors.blue : colors.white },
+                    { tintColor: isFocused ? colors.blue : colors.profileHandleText },
                   ]}
                 />
               </TouchableOpacity>
@@ -157,62 +151,61 @@ export const CustomInput = memo(
 const styles = StyleSheet.create({
   container: {
     width: "100%",
-    marginVertical: 10,
+    marginVertical: scales(8),
   },
   label: {
     fontSize: scales(14),
-    color: colors.white,
+    color: "rgba(255, 255, 255, 0.7)",
     fontFamily: fontFamily.medium,
-    marginBottom: 8,
-    marginLeft: 4,
-    letterSpacing: 0.4,
+    marginBottom: scales(8),
+    marginLeft: scales(4),
+    letterSpacing: 0.3,
   },
   labelFocused: {
     color: colors.blue,
   },
   glowRing: {
-    borderRadius: scales(15),
+    borderRadius: scales(14),
     shadowColor: colors.blue,
-    shadowOffset: { width: 0, height: 0 },
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 8,
   },
   errorText: {
     color: colors.red,
     fontSize: scales(12),
     fontFamily: fontFamily.regular,
-    marginTop: 4,
-    marginLeft: 4,
+    marginTop: scales(4),
+    marginLeft: scales(4),
     letterSpacing: 0.2,
   },
   inputContainer: {
     flexDirection: "row",
     alignItems: "center",
     borderWidth: 1,
-    borderRadius: scales(15),
-    paddingHorizontal: 16,
+    borderRadius: scales(14),
+    paddingHorizontal: scales(16),
   },
   input: {
     flex: 1,
     fontSize: scales(15),
     color: colors.white,
-    fontFamily: fontFamily.regular,
-    paddingVertical: 18,
+    fontFamily: fontFamily.medium,
+    paddingVertical: 0,
     letterSpacing: 0.3,
   },
   eyeBtn: {
-    marginLeft: 10,
-    padding: 4,
+    marginLeft: scales(10),
+    padding: scales(4),
   },
   eyeImage: {
-    width: 20,
-    height: 20,
+    width: scales(20),
+    height: scales(20),
     resizeMode: "contain",
-    tintColor: colors.white,
   },
   leftIcon: {
-    width: 18,
-    height: 18,
+    width: scales(18),
+    height: scales(18),
     resizeMode: "contain",
-    tintColor: colors.white,
-    marginRight: 10,
+    marginRight: scales(10),
   },
 });

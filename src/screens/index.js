@@ -28,3 +28,6 @@ export * from "./movie/movie";
 export * from "./ratings/ratings";
 export * from "./intro/intro";
 export * from "./video/video";
+export * from "./reviews/review";
+export * from "./insights/insights";
+export * from "./finance/finance";

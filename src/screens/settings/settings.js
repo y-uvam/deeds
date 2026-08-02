@@ -1,6 +1,12 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useRef, useState } from "react";
 import { View, Text, StyleSheet, ScrollView } from "react-native";
-import { AppBackground, Header, NextButton } from "../../components";
+import {
+  AppBackground,
+  Header,
+  NextButton,
+  CustomBottomSheet,
+  CustomButton,
+} from "../../components";
 import { colors, scales, commonText } from "../../utils";
 import { appImages, fontFamily } from "../../assets";
 import { navigate, reset, routesConstants } from "../../navigation";
@@ -11,6 +17,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export const Settings = () => {
   const dispatch = useDispatch();
+  const actionSheetRef = useRef(null);
+  const [actionType, setActionType] = useState("logout"); // "logout" | "deactivate"
 
   const handleLogout = useCallback(async () => {
     dispatch(resetPersistStore());
@@ -18,6 +26,28 @@ export const Settings = () => {
     showCustomMessage("Logged out successfully.", "info");
     reset(routesConstants.intro);
   }, [dispatch]);
+
+  const openLogoutConfirm = () => {
+    setActionType("logout");
+    actionSheetRef.current?.present();
+  };
+
+  const openDeactivateConfirm = () => {
+    setActionType("deactivate");
+    actionSheetRef.current?.present();
+  };
+
+  const handleYesAction = useCallback(() => {
+    actionSheetRef.current?.dismiss();
+    setTimeout(() => {
+      if (actionType === "logout") {
+        handleLogout();
+      } else if (actionType === "deactivate") {
+        showCustomMessage("Account deactivated successfully.", "info");
+        handleLogout();
+      }
+    }, 250);
+  }, [actionType, handleLogout]);
 
   const Section = ({ title, children }) => (
     <View style={styles.sectionContainer}>
@@ -30,81 +60,102 @@ export const Settings = () => {
     <AppBackground>
       <Header label={commonText.settings} showBackButton={true} />
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        <Section title="Activity">
-          <NextButton
-            leftIcon={appImages.saved}
-            label="Saved"
-            onPress={() => {
-              navigate(routesConstants.savedPosts);
-            }}
-          />
+        <Section title="Account & Activity">
           <NextButton
             leftIcon={appImages.yourActivity}
             label="Your Activity"
-            onPress={() => {
-              navigate(routesConstants.yourActivity);
-            }}
+            onPress={() => navigate(routesConstants.yourActivity)}
           />
           <NextButton
-            leftIcon={appImages.mention}
-            label="Tags and Mentions"
-            onPress={() => {
-              navigate(routesConstants.mentions);
-            }}
+            leftIcon={appImages.monetize}
+            label="Monetization & Tools"
+            onPress={() => navigate(routesConstants.monetization)}
           />
           <NextButton
-            leftIcon={appImages.blocked}
-            label={commonText.blocked}
-            onPress={() => {
-              navigate(routesConstants.blocked);
-            }}
+            leftIcon={appImages.dataUsage}
+            label="Data Usage & Media"
+            onPress={() => navigate(routesConstants.dataUsage)}
           />
         </Section>
 
-        <Section title="Manage Account">
+        <Section title="Privacy & Security">
           <NextButton
             leftIcon={appImages.lock}
             label="Account Privacy"
-            onPress={() => {
-              navigate(routesConstants.accountPrivacy);
-            }}
+            onPress={() => navigate(routesConstants.accountPrivacy)}
           />
           <NextButton
             leftIcon={appImages.accountPrivacy}
             label="Device Permissions"
-            onPress={() => {
-              navigate(routesConstants.devicePermissions);
-            }}
-          />
-          <NextButton
-            leftIcon={appImages.monetize}
-            label="Monetization"
-            onPress={() => {
-              navigate(routesConstants.monetization);
-            }}
-          />
-          <NextButton
-            leftIcon={appImages.dataUsage}
-            label="Data Usage"
-            onPress={() => {
-              navigate(routesConstants.dataUsage);
-            }}
+            onPress={() => navigate(routesConstants.devicePermissions)}
           />
         </Section>
 
-        <Section title="Login and deactivation">
+        <Section title="For Professionals">
+          <NextButton
+            leftIcon={appImages.insights}
+            label="Insights"
+            onPress={() => navigate(routesConstants.insights)}
+          />
+          <NextButton
+            leftIcon={appImages.finance}
+            label="Financial"
+            onPress={() => navigate(routesConstants.finance)}
+          />
+        </Section>
+
+        <Section title="Login & Account Control">
           <NextButton
             leftIcon={appImages.logout}
             label="Log Out"
-            onPress={handleLogout}
+            onPress={openLogoutConfirm}
           />
           <NextButton
             leftIcon={appImages.bin}
             label="Deactivate Account"
-            onPress={handleLogout}
+            onPress={openDeactivateConfirm}
           />
         </Section>
       </ScrollView>
+
+      <CustomBottomSheet
+        ref={actionSheetRef}
+        snapPoints={["36%"]}
+        enablePanDownToClose={true}
+        useBlur={true}
+      >
+        <View style={styles.sheetContent}>
+          <Text style={styles.sheetHeading}>
+            {actionType === "logout" ? "Log Out" : "Deactivate Account"}
+          </Text>
+          <Text style={styles.sheetDescription}>
+            {actionType === "logout"
+              ? "Are you sure you want to log out? You will need to sign back in to access your profile and messages."
+              : "Are you sure you want to deactivate your account? Your profile, posts, and interactions will be hidden until you reactivate by logging in again."}
+          </Text>
+          <View style={styles.buttonRow}>
+            <View style={styles.buttonWrapper}>
+              <CustomButton
+                label="No"
+                onPress={() => actionSheetRef.current?.dismiss()}
+                gradientColors={[colors.profileBtnBg, colors.profileBtnBg]}
+                labelStyle={{ color: colors.white }}
+              />
+            </View>
+            <View style={styles.buttonWrapper}>
+              <CustomButton
+                label="Yes"
+                onPress={handleYesAction}
+                gradientColors={
+                  actionType === "deactivate"
+                    ? [colors.red, colors.lightRed]
+                    : [colors.orange, colors.storyRing, colors.lightRed]
+                }
+              />
+            </View>
+          </View>
+        </View>
+      </CustomBottomSheet>
     </AppBackground>
   );
 };
@@ -131,5 +182,36 @@ const styles = StyleSheet.create({
     backgroundColor: colors.transparentWhite5,
     borderRadius: scales(20),
     paddingVertical: scales(5),
+  },
+  sheetContent: {
+    alignItems: "center",
+    paddingHorizontal: scales(10),
+    paddingBottom: scales(20),
+  },
+  sheetHeading: {
+    color: colors.white,
+    fontFamily: fontFamily.bold,
+    fontSize: scales(22),
+    textAlign: "center",
+    marginBottom: scales(12),
+  },
+  sheetDescription: {
+    color: "rgba(255, 255, 255, 0.7)",
+    fontFamily: fontFamily.regular,
+    fontSize: scales(15),
+    textAlign: "center",
+    lineHeight: scales(22),
+    marginBottom: scales(28),
+    paddingHorizontal: scales(6),
+  },
+  buttonRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    width: "100%",
+    gap: scales(15),
+  },
+  buttonWrapper: {
+    flex: 1,
   },
 });

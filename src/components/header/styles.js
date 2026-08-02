@@ -67,7 +67,6 @@ export const styles = StyleSheet.create({
     color: colors.white,
     fontSize: scales(18),
     letterSpacing: 1.5,
-    textTransform: "uppercase",
   },
   bottomLine: {
     height: 1,

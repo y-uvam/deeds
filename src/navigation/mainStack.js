@@ -30,6 +30,9 @@ import {
   Movie,
   Intro,
   Video,
+  Reviews,
+  Finance,
+  Insights,
 } from "../screens";
 import { BottomTab } from "./bottomTab";
 import { Ratings } from "../screens/ratings/ratings";
@@ -85,6 +88,9 @@ const MainStack = () => {
       <Screen name={routesConstants.movie} component={Movie} />
       <Screen name={routesConstants.ratings} component={Ratings} />
       <Screen name={routesConstants.intro} component={Intro} />
+      <Screen name={routesConstants.review} component={Reviews} />
+      <Screen name={routesConstants.finance} component={Finance} />
+      <Screen name={routesConstants.insights} component={Insights} />
       <Screen
         name={routesConstants.video}
         component={Video}

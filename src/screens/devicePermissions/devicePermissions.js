@@ -1,9 +1,26 @@
+import React, { useState } from "react";
 import { View, Text, StyleSheet, ScrollView } from "react-native";
 import { AppBackground, Header, NextButton } from "../../components";
 import { colors, scales, commonText } from "../../utils";
 import { appImages, fontFamily } from "../../assets";
+import { showCustomMessage } from "../../helper/FlashMessage";
 
 export const DevicePermissions = () => {
+  const [permissions, setPermissions] = useState({
+    camera: true,
+    mic: true,
+    location: false,
+    notifications: true,
+  });
+
+  const handleToggle = (key, label, value) => {
+    setPermissions((prev) => ({ ...prev, [key]: value }));
+    showCustomMessage(
+      `${label} access ${value ? "enabled" : "disabled"}`,
+      value ? "success" : "info"
+    );
+  };
+
   const Section = ({ title, children }) => (
     <View style={styles.sectionContainer}>
       <Text style={styles.sectionTitle}>{title}</Text>
@@ -15,26 +32,34 @@ export const DevicePermissions = () => {
     <AppBackground>
       <Header label={commonText.DevicePermissions} showBackButton={true} />
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        <Section title="Permissions">
+        <Section title="Device Permissions">
           <NextButton
             leftIcon={appImages.camera}
             label="Camera"
-            onPress={() => {}}
+            isSwitch={true}
+            switchValue={permissions.camera}
+            onSwitchChange={(val) => handleToggle("camera", "Camera", val)}
           />
           <NextButton
             leftIcon={appImages.mic}
             label="Microphone"
-            onPress={() => {}}
+            isSwitch={true}
+            switchValue={permissions.mic}
+            onSwitchChange={(val) => handleToggle("mic", "Microphone", val)}
           />
           <NextButton
             leftIcon={appImages.location}
-            label="Location"
-            onPress={() => {}}
+            label="Location Services"
+            isSwitch={true}
+            switchValue={permissions.location}
+            onSwitchChange={(val) => handleToggle("location", "Location", val)}
           />
           <NextButton
             leftIcon={appImages.bell}
-            label="Notifications"
-            onPress={() => {}}
+            label="Push Notifications"
+            isSwitch={true}
+            switchValue={permissions.notifications}
+            onSwitchChange={(val) => handleToggle("notifications", "Notifications", val)}
           />
         </Section>
       </ScrollView>

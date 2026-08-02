@@ -10,10 +10,17 @@ import {
   Platform,
   TextInput,
 } from "react-native";
-import { AppBackground, Header, Spacer } from "../../components";
+import {
+  AppBackground,
+  Header,
+  Spacer,
+  ProfileComponent,
+  CustomBottomSheet,
+} from "../../components";
 import { colors, scales } from "../../utils";
 import { appImages, fontFamily } from "../../assets";
-import { goBack } from "../../navigation";
+import { goBack, navigate, routesConstants } from "../../navigation";
+import { showCustomMessage } from "../../helper/FlashMessage";
 
 const INITIAL_MESSAGES = [
   {
@@ -94,6 +101,27 @@ export const ChatCard = () => {
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState(INITIAL_MESSAGES);
   const flatListRef = useRef(null);
+  const userOptionsSheetRef = useRef(null);
+
+  const ListItem = ({ image, label, onPress, isDestructive }) => {
+    return (
+      <TouchableOpacity
+        onPress={onPress}
+        style={styles.listItem}
+        activeOpacity={0.7}
+      >
+        <Image
+          source={image}
+          style={[styles.listImage, isDestructive && { tintColor: colors.red }]}
+          resizeMode="contain"
+          tintColor={isDestructive ? colors.red : colors.white}
+        />
+        <Text style={[styles.listText, isDestructive && { color: colors.red }]}>
+          {label}
+        </Text>
+      </TouchableOpacity>
+    );
+  };
 
   const sendMessage = (text) => {
     const finalMsg = typeof text === "string" ? text : message;
@@ -125,10 +153,17 @@ export const ChatCard = () => {
   return (
     <AppBackground>
       <Header
-        label="Alex Johnson"
         showBackButton={true}
         onBackPress={() => goBack()}
+        customTitle={
+          <ProfileComponent
+            name="Alex Johnson"
+            profileImage={appImages.dummyuser}
+            style={{ paddingHorizontal: 0 }}
+          />
+        }
         rightIcon={appImages.threeDots}
+        onRightPress={() => userOptionsSheetRef.current?.present()}
       />
 
       <FlatList
@@ -176,6 +211,82 @@ export const ChatCard = () => {
         </View>
         <Spacer height={Platform.OS === "ios" ? scales(30) : scales(10)} />
       </KeyboardAvoidingView>
+
+      <CustomBottomSheet
+        ref={userOptionsSheetRef}
+        snapPoints={["54%"]}
+        useBlur={true}
+        enablePanDownToClose={true}
+        enableBackdrop={true}
+        showCloseButton={true}
+        title="User Options"
+        subtitle="Select an action for Alex Johnson"
+      >
+        <View style={styles.listItemContainer}>
+          <ListItem
+            image={appImages.info}
+            label="View Profile"
+            onPress={() => {
+              userOptionsSheetRef.current?.dismiss();
+              navigate(routesConstants.Profile);
+            }}
+          />
+          <ListItem
+            image={appImages.follow}
+            label="Follow Creator"
+            onPress={() => {
+              userOptionsSheetRef.current?.dismiss();
+              showCustomMessage("Followed creator", "success");
+            }}
+          />
+          <ListItem
+            image={appImages.bell}
+            label="Mute Creator"
+            onPress={() => {
+              userOptionsSheetRef.current?.dismiss();
+              showCustomMessage("Muted creator messages", "info");
+            }}
+          />
+          <ListItem
+            image={appImages.pin}
+            label="Pin Chat"
+            onPress={() => {
+              userOptionsSheetRef.current?.dismiss();
+              showCustomMessage("Chat pinned to top", "success");
+            }}
+          />
+          <ListItem
+            image={appImages.bin}
+            label="Delete Chat"
+            isDestructive={true}
+            onPress={() => {
+              userOptionsSheetRef.current?.dismiss();
+              showCustomMessage("Chat history deleted", "info");
+            }}
+          />
+          <ListItem
+            image={appImages.blocked}
+            label="Block User"
+            isDestructive={true}
+            onPress={() => {
+              userOptionsSheetRef.current?.dismiss();
+              showCustomMessage("Blocked user", "danger");
+            }}
+          />
+          <ListItem
+            image={appImages.report}
+            label="Report User"
+            isDestructive={true}
+            onPress={() => {
+              userOptionsSheetRef.current?.dismiss();
+              showCustomMessage(
+                "Report submitted. Thank you for keeping IndieMate safe.",
+                "danger",
+              );
+            }}
+          />
+        </View>
+      </CustomBottomSheet>
     </AppBackground>
   );
 };
@@ -279,5 +390,28 @@ const styles = StyleSheet.create({
     height: scales(20),
     resizeMode: "contain",
     tintColor: "rgba(255,255,255,0.6)",
+  },
+  listItemContainer: {
+    paddingVertical: scales(4),
+    gap: scales(10),
+  },
+  listItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: scales(12),
+    paddingHorizontal: scales(14),
+    borderRadius: scales(14),
+    backgroundColor: colors.transparentWhite5,
+    gap: scales(14),
+  },
+  listImage: {
+    height: scales(20),
+    width: scales(20),
+  },
+  listText: {
+    color: colors.white,
+    fontFamily: fontFamily.semiBold,
+    fontSize: scales(14),
+    letterSpacing: 0.5,
   },
 });

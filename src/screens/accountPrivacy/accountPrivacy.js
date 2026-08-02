@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { View, Text, StyleSheet, ScrollView, Image } from "react-native";
-import { AppBackground, Header, NextButton, CustomSwitch } from "../../components";
+import { View, Text, StyleSheet, ScrollView } from "react-native";
+import { AppBackground, Header, NextButton } from "../../components";
 import { colors, scales, commonText } from "../../utils";
 import { appImages, fontFamily } from "../../assets";
 import { navigate, routesConstants } from "../../navigation";
@@ -29,13 +29,13 @@ export const AccountPrivacy = () => {
       <Header label={commonText.accountPrivacy} showBackButton={true} />
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <Section title="Account Privacy">
-          <View style={styles.switchContainer}>
-            <View style={styles.leftContainer}>
-              <Image source={appImages.lock} style={styles.leftIcon} />
-              <Text style={styles.label}>Private Account</Text>
-            </View>
-            <CustomSwitch value={isPrivate} onValueChange={handleToggle} />
-          </View>
+          <NextButton
+            leftIcon={appImages.lock}
+            label="Private Account"
+            isSwitch={true}
+            switchValue={isPrivate}
+            onSwitchChange={handleToggle}
+          />
         </Section>
 
         <Section title="Interactions">
@@ -48,14 +48,6 @@ export const AccountPrivacy = () => {
             leftIcon={appImages.mention}
             label="Tags and Mentions"
             onPress={() => navigate(routesConstants.mentions)}
-          />
-        </Section>
-
-        <Section title="Connections">
-          <NextButton
-            leftIcon={appImages.accountPrivacy}
-            label="Device Permissions"
-            onPress={() => navigate(routesConstants.devicePermissions)}
           />
         </Section>
       </ScrollView>
@@ -77,27 +69,5 @@ const styles = StyleSheet.create({
     backgroundColor: colors.transparentWhite5,
     borderRadius: scales(20),
     paddingVertical: scales(5),
-  },
-  switchContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    padding: scales(10),
-    marginVertical: scales(5),
-  },
-  leftContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: scales(10),
-  },
-  leftIcon: {
-    height: 25,
-    width: 25,
-    tintColor: colors.white,
-  },
-  label: {
-    fontFamily: fontFamily.regular,
-    color: colors.white,
-    fontSize: scales(16),
   },
 });

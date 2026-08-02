@@ -8,6 +8,7 @@ import {
   Animated,
   Dimensions,
   FlatList,
+  ScrollView,
 } from "react-native";
 import { Spacer, CustomSkeleton, AppBackground } from "../../components";
 import { colors, scales, commonText } from "../../utils";
@@ -20,7 +21,7 @@ import { useTabBarScrollHandler } from "../../context/TabBarContext";
 import Share from "react-native-share";
 
 const { width } = Dimensions.get("window");
-const AnimatedFlatList = AnimatedRN.createAnimatedComponent(FlatList);
+const AnimatedRNScrollView = AnimatedRN.createAnimatedComponent(ScrollView);
 
 const POSTS = Array.from({ length: 5 }, (_, i) => ({
   id: `post_${i}`,
@@ -60,7 +61,8 @@ export const Profile = () => {
       err && console.log(err);
     });
   };
-  const tabAnim = useRef(new Animated.Value(0)).current;
+  const horizontalScrollRef = useRef(null);
+  const scrollX = useRef(new Animated.Value(0)).current;
   const [loading, setLoading] = useState(true);
   const scrollHandler = useTabBarScrollHandler();
 
@@ -73,18 +75,15 @@ export const Profile = () => {
 
   const handleTabPress = (index) => {
     setActiveTab(index);
-    Animated.spring(tabAnim, {
-      toValue: index,
-      useNativeDriver: true,
-      tension: 60,
-      friction: 10,
-    }).start();
+    horizontalScrollRef.current?.scrollTo({ x: index * width, animated: true });
   };
 
-  const getGridData = () => {
-    if (activeTab === 0) return POSTS;
-    if (activeTab === 1) return REELS;
-    return TAGS;
+  const handleMomentumScrollEnd = (event) => {
+    const contentOffsetX = event.nativeEvent.contentOffset.x;
+    const index = Math.round(contentOffsetX / width);
+    if (index !== activeTab) {
+      setActiveTab(index);
+    }
   };
 
   const renderCoverPhoto = () => {
@@ -207,13 +206,14 @@ export const Profile = () => {
   );
 
   const renderTabs = () => {
-    const tabTranslate = tabAnim.interpolate({
-      inputRange: [0, 1, 2],
+    const tabTranslate = scrollX.interpolate({
+      inputRange: [0, width, width * 2],
       outputRange: [
         0,
         (width - scales(32)) / 3,
         ((width - scales(32)) / 3) * 2,
       ],
+      extrapolate: "clamp",
     });
 
     return (
@@ -279,22 +279,43 @@ export const Profile = () => {
     );
   };
 
-  const renderGridItem = ({ item }) => (
-    <TouchableOpacity style={styles.modernGridItem}>
-      <Image source={item.image} style={styles.modernGridImage} />
-    </TouchableOpacity>
+  const renderGrid = (items, emptyText) => (
+    <View style={styles.gridContainer}>
+      {items.length > 0 ? (
+        items.map((item) => (
+          <TouchableOpacity key={item.id} style={styles.modernGridItem}>
+            <Image
+              source={item.image}
+              style={styles.modernGridImage}
+              resizeMode="cover"
+            />
+          </TouchableOpacity>
+        ))
+      ) : (
+        <View style={styles.emptyContainer}>
+          <Text style={styles.emptyText}>{emptyText}</Text>
+        </View>
+      )}
+    </View>
   );
 
-  const listHeader = (
-    <View>
-      {renderCoverPhoto()}
-      {renderProfileCard()}
-      <Spacer height={scales(20)} />
-      {renderHighlights()}
-      <Spacer height={scales(20)} />
-      {renderTabs()}
-      <Spacer height={scales(10)} />
-    </View>
+  const renderContentPager = () => (
+    <Animated.ScrollView
+      ref={horizontalScrollRef}
+      horizontal
+      pagingEnabled
+      showsHorizontalScrollIndicator={false}
+      scrollEventThrottle={16}
+      onScroll={Animated.event(
+        [{ nativeEvent: { contentOffset: { x: scrollX } } }],
+        { useNativeDriver: true },
+      )}
+      onMomentumScrollEnd={handleMomentumScrollEnd}
+    >
+      <View style={{ width }}>{renderGrid(POSTS, "No posts yet")}</View>
+      <View style={{ width }}>{renderGrid(REELS, "No bites yet")}</View>
+      <View style={{ width }}>{renderGrid(TAGS, "No tagged posts yet")}</View>
+    </Animated.ScrollView>
   );
 
   if (loading) {
@@ -307,19 +328,20 @@ export const Profile = () => {
 
   return (
     <AppBackground isTopInset={false}>
-      <AnimatedFlatList
-        data={getGridData()}
-        keyExtractor={(item) => item.id}
-        numColumns={3}
-        renderItem={renderGridItem}
-        ListHeaderComponent={listHeader}
+      <AnimatedRNScrollView
         showsVerticalScrollIndicator={false}
-        removeClippedSubviews={false}
-        initialNumToRender={15}
         contentContainerStyle={styles.listContent}
         onScroll={scrollHandler}
         scrollEventThrottle={16}
-      />
+      >
+        {renderCoverPhoto()}
+        {renderProfileCard()}
+        <Spacer height={scales(20)} />
+        {renderHighlights()}
+        <Spacer height={scales(20)} />
+        {renderTabs()}
+        {renderContentPager()}
+      </AnimatedRNScrollView>
     </AppBackground>
   );
 };
@@ -517,6 +539,7 @@ const styles = StyleSheet.create({
     borderRadius: scales(30),
     padding: scales(4),
     position: "relative",
+    marginBottom: scales(10),
   },
   activeTabBg: {
     position: "absolute",
@@ -554,6 +577,11 @@ const styles = StyleSheet.create({
   listContent: {
     paddingBottom: scales(100),
   },
+  gridContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    width: width,
+  },
   modernGridItem: {
     width: width / 3 - 2,
     height: width / 3 + scales(30),
@@ -565,5 +593,16 @@ const styles = StyleSheet.create({
   modernGridImage: {
     width: "100%",
     height: "100%",
+  },
+  emptyContainer: {
+    paddingVertical: scales(40),
+    alignItems: "center",
+    justifyContent: "center",
+    width: "100%",
+  },
+  emptyText: {
+    color: "rgba(255, 255, 255, 0.5)",
+    fontFamily: fontFamily.medium,
+    fontSize: scales(14),
   },
 });

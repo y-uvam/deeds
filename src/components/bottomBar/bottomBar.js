@@ -33,7 +33,8 @@ const TABS = [
 ];
 
 const GAP = scales(16);
-const EXPANDED_WIDTH = ITEM_SIZE * TABS.length + GAP * (TABS.length - 1) + PADDING * 2;
+const EXPANDED_WIDTH =
+  ITEM_SIZE * TABS.length + GAP * (TABS.length - 1) + PADDING * 2;
 const COLLAPSED_WIDTH = ITEM_SIZE + PADDING * 2;
 const BAR_HEIGHT = ITEM_SIZE + PADDING * 2;
 const LEFT_MARGIN = scales(20);
@@ -217,9 +218,11 @@ export const BottomBar = () => {
               />
             ))}
           </View>
-          <View style={[StyleSheet.absoluteFill, styles.borderOverlay]} pointerEvents="none" />
+          <View
+            style={[StyleSheet.absoluteFill, styles.borderOverlay]}
+            pointerEvents="none"
+          />
         </View>
-
       </Animated.View>
     </View>
   );

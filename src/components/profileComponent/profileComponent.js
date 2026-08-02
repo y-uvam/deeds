@@ -3,9 +3,9 @@ import { colors, scales } from "../../utils";
 import { fontFamily } from "../../assets";
 import { navigate, routesConstants } from "../../navigation";
 
-export const ProfileComponent = ({ userId, name, profileImage }) => {
+export const ProfileComponent = ({ userId, name, profileImage, style }) => {
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, style]}>
       <TouchableOpacity
         onPress={() => {
           navigate(routesConstants.Profile);
@@ -13,7 +13,10 @@ export const ProfileComponent = ({ userId, name, profileImage }) => {
       >
         <Image source={profileImage} style={styles.profileImage} />
       </TouchableOpacity>
-      <Text style={styles.profileName}>{name}</Text>
+      <View>
+        <Text style={styles.profileName}>{name}</Text>
+        {!!userId && <Text style={styles.profileUsername}>@{userId}</Text>}
+      </View>
     </View>
   );
 };
@@ -35,5 +38,11 @@ const styles = StyleSheet.create({
     fontFamily: fontFamily.regular,
     color: colors.white,
     fontSize: scales(16),
+  },
+  profileUsername: {
+    fontFamily: fontFamily.regular,
+    color: "rgba(255, 255, 255, 0.6)",
+    fontSize: scales(14),
+    marginTop: scales(2),
   },
 });

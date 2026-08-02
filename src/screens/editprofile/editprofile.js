@@ -46,14 +46,11 @@ const ImageOption = memo(({ label, icon, onPress, isDestructive }) => (
     onPress={onPress}
     activeOpacity={0.7}
   >
-    <View
-      style={[styles.optionIconCircle, isDestructive && styles.destructiveBg]}
-    >
-      <Image
-        source={icon}
-        style={[styles.optionIcon, isDestructive && { tintColor: colors.red }]}
-      />
-    </View>
+    <Image
+      source={icon}
+      style={[styles.optionIcon, isDestructive && { tintColor: colors.red }]}
+    />
+
     <Text style={[styles.optionLabel, isDestructive && { color: colors.red }]}>
       {label}
     </Text>
@@ -115,7 +112,7 @@ export const Editprofile = () => {
               style={styles.avatar}
             />
             <View style={styles.editIconBadge}>
-              <Image source={appImages.plus} style={styles.plusIcon} />
+              <Image source={appImages.edit} style={styles.plusIcon} />
             </View>
           </View>
           <Spacer height={scales(12)} />
@@ -142,6 +139,7 @@ export const Editprofile = () => {
         title={editingField?.label}
         subtitle={editingField?.placeholder}
         snapPoints={["45%"]}
+        useBlur={true}
       >
         <KeyboardAvoidingView
           behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -163,27 +161,28 @@ export const Editprofile = () => {
 
       <CustomBottomSheet
         ref={imageSheetRef}
-        title="Profile Photo"
-        subtitle="Update your look"
         snapPoints={["35%"]}
+        useBlur={true}
       >
         <View style={styles.optionsContainer}>
           <ImageOption
             label="Take Photo"
-            icon={appImages.post}
+            icon={appImages.camera}
             onPress={() => {}}
           />
           <ImageOption
             label="Choose Gallery"
-            icon={appImages.imageupload}
+            icon={appImages.gallery}
             onPress={() => {}}
           />
-          <ImageOption
-            label="Remove current"
-            icon={appImages.plus}
-            isDestructive={true}
-            onPress={() => {}}
-          />
+          {profileData?.profileImage && (
+            <ImageOption
+              label="Remove current"
+              icon={appImages.bin}
+              isDestructive={true}
+              onPress={() => {}}
+            />
+          )}
         </View>
       </CustomBottomSheet>
     </AppBackground>
@@ -201,8 +200,6 @@ const styles = StyleSheet.create({
   avatarWrapper: {
     padding: scales(3),
     borderRadius: scales(70),
-    borderWidth: 2,
-    borderColor: colors.blue,
     position: "relative",
   },
   avatar: {
@@ -215,7 +212,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     bottom: scales(2),
     right: scales(2),
-    backgroundColor: colors.blue,
+    backgroundColor: colors.storyRing,
     width: scales(25),
     height: scales(25),
     borderRadius: scales(13),
@@ -288,6 +285,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     paddingVertical: scales(14),
+    gap: scales(10),
   },
   optionIconCircle: {
     width: scales(44),

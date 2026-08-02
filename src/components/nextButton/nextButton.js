@@ -1,15 +1,65 @@
+import React from "react";
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { appImages, fontFamily } from "../../assets";
 import { colors, scales } from "../../utils";
+import { CustomSwitch } from "../CustomSwitch/CustomSwitch";
 
-export const NextButton = ({ leftIcon, label, onPress }) => {
+export const NextButton = ({
+  leftIcon,
+  label,
+  onPress,
+  rightIcon,
+  isSelected,
+  isSwitch = false,
+  switchValue = false,
+  onSwitchChange,
+}) => {
   return (
-    <TouchableOpacity style={styles.container} onPress={onPress}>
+    <TouchableOpacity
+      style={styles.container}
+      onPress={isSwitch ? () => onSwitchChange?.(!switchValue) : onPress}
+      activeOpacity={0.7}
+    >
       <View style={styles.leftContainer}>
-        <Image source={leftIcon} style={styles.leftIcon} />
-        <Text style={styles.label}>{label}</Text>
+        {leftIcon && (
+          <Image
+            source={leftIcon}
+            style={styles.leftIcon}
+            resizeMode="contain"
+          />
+        )}
+        <Text
+          style={[
+            styles.label,
+            isSelected && { fontFamily: fontFamily.semiBold, color: colors.blue },
+          ]}
+        >
+          {label}
+        </Text>
       </View>
-      <Image style={styles.next} source={appImages.backarrow} />
+      {isSwitch ? (
+        <CustomSwitch
+          value={switchValue}
+          onValueChange={onSwitchChange}
+          activeColor={colors.blue}
+        />
+      ) : (
+        <Image
+          style={[
+            styles.next,
+            rightIcon
+              ? {
+                  transform: [{ rotate: "0deg" }],
+                  tintColor: colors.blue,
+                  height: scales(20),
+                  width: scales(20),
+                }
+              : {},
+          ]}
+          source={rightIcon || appImages.backarrow}
+          resizeMode="contain"
+        />
+      )}
     </TouchableOpacity>
   );
 };

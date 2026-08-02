@@ -14,6 +14,7 @@ import Animated, {
 } from "react-native-reanimated";
 import { useTabBar } from "../context/TabBarContext";
 import { navigate } from "./navigationServices";
+import { colors } from "../utils";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
@@ -57,7 +58,7 @@ const SwipeableTabWrapper = ({
         translateX.value = 0;
       }
     },
-    [routeName, isCollapsed, translateX]
+    [routeName, isCollapsed, translateX],
   );
 
   const pan = Gesture.Pan()
@@ -87,7 +88,7 @@ const SwipeableTabWrapper = ({
               if (finished) {
                 runOnJS(completeSwipe)("left");
               }
-            }
+            },
           );
         } else if (
           PrevComponent &&
@@ -100,7 +101,7 @@ const SwipeableTabWrapper = ({
               if (finished) {
                 runOnJS(completeSwipe)("right");
               }
-            }
+            },
           );
         } else {
           translateX.value = withTiming(0, {
@@ -132,7 +133,10 @@ const SwipeableTabWrapper = ({
     <GestureDetector gesture={pan}>
       <View style={styles.container}>
         {PrevComponent && (
-          <Animated.View style={[styles.screen, prevStyle]} pointerEvents="none">
+          <Animated.View
+            style={[styles.screen, prevStyle]}
+            pointerEvents="none"
+          >
             <PrevComponent isPreview={true} />
           </Animated.View>
         )}
@@ -140,7 +144,10 @@ const SwipeableTabWrapper = ({
           {children}
         </Animated.View>
         {NextComponent && (
-          <Animated.View style={[styles.screen, nextStyle]} pointerEvents="none">
+          <Animated.View
+            style={[styles.screen, nextStyle]}
+            pointerEvents="none"
+          >
             <NextComponent isPreview={true} />
           </Animated.View>
         )}
@@ -228,6 +235,7 @@ const styles = StyleSheet.create({
     flex: 1,
     position: "relative",
     overflow: "hidden",
+    backgroundColor: colors.background,
   },
   screen: {
     ...StyleSheet.absoluteFillObject,

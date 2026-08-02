@@ -1,9 +1,11 @@
 import React from "react";
 import {
+  View,
   Text,
   StyleSheet,
   ActivityIndicator,
   TouchableOpacity,
+  Platform,
 } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 import { colors, scales } from "../../utils";
@@ -40,7 +42,9 @@ export const CustomButton = ({
         {loader ? (
           <ActivityIndicator size="small" color={colors.white} />
         ) : (
-          <Text style={[styles.label, labelStyle]}>{label}</Text>
+          <View style={styles.textWrapper}>
+            <Text style={[styles.label, labelStyle]}>{label}</Text>
+          </View>
         )}
       </LinearGradient>
     </TouchableOpacity>
@@ -50,18 +54,23 @@ export const CustomButton = ({
 const styles = StyleSheet.create({
   touchable: {
     borderRadius: scales(20),
+    overflow: "hidden",
   },
   button: {
-    // paddingVertical: scales(15),
-    minHeight: scales(50),
+    height: scales(50),
     borderRadius: scales(20),
     justifyContent: "center",
     alignItems: "center",
     width: "100%",
-    paddingHorizontal: scales(16),
   },
   disabled: {
     opacity: 0.5,
+  },
+  textWrapper: {
+    paddingTop: Platform.OS === "ios" ? scales(6) : scales(3),
+    alignItems: "center",
+    justifyContent: "center",
+    width: "100%",
   },
   label: {
     color: colors.white,
@@ -69,8 +78,5 @@ const styles = StyleSheet.create({
     fontFamily: fontFamily.semiBold,
     letterSpacing: 0.5,
     textAlign: "center",
-    alignSelf: "center",
-    includeFontPadding: false,
-    lineHeight: scales(20),
   },
 });

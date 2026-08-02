@@ -23,7 +23,7 @@ import LinearGradient from "react-native-linear-gradient";
 import { navigate, routesConstants } from "../../navigation";
 
 const { width } = Dimensions.get("window");
-const HORIZONTAL_PADDING = scales(12);
+const HORIZONTAL_PADDING = scales(5);
 const GRID_GAP = scales(3);
 const COLUMN_WIDTH = (width - HORIZONTAL_PADDING * 2 - GRID_GAP * 2) / 3;
 const LARGE_TILE_SIZE = COLUMN_WIDTH * 2 + GRID_GAP;

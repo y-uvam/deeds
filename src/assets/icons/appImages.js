@@ -73,4 +73,9 @@ export const appImages = {
   report: require("../icons/report.png"),
   copy: require("../icons/copy.png"),
   info: require("../icons/info.png"),
+  donation: require("../icons/donation.png"),
+  finance: require("../icons/finance.png"),
+  insights: require("../icons/insights.png"),
+  history: require("../icons/history.png"),
+  everyone: require("../icons/everyone.png"),
 };

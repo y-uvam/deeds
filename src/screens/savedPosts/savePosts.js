@@ -8,7 +8,7 @@ import {
   Dimensions,
 } from "react-native";
 import { AppBackground, Header, CustomSearch } from "../../components";
-import { colors, scales } from "../../utils";
+import { colors, commonText, scales } from "../../utils";
 import { appImages } from "../../assets";
 
 const { width } = Dimensions.get("window");
@@ -25,7 +25,7 @@ const dummyData = Array.from({ length: 18 }).map((_, i) => ({
   isVideo: i % 4 === 0, // Just a mix of videos and posts
 }));
 
-export const SavedPosts = () => {
+export const SavedPosts = ({ route }) => {
   const [searchText, setSearchText] = useState("");
 
   const renderItem = ({ item }) => (
@@ -41,13 +41,7 @@ export const SavedPosts = () => {
 
   return (
     <AppBackground>
-      <Header label="Saved posts and videos" showBackButton={true} />
-      <CustomSearch
-        value={searchText}
-        onChangeText={setSearchText}
-        placeholder="Search"
-        containerStyle={styles.searchContainer}
-      />
+      <Header label={route?.params?.type} showBackButton={true} />
 
       <FlatList
         data={dummyData}

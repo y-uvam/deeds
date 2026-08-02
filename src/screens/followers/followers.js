@@ -9,7 +9,12 @@ import {
   Animated,
   Dimensions,
 } from "react-native";
-import { AppBackground, Header, CustomSearch } from "../../components";
+import {
+  AppBackground,
+  Header,
+  CustomSearch,
+  ProfileComponent,
+} from "../../components";
 import { colors, scales } from "../../utils";
 import { appImages, fontFamily } from "../../assets";
 import { showCustomMessage } from "../../helper/FlashMessage";
@@ -17,19 +22,79 @@ import { showCustomMessage } from "../../helper/FlashMessage";
 const { width } = Dimensions.get("window");
 
 const DUMMY_FOLLOWERS = [
-  { id: "1", name: "Alice Cooper", username: "alice_c", avatar: "https://picsum.photos/100/100?random=11", isFollowing: true },
-  { id: "2", name: "Bob Marley", username: "bob_m", avatar: "https://picsum.photos/100/100?random=12", isFollowing: false },
-  { id: "3", name: "Charlie Puth", username: "charlie_p", avatar: "https://picsum.photos/100/100?random=13", isFollowing: true },
-  { id: "4", name: "Diana Prince", username: "wonder_diana", avatar: "https://picsum.photos/100/100?random=14", isFollowing: false },
-  { id: "5", name: "Ethan Hunt", username: "ethan_h", avatar: "https://picsum.photos/100/100?random=15", isFollowing: true },
+  {
+    id: "1",
+    name: "Alice Cooper",
+    username: "alice_c",
+    avatar: appImages.dummyuser,
+    isFollowing: true,
+  },
+  {
+    id: "2",
+    name: "Bob Marley",
+    username: "bob_m",
+    avatar: appImages.dummyuser,
+    isFollowing: false,
+  },
+  {
+    id: "3",
+    name: "Charlie Puth",
+    username: "charlie_p",
+    avatar: appImages.dummyuser,
+    isFollowing: true,
+  },
+  {
+    id: "4",
+    name: "Diana Prince",
+    username: "wonder_diana",
+    avatar: appImages.dummyuser,
+    isFollowing: false,
+  },
+  {
+    id: "5",
+    name: "Ethan Hunt",
+    username: "ethan_h",
+    avatar: appImages.dummyuser,
+    isFollowing: true,
+  },
 ];
 
 const DUMMY_FOLLOWING = [
-  { id: "1", name: "Alice Cooper", username: "alice_c", avatar: "https://picsum.photos/100/100?random=11", isFollowing: true },
-  { id: "3", name: "Charlie Puth", username: "charlie_p", avatar: "https://picsum.photos/100/100?random=13", isFollowing: true },
-  { id: "5", name: "Ethan Hunt", username: "ethan_h", avatar: "https://picsum.photos/100/100?random=15", isFollowing: true },
-  { id: "6", name: "Fiona Gallagher", username: "fiona_g", avatar: "https://picsum.photos/100/100?random=16", isFollowing: true },
-  { id: "7", name: "George Clooney", username: "george_c", avatar: "https://picsum.photos/100/100?random=17", isFollowing: true },
+  {
+    id: "1",
+    name: "Alice Cooper",
+    username: "alice_c",
+    avatar: appImages.dummyuser,
+    isFollowing: true,
+  },
+  {
+    id: "3",
+    name: "Charlie Puth",
+    username: "charlie_p",
+    avatar: appImages.dummyuser,
+    isFollowing: true,
+  },
+  {
+    id: "5",
+    name: "Ethan Hunt",
+    username: "ethan_h",
+    avatar: appImages.dummyuser,
+    isFollowing: true,
+  },
+  {
+    id: "6",
+    name: "Fiona Gallagher",
+    username: "fiona_g",
+    avatar: appImages.dummyuser,
+    isFollowing: true,
+  },
+  {
+    id: "7",
+    name: "George Clooney",
+    username: "george_c",
+    avatar: appImages.dummyuser,
+    isFollowing: true,
+  },
 ];
 
 export const Followers = ({ route }) => {
@@ -40,7 +105,9 @@ export const Followers = ({ route }) => {
   const [following, setFollowing] = useState(DUMMY_FOLLOWING);
 
   const scrollViewRef = useRef(null);
-  const scrollX = useRef(new Animated.Value(type === "following" ? width : 0)).current;
+  const scrollX = useRef(
+    new Animated.Value(type === "following" ? width : 0),
+  ).current;
 
   useEffect(() => {
     if (type) {
@@ -65,12 +132,16 @@ export const Followers = ({ route }) => {
   const handleToggleFollow = (user) => {
     setFollowing((prev) =>
       prev.map((item) =>
-        item.id === user.id ? { ...item, isFollowing: !item.isFollowing } : item
-      )
+        item.id === user.id
+          ? { ...item, isFollowing: !item.isFollowing }
+          : item,
+      ),
     );
     showCustomMessage(
-      user.isFollowing ? `Unfollowed @${user.username}` : `Followed @${user.username}`,
-      "success"
+      user.isFollowing
+        ? `Unfollowed @${user.username}`
+        : `Followed @${user.username}`,
+      "success",
     );
   };
 
@@ -87,24 +158,27 @@ export const Followers = ({ route }) => {
   const filteredFollowers = followers.filter(
     (user) =>
       user.name.toLowerCase().includes(searchText.toLowerCase()) ||
-      user.username.toLowerCase().includes(searchText.toLowerCase())
+      user.username.toLowerCase().includes(searchText.toLowerCase()),
   );
 
   const filteredFollowing = following.filter(
     (user) =>
       user.name.toLowerCase().includes(searchText.toLowerCase()) ||
-      user.username.toLowerCase().includes(searchText.toLowerCase())
+      user.username.toLowerCase().includes(searchText.toLowerCase()),
   );
 
   const renderItem = ({ item }) => (
     <View style={styles.userRow}>
-      <View style={styles.userInfo}>
-        <Image source={{ uri: item.avatar }} style={styles.avatar} />
-        <View style={styles.textContainer}>
-          <Text style={styles.name}>{item.name}</Text>
-          <Text style={styles.username}>@{item.username}</Text>
-        </View>
-      </View>
+      <ProfileComponent
+        name={item.name}
+        userId={item.username}
+        profileImage={
+          typeof item.avatar === "string"
+            ? { uri: item.avatar }
+            : item.avatar || appImages.dummyuser
+        }
+        style={{ flex: 1, paddingHorizontal: 0 }}
+      />
 
       {activeTab === "followers" ? (
         <TouchableOpacity
@@ -124,7 +198,9 @@ export const Followers = ({ route }) => {
           <Text
             style={[
               styles.followButtonText,
-              item.isFollowing ? styles.followingButtonText : styles.followButtonText,
+              item.isFollowing
+                ? styles.followingButtonText
+                : styles.followButtonText,
             ]}
           >
             {item.isFollowing ? "Following" : "Follow"}
@@ -207,7 +283,7 @@ export const Followers = ({ route }) => {
         scrollEventThrottle={16}
         onScroll={Animated.event(
           [{ nativeEvent: { contentOffset: { x: scrollX } } }],
-          { useNativeDriver: true }
+          { useNativeDriver: true },
         )}
         onMomentumScrollEnd={handleMomentumScrollEnd}
         contentOffset={{ x: type === "following" ? width : 0, y: 0 }}
@@ -294,31 +370,6 @@ const styles = StyleSheet.create({
     borderRadius: scales(16),
     padding: scales(12),
     marginBottom: scales(12),
-  },
-  userInfo: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: scales(12),
-  },
-  avatar: {
-    width: scales(45),
-    height: scales(45),
-    borderRadius: scales(22.5),
-    backgroundColor: colors.transparentWhite10,
-  },
-  textContainer: {
-    justifyContent: "center",
-  },
-  name: {
-    fontFamily: fontFamily.semiBold,
-    color: colors.white,
-    fontSize: scales(16),
-  },
-  username: {
-    fontFamily: fontFamily.regular,
-    color: "rgba(255, 255, 255, 0.6)",
-    fontSize: scales(14),
-    marginTop: scales(2),
   },
   removeButton: {
     backgroundColor: "rgba(255, 255, 255, 0.15)",

@@ -24,8 +24,6 @@ export const AppBackground = ({
         </>
       )}
 
-      <View style={styles.topAccent} />
-
       <View
         style={[
           styles.content,
@@ -46,14 +44,6 @@ const styles = StyleSheet.create({
   overlay: {
     ...StyleSheet.absoluteFillObject,
     backgroundColor: "rgba(5, 20, 36, 0.72)",
-  },
-  topAccent: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    height: 1,
-    backgroundColor: "rgba(0,136,255,0.25)",
   },
   content: {
     flex: 1,

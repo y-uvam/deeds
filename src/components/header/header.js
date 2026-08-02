@@ -76,6 +76,7 @@ export const Header = ({
   leftButtonPress,
   filterIcon = false,
   onFilterPress,
+  customTitle,
 }) => {
   const hasLeftButton = showBackButton || leftButton;
 
@@ -89,7 +90,7 @@ export const Header = ({
               onPress={() => (leftButtonPress ? leftButtonPress() : goBack())}
             />
           )}
-          <HeaderPill label={label} isLogo={isHome} />
+          {customTitle ? customTitle : <HeaderPill label={label} isLogo={isHome} />}
         </View>
 
         <View style={styles.rightContainer}>

@@ -22,35 +22,38 @@ export const YourActivity = () => {
           <NextButton
             leftIcon={appImages.like}
             label="Likes"
-            onPress={() => showCustomMessage("Showing likes history...", "info")}
+            onPress={() =>
+              navigate(routesConstants.savedPosts, { type: "Likes" })
+            }
           />
           <NextButton
             leftIcon={appImages.comment}
             label="Comments"
-            onPress={() => showCustomMessage("Showing comments history...", "info")}
+            onPress={() =>
+              navigate(routesConstants.review, { type: "comments" })
+            }
           />
           <NextButton
-            leftIcon={appImages.tag}
-            label="Tags & Mentions"
-            onPress={() => showCustomMessage("Showing tags and mentions...", "info")}
+            leftIcon={appImages.star}
+            label="Ratings"
+            onPress={() => navigate(routesConstants.review, { type: "rating" })}
           />
         </Section>
 
-        <Section title="Information & Content">
+        <Section title="Saved & History">
           <NextButton
             leftIcon={appImages.saved}
             label="Saved Posts"
-            onPress={() => navigate(routesConstants.savedPosts)}
+            onPress={() =>
+              navigate(routesConstants.savedPosts, { type: "Saved Posts" })
+            }
           />
           <NextButton
             leftIcon={appImages.browse}
-            label="Recent Searches"
-            onPress={() => showCustomMessage("Recent searches are empty.", "info")}
-          />
-          <NextButton
-            leftIcon={appImages.dataUsage}
-            label="Data Usage"
-            onPress={() => navigate(routesConstants.dataUsage)}
+            label="History"
+            onPress={() =>
+              navigate(routesConstants.savedPosts, { type: "History" })
+            }
           />
         </Section>
       </ScrollView>

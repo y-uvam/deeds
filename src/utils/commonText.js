@@ -66,6 +66,9 @@ export const commonText = {
   monetization: "Monetization",
   tagsAndMentions: "Tags and Mentions",
   ratings: "Ratings",
+  savedPosts: "Saved Posts",
+  likes: "Likes",
+  reviews: "Reviews & Ratings",
 };
 export const validationConstants = {
   noInternet: "Please check your internet connection.",
