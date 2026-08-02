@@ -1,4 +1,4 @@
-import React, { memo, useState, useRef } from "react";
+import React, { memo, useState, useRef, useCallback } from "react";
 import {
   StyleSheet,
   View,
@@ -7,9 +7,11 @@ import {
   Image,
   TouchableOpacity,
   Pressable,
+  Share,
   Animated as RnAnimated,
 } from "react-native";
 import Video from "react-native-video";
+import LottieView from "lottie-react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { BlurView } from "@react-native-community/blur";
 import { useNavigation, StackActions } from "@react-navigation/native";
@@ -20,15 +22,51 @@ import {
 } from "react-native-gesture-handler";
 import { routesConstants } from "../../navigation";
 import { appImages, fontFamily } from "../../assets";
+import { animations } from "../../animations/animations";
 import { colors, scales } from "../../utils";
+import { showCustomMessage } from "../../helper/FlashMessage";
+import { CommentSheet } from "../commentSheet/commentSheet";
+import { CustomBottomSheet } from "../customBottomSheet/customBottomSheet";
 
 const { width: W, height: H } = Dimensions.get("window");
+
+const ListItem = ({ image, label, onPress, isDestructive }) => (
+  <TouchableOpacity
+    style={styles.listItem}
+    onPress={onPress}
+    activeOpacity={0.7}
+  >
+    <Image
+      source={image}
+      style={[
+        styles.listIcon,
+        isDestructive && { tintColor: colors.lightRed },
+      ]}
+      tintColor={isDestructive ? colors.lightRed : colors.white}
+    />
+    <Text
+      style={[
+        styles.listText,
+        isDestructive && { color: colors.lightRed },
+      ]}
+    >
+      {label}
+    </Text>
+  </TouchableOpacity>
+);
 
 export const ReelItem = memo(({ item, isActive, isMuted, onToggleMute }) => {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation();
   const [liked, setLiked] = useState(false);
   const [likesCount, setLikesCount] = useState(item.likes || 124);
+  const [saved, setSaved] = useState(false);
+  const [isFollowing, setIsFollowing] = useState(false);
+  const [showLikeAnim, setShowLikeAnim] = useState(false);
+  const [showSaveAnim, setShowSaveAnim] = useState(false);
+
+  const commentSheetRef = useRef(null);
+  const moreSheetRef = useRef(null);
   const fadeAnim = useRef(new RnAnimated.Value(0)).current;
 
   const handlePressVideo = () => {
@@ -49,10 +87,52 @@ export const ReelItem = memo(({ item, isActive, isMuted, onToggleMute }) => {
     ]).start();
   };
 
-  const handlePressLike = () => {
-    setLiked(!liked);
-    setLikesCount(liked ? likesCount - 1 : likesCount + 1);
-  };
+  const handlePressLike = useCallback(() => {
+    if (!liked) {
+      setLiked(true);
+      setLikesCount((prev) => prev + 1);
+      setShowLikeAnim(true);
+      setTimeout(() => setShowLikeAnim(false), 1500);
+    } else {
+      setLiked(false);
+      setLikesCount((prev) => Math.max(0, prev - 1));
+    }
+  }, [liked]);
+
+  const handleSave = useCallback(() => {
+    if (!saved) {
+      setSaved(true);
+      setShowSaveAnim(true);
+      setTimeout(() => setShowSaveAnim(false), 1500);
+    } else {
+      setSaved(false);
+    }
+  }, [saved]);
+
+  const handleSharePost = useCallback(async () => {
+    try {
+      await Share.share({
+        message: `Check out this reel on IndieMate!`,
+      });
+    } catch (error) {
+      console.log("Share error:", error);
+    }
+  }, []);
+
+  const handleFollow = useCallback(() => {
+    setIsFollowing((prev) => {
+      const nextState = !prev;
+      showCustomMessage(
+        nextState ? "Following creator" : "Unfollowed creator",
+        nextState ? "success" : "info"
+      );
+      return nextState;
+    });
+  }, []);
+
+  const handleProfilePress = useCallback(() => {
+    navigation.navigate(routesConstants.Profile);
+  }, [navigation]);
 
   const onFling = (event) => {
     if (event.nativeEvent.state === State.ACTIVE) {
@@ -82,6 +162,23 @@ export const ReelItem = memo(({ item, isActive, isMuted, onToggleMute }) => {
           )}
         </Pressable>
 
+        {showLikeAnim && (
+          <LottieView
+            source={animations.like}
+            autoPlay
+            loop={false}
+            style={styles.likeAnimCorner}
+          />
+        )}
+        {showSaveAnim && (
+          <LottieView
+            source={animations.save}
+            autoPlay
+            loop={false}
+            style={styles.saveAnimCorner}
+          />
+        )}
+
         <View
           style={[styles.topProfileContainer, { top: insets.top + scales(0) }]}
         >
@@ -91,15 +188,35 @@ export const ReelItem = memo(({ item, isActive, isMuted, onToggleMute }) => {
             blurAmount={5}
             reducedTransparencyFallbackColor={colors.background}
           />
-          <Image source={appImages.dummyuser} style={styles.profileImage} />
-          <View style={styles.topProfileText}>
-            <Text style={styles.username}>
-              {item.username || "creator_username"}
+          <TouchableOpacity
+            style={styles.profileClickArea}
+            onPress={handleProfilePress}
+            activeOpacity={0.8}
+          >
+            <Image source={appImages.dummyuser} style={styles.profileImage} />
+            <View style={styles.topProfileText}>
+              <Text style={styles.username}>
+                {item.username || "creator_username"}
+              </Text>
+              <Text style={styles.musicText}>Original Audio</Text>
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[
+              styles.followButton,
+              isFollowing && styles.followingButton,
+            ]}
+            onPress={handleFollow}
+            activeOpacity={0.8}
+          >
+            <Text
+              style={[
+                styles.followText,
+                isFollowing && styles.followingText,
+              ]}
+            >
+              {isFollowing ? "Following" : "Follow"}
             </Text>
-            <Text style={styles.musicText}>Original Audio</Text>
-          </View>
-          <TouchableOpacity style={styles.followButton}>
-            <Text style={styles.followText}>Follow</Text>
           </TouchableOpacity>
         </View>
 
@@ -130,17 +247,26 @@ export const ReelItem = memo(({ item, isActive, isMuted, onToggleMute }) => {
                 <Text style={styles.actionText}>{likesCount}</Text>
               </TouchableOpacity>
 
-              <TouchableOpacity style={styles.horizontalActionButton}>
+              <TouchableOpacity
+                onPress={() => commentSheetRef.current?.present()}
+                style={styles.horizontalActionButton}
+              >
                 <Image source={appImages.comment} style={styles.actionIcon} />
                 <Text style={styles.actionText}>{item.comments || 45}</Text>
               </TouchableOpacity>
 
-              <TouchableOpacity style={styles.horizontalActionButton}>
+              <TouchableOpacity
+                onPress={handleSharePost}
+                style={styles.horizontalActionButton}
+              >
                 <Image source={appImages.send} style={styles.actionIcon} />
                 <Text style={styles.actionText}>Share</Text>
               </TouchableOpacity>
 
-              <TouchableOpacity style={styles.horizontalActionButton}>
+              <TouchableOpacity
+                onPress={() => moreSheetRef.current?.present()}
+                style={styles.horizontalActionButton}
+              >
                 <Image source={appImages.threeDots} style={styles.actionIcon} />
               </TouchableOpacity>
             </View>
@@ -158,6 +284,94 @@ export const ReelItem = memo(({ item, isActive, isMuted, onToggleMute }) => {
             />
           </View>
         </RnAnimated.View>
+
+        <CommentSheet ref={commentSheetRef} />
+        <CustomBottomSheet
+          ref={moreSheetRef}
+          snapPoints={["54%"]}
+          useBlur={true}
+          enablePanDownToClose={true}
+          enableBackdrop={true}
+          showCloseButton={true}
+          title="Reel Options"
+          subtitle="Select an action for this reel"
+        >
+          <View style={styles.listItemContainer}>
+            <ListItem
+              image={appImages.info}
+              label="Full Details"
+              onPress={() => {
+                moreSheetRef.current?.dismiss();
+                navigation.navigate(routesConstants.movie);
+              }}
+            />
+            <ListItem
+              image={saved ? appImages.saved : appImages.save}
+              label={saved ? "Remove from Saved" : "Save Reel"}
+              onPress={() => {
+                handleSave();
+                moreSheetRef.current?.dismiss();
+                showCustomMessage(
+                  saved ? "Removed from saved reels" : "Saved to your library",
+                  "success"
+                );
+              }}
+            />
+            <ListItem
+              image={appImages.send}
+              label="Share Reel"
+              onPress={() => {
+                moreSheetRef.current?.dismiss();
+                handleSharePost();
+              }}
+            />
+            <ListItem
+              image={appImages.copy}
+              label="Copy Link"
+              onPress={() => {
+                moreSheetRef.current?.dismiss();
+                showCustomMessage("Reel link copied to clipboard", "info");
+              }}
+            />
+            <ListItem
+              image={appImages.follow}
+              label="Follow Creator"
+              onPress={() => {
+                moreSheetRef.current?.dismiss();
+                showCustomMessage("Followed creator", "success");
+              }}
+            />
+            <ListItem
+              image={appImages.bell}
+              label="Mute Creator"
+              onPress={() => {
+                moreSheetRef.current?.dismiss();
+                showCustomMessage("Muted creator reels", "info");
+              }}
+            />
+            <ListItem
+              image={appImages.blocked}
+              label="Block User"
+              isDestructive={true}
+              onPress={() => {
+                moreSheetRef.current?.dismiss();
+                showCustomMessage("Blocked user", "danger");
+              }}
+            />
+            <ListItem
+              image={appImages.report}
+              label="Report Reel"
+              isDestructive={true}
+              onPress={() => {
+                moreSheetRef.current?.dismiss();
+                showCustomMessage(
+                  "Report submitted. Thank you for keeping IndieMate safe.",
+                  "danger"
+                );
+              }}
+            />
+          </View>
+        </CustomBottomSheet>
       </View>
     </FlingGestureHandler>
   );
@@ -168,6 +382,24 @@ const styles = StyleSheet.create({
     width: W,
     height: H,
     backgroundColor: colors.black,
+  },
+  likeAnimCorner: {
+    position: "absolute",
+    bottom: scales(140),
+    left: scales(10),
+    width: scales(120),
+    height: scales(120),
+    zIndex: 99,
+    pointerEvents: "none",
+  },
+  saveAnimCorner: {
+    position: "absolute",
+    bottom: scales(140),
+    right: scales(10),
+    width: scales(120),
+    height: scales(120),
+    zIndex: 99,
+    pointerEvents: "none",
   },
   topProfileContainer: {
     position: "absolute",
@@ -207,14 +439,29 @@ const styles = StyleSheet.create({
     opacity: 0.8,
     marginTop: scales(2),
   },
+  profileClickArea: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+  },
   followButton: {
     backgroundColor: colors.white,
     borderRadius: scales(15),
-    paddingHorizontal: scales(12),
+    paddingHorizontal: scales(14),
     paddingVertical: scales(6),
+  },
+  followingButton: {
+    backgroundColor: "rgba(255, 255, 255, 0.2)",
+    borderWidth: 1,
+    borderColor: "rgba(255, 255, 255, 0.4)",
   },
   followText: {
     color: colors.black,
+    fontFamily: fontFamily.bold,
+    fontSize: scales(12),
+  },
+  followingText: {
+    color: colors.white,
     fontFamily: fontFamily.bold,
     fontSize: scales(12),
   },
@@ -250,34 +497,51 @@ const styles = StyleSheet.create({
     gap: scales(6),
   },
   actionIcon: {
-    width: scales(24),
-    height: scales(24),
+    width: scales(22),
+    height: scales(22),
     tintColor: colors.white,
+    resizeMode: "contain",
   },
   actionText: {
     color: colors.white,
-    fontFamily: fontFamily.semiBold,
+    fontFamily: fontFamily.bold,
     fontSize: scales(13),
   },
   muteIndicatorContainer: {
     ...StyleSheet.absoluteFillObject,
-    alignItems: "center",
     justifyContent: "center",
+    alignItems: "center",
   },
   muteIndicatorCircle: {
-    width: scales(64),
-    height: scales(64),
-    borderRadius: scales(32),
-    backgroundColor: "rgba(0, 0, 0, 0.6)",
-    alignItems: "center",
+    width: scales(70),
+    height: scales(70),
+    borderRadius: scales(35),
+    backgroundColor: "rgba(0,0,0,0.5)",
     justifyContent: "center",
-  },
-  muteIndicatorText: {
-    fontSize: scales(28),
+    alignItems: "center",
   },
   play: {
-    height: scales(20),
-    width: scales(20),
-    tintColor: colors.gray,
+    width: scales(28),
+    height: scales(28),
+    tintColor: colors.white,
+  },
+  listItemContainer: {
+    paddingVertical: scales(10),
+  },
+  listItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: scales(14),
+  },
+  listIcon: {
+    width: scales(22),
+    height: scales(22),
+    marginRight: scales(14),
+    resizeMode: "contain",
+  },
+  listText: {
+    color: colors.white,
+    fontSize: scales(16),
+    fontFamily: fontFamily.medium,
   },
 });

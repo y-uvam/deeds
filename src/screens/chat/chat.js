@@ -1,24 +1,19 @@
-import React, { memo, useState, useCallback } from "react";
+import React, { useState, memo, useCallback } from "react";
 import {
   View,
   Text,
   StyleSheet,
-  FlatList,
   Image,
   TouchableOpacity,
+  FlatList,
 } from "react-native";
-import {
-  AppBackground,
-  Header,
-  Spacer,
-  CustomInput,
-  CustomSearch,
-} from "../../components";
-import { colors, commonText, scales } from "../../utils";
-import { appImages, fontFamily } from "../../assets";
+import { AppBackground, Header, Spacer, CustomSearch } from "../../components";
+import { colors, scales, commonText } from "../../utils";
+import { fontFamily, appImages } from "../../assets";
 import { navigate, routesConstants } from "../../navigation";
 import Animated from "react-native-reanimated";
 import { useTabBarScrollHandler } from "../../context/TabBarContext";
+import LinearGradient from "react-native-linear-gradient";
 
 const ChatItem = memo(({ item }) => (
   <TouchableOpacity
@@ -30,26 +25,36 @@ const ChatItem = memo(({ item }) => (
       <Image source={item.image || appImages.dummyuser} style={styles.avatar} />
       {item.online && <View style={styles.onlineBadge} />}
     </View>
+
     <View style={styles.chatDetails}>
-      <View style={styles.chatHeader}>
-        <Text style={styles.userName} numberOfLines={1}>
-          {item.name}
-        </Text>
-        <Text style={styles.timeText}>{item.time}</Text>
-      </View>
-      <View style={styles.chatFooter}>
-        <Text
-          style={[styles.lastMessage, item.unread && styles.unreadMessage]}
-          numberOfLines={1}
+      <Text style={styles.userName} numberOfLines={1}>
+        {item.name}
+      </Text>
+      <Text
+        style={[styles.lastMessage, item.unread > 0 && styles.unreadMessage]}
+        numberOfLines={1}
+      >
+        {item.message}
+      </Text>
+    </View>
+
+    <View style={styles.chatMeta}>
+      <Text style={[styles.timeText]}>{item.time}</Text>
+      {item.unread > 0 ? (
+        <LinearGradient
+          colors={[colors.orange, colors.storyRing, colors.lightRed]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={[
+            styles.unreadBadge,
+            { width: item.unread > 9 ? scales(28) : scales(22) },
+          ]}
         >
-          {item.message}
-        </Text>
-        {item.unread > 0 && (
-          <View style={styles.unreadBadge}>
-            <Text style={styles.unreadText}>{item.unread}</Text>
-          </View>
-        )}
-      </View>
+          <Text style={styles.unreadText}>{item.unread}</Text>
+        </LinearGradient>
+      ) : (
+        <View style={styles.metaPlaceholder} />
+      )}
     </View>
   </TouchableOpacity>
 ));
@@ -148,15 +153,15 @@ const styles = StyleSheet.create({
   chatRow: {
     flexDirection: "row",
     alignItems: "center",
-    paddingVertical: scales(15),
+    paddingVertical: scales(14),
   },
   avatarWrapper: {
     position: "relative",
   },
   avatar: {
-    width: scales(55),
-    height: scales(55),
-    borderRadius: scales(27.5),
+    width: scales(52),
+    height: scales(52),
+    borderRadius: scales(26),
     backgroundColor: colors.darkblack,
   },
   onlineBadge: {
@@ -172,56 +177,55 @@ const styles = StyleSheet.create({
   },
   chatDetails: {
     flex: 1,
-    marginLeft: scales(15),
+    marginLeft: scales(14),
+    marginRight: scales(10),
     justifyContent: "center",
-  },
-  chatHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: scales(4),
   },
   userName: {
     fontSize: scales(16),
     fontFamily: fontFamily.bold,
     color: colors.white,
-    flex: 1,
-  },
-  timeText: {
-    fontSize: scales(12),
-    fontFamily: fontFamily.regular,
-    color: "rgba(255,255,255,0.4)",
-    marginLeft: scales(10),
-  },
-  chatFooter: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+    marginBottom: scales(4),
   },
   lastMessage: {
-    fontSize: scales(14),
+    fontSize: scales(13),
     fontFamily: fontFamily.regular,
     color: "rgba(255,255,255,0.6)",
-    flex: 1,
   },
   unreadMessage: {
     color: colors.white,
     fontFamily: fontFamily.medium,
   },
+  chatMeta: {
+    alignItems: "flex-end",
+    justifyContent: "center",
+    gap: scales(6),
+  },
+  timeText: {
+    fontSize: scales(12),
+    fontFamily: fontFamily.regular,
+    color: "rgba(255,255,255,0.4)",
+  },
+  unreadTimeText: {
+    color: colors.storyRing,
+    fontFamily: fontFamily.medium,
+  },
   unreadBadge: {
-    backgroundColor: colors.blue,
-    minWidth: scales(20),
-    height: scales(20),
-    borderRadius: scales(10),
+    height: scales(22),
+    borderRadius: scales(11),
     justifyContent: "center",
     alignItems: "center",
-    paddingHorizontal: scales(6),
-    marginLeft: scales(10),
+    overflow: "hidden",
   },
   unreadText: {
     color: colors.white,
-    fontSize: scales(10),
+    fontSize: scales(11),
     fontFamily: fontFamily.bold,
+    textAlign: "center",
+    includeFontPadding: false,
+  },
+  metaPlaceholder: {
+    height: scales(22),
   },
   separator: {
     height: 1,

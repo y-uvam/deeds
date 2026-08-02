@@ -74,13 +74,22 @@ export const styles = StyleSheet.create({
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: colors.transparentWhite12,
   },
-  animOverlay: {
+  likeAnimCorner: {
     position: "absolute",
-    top: "25%",
-    left: scales(20),
-    width: scales(130),
-    height: scales(130),
-    zIndex: 10,
+    bottom: scales(10),
+    left: scales(10),
+    width: scales(120),
+    height: scales(120),
+    zIndex: 99,
+    pointerEvents: "none",
+  },
+  saveAnimCorner: {
+    position: "absolute",
+    bottom: scales(10),
+    right: scales(10),
+    width: scales(120),
+    height: scales(120),
+    zIndex: 99,
     pointerEvents: "none",
   },
   profileHeader: {

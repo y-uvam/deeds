@@ -318,19 +318,11 @@ export const PostItem = ({
       >
         <Image
           source={image}
-          style={[
-            styles.listImage,
-            isDestructive && { tintColor: colors.red },
-          ]}
+          style={[styles.listImage, isDestructive && { tintColor: colors.red }]}
           resizeMode="contain"
           tintColor={isDestructive ? colors.red : colors.white}
         />
-        <Text
-          style={[
-            styles.listText,
-            isDestructive && { color: colors.red },
-          ]}
-        >
+        <Text style={[styles.listText, isDestructive && { color: colors.red }]}>
           {label}
         </Text>
       </TouchableOpacity>
@@ -378,14 +370,14 @@ export const PostItem = ({
 
         <Description text={description} />
 
-        <View>
+        <View style={{ position: "relative" }}>
           <ImageCarousel images={images} onDoubleTap={handleLike} />
           {showLikeAnim && (
             <LottieView
               source={animations.like}
               autoPlay
               loop={false}
-              style={styles.animOverlay}
+              style={styles.likeAnimCorner}
             />
           )}
           {showSaveAnim && (
@@ -393,10 +385,7 @@ export const PostItem = ({
               source={animations.save}
               autoPlay
               loop={false}
-              style={[
-                styles.animOverlay,
-                { right: scales(20), left: undefined },
-              ]}
+              style={styles.saveAnimCorner}
             />
           )}
         </View>
@@ -446,6 +435,14 @@ export const PostItem = ({
       >
         <View style={styles.listItemContainer}>
           <ListItem
+            image={appImages.info}
+            label={"Full Details"}
+            onPress={() => {
+              moreSheetRef.current?.dismiss();
+              navigate(routesConstants.movie);
+            }}
+          />
+          <ListItem
             image={saved ? appImages.saved : appImages.save}
             label={saved ? "Remove from Saved" : "Save Post"}
             onPress={() => {
@@ -453,7 +450,7 @@ export const PostItem = ({
               moreSheetRef.current?.dismiss();
               showCustomMessage(
                 saved ? "Removed from saved posts" : "Saved to your library",
-                "success"
+                "success",
               );
             }}
           />
@@ -466,7 +463,7 @@ export const PostItem = ({
             }}
           />
           <ListItem
-            image={appImages.browse}
+            image={appImages.copy}
             label="Copy Link"
             onPress={() => {
               moreSheetRef.current?.dismiss();
@@ -499,14 +496,14 @@ export const PostItem = ({
             }}
           />
           <ListItem
-            image={appImages.bin}
+            image={appImages.report}
             label="Report Post"
             isDestructive={true}
             onPress={() => {
               moreSheetRef.current?.dismiss();
               showCustomMessage(
                 "Report submitted. Thank you for keeping Virtue safe.",
-                "danger"
+                "danger",
               );
             }}
           />

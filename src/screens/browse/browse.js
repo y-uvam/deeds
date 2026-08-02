@@ -1,7 +1,6 @@
-import React, { useState, useRef, useMemo } from "react";
+import React, { useState, useRef, useMemo, useCallback } from "react";
 import {
   StyleSheet,
-  Text,
   View,
   TouchableOpacity,
   Image,
@@ -10,13 +9,13 @@ import {
   ScrollView,
 } from "react-native";
 import {
+  AppBackground,
   CustomSearch,
   Filter,
-  CustomCarousel,
   RoundIconButton,
 } from "../../components";
 import { colors, scales, commonText } from "../../utils";
-import { appImages, fontFamily } from "../../assets";
+import { appImages } from "../../assets";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Animated from "react-native-reanimated";
 import { useTabBarScrollHandler } from "../../context/TabBarContext";
@@ -24,52 +23,22 @@ import LinearGradient from "react-native-linear-gradient";
 import { navigate, routesConstants } from "../../navigation";
 
 const { width } = Dimensions.get("window");
-const GRID_GAP = scales(3);
 const HORIZONTAL_PADDING = scales(12);
+const GRID_GAP = scales(3);
 const COLUMN_WIDTH = (width - HORIZONTAL_PADDING * 2 - GRID_GAP * 2) / 3;
+const LARGE_TILE_SIZE = COLUMN_WIDTH * 2 + GRID_GAP;
 
-const CAROUSEL_EVENTS = [
-  {
-    id: "e1",
-    title: "Cannes Film Festival",
-    subtitle: "Latest releases & premieres from indie creators",
-    date: "Oct 24",
-    image: { uri: "https://picsum.photos/seed/cannes_fest/800/500" },
-    tag: "Festival",
-  },
-  {
-    id: "e2",
-    title: "Neon Dreams Premiere",
-    subtitle: "Exclusive early access screening",
-    date: "Nov 02",
-    image: { uri: "https://picsum.photos/seed/neon_prem/800/500" },
-    tag: "Premiere",
-  },
-  {
-    id: "e3",
-    title: "Creator Summit 2026",
-    subtitle: "Connect with top global creators",
-    date: "Dec 12",
-    image: { uri: "https://picsum.photos/seed/creator_sum/800/500" },
-    tag: "Event",
-  },
-];
-
-const DUMMY_POSTS = Array.from({ length: 24 }, (_, i) => {
-  const isVideo = i % 4 === 1;
+const DUMMY_POSTS = Array.from({ length: 27 }, (_, i) => {
+  const isVideo = i % 3 === 1;
   return {
-    id: `post_${i}`,
-    images: [
-      { uri: `https://picsum.photos/seed/browse_grid_${i + 105}/500/500` },
-    ],
+    id: `explore_${i}`,
+    image: `https://picsum.photos/seed/explore_grid_${i + 120}/600/600`,
     type: isVideo ? "project" : "post",
-    description:
-      "Living life one indiemate at a time 🌟 Grateful for the small moments that make everything worthwhile. #indiemate #community #love",
-    likes: Math.floor(Math.random() * 900) + 50,
-    comments: Math.floor(Math.random() * 100) + 2,
-    shares: Math.floor(Math.random() * 50) + 1,
+    likes: Math.floor(Math.random() * 900) + 120,
+    comments: Math.floor(Math.random() * 150) + 12,
+    shares: Math.floor(Math.random() * 40) + 5,
+    description: "Featured community creation on IndieMate ✨",
     postType: isVideo ? "project" : "slate",
-    title: "Dhanda Empire",
   };
 });
 
@@ -81,71 +50,50 @@ export const Browse = () => {
   const filterRef = useRef(null);
   const [search, setSearch] = useState("");
 
-  const gridColumns = useMemo(() => {
-    const cols = [[], [], []];
-
-    DUMMY_POSTS.forEach((post, i) => {
-      const colIdx = i % 3;
-      cols[colIdx].push({
-        ...post,
-        height: 150,
-      });
-    });
-
-    return cols;
+  const layoutGroups = useMemo(() => {
+    const groups = [];
+    for (let i = 0; i < DUMMY_POSTS.length; i += 9) {
+      groups.push(DUMMY_POSTS.slice(i, i + 9));
+    }
+    return groups;
   }, []);
 
-  const renderCarouselItem = ({ item }) => {
-    return (
-      <View style={styles.carouselItem}>
-        <Image source={item.image} style={styles.carouselImage} />
-        <LinearGradient
-          colors={["transparent", "rgba(0,0,0,0.8)"]}
-          style={styles.carouselGradient}
-        />
-        <View style={styles.carouselContent}>
-          <View style={styles.carouselTagRow}>
-            <View style={styles.carouselTag}>
-              <Text style={styles.carouselTagText}>{item.tag}</Text>
-            </View>
-            <View style={styles.carouselDate}>
-              <Text style={styles.carouselDateText}>{item.date}</Text>
-            </View>
-          </View>
-          <Text style={styles.carouselTitle}>{item.title}</Text>
-          <Text style={styles.carouselSubtitle}>{item.subtitle}</Text>
-        </View>
-      </View>
-    );
-  };
+  const handleTilePress = useCallback((item) => {
+    if (item?.type === "project") {
+      navigate(routesConstants.movie, { item });
+    } else {
+      navigate(routesConstants.post, {
+        images: [{ uri: item.image }],
+        description: item.description,
+        likes: item.likes,
+        comments: item.comments,
+        shares: item.shares,
+      });
+    }
+  }, []);
 
-  const renderGridItem = (item) => {
+  const renderTile = (item, isLarge = false) => {
+    const tileWidth = isLarge ? LARGE_TILE_SIZE : COLUMN_WIDTH;
+    const tileHeight = isLarge ? LARGE_TILE_SIZE : COLUMN_WIDTH;
+
     return (
       <TouchableOpacity
         key={item.id}
-        style={[styles.gridTile, { height: item.height }]}
+        style={[styles.tile, { width: tileWidth, height: tileHeight }]}
         activeOpacity={0.85}
-        onPress={() => {
-          if (item?.type === "project") {
-            navigate(routesConstants.movie, { item });
-          } else {
-            navigate(routesConstants.post, {
-              images: item.images,
-              description: item.description,
-              likes: item.likes,
-              comments: item.comments,
-              shares: item.shares,
-            });
-          }
-        }}
+        onPress={() => handleTilePress(item)}
       >
-        <Image source={item.images[0]} style={styles.tileImage} />
+        <Image source={{ uri: item.image }} style={styles.tileImage} />
+        <LinearGradient
+          colors={["transparent", "rgba(0,0,0,0.45)"]}
+          style={styles.tileGradient}
+        />
 
         {item.type === "project" && (
-          <View style={styles.badgeTopRight}>
+          <View style={styles.badgeContainer}>
             <Image
               source={appImages.play}
-              style={styles.playBadgeIcon}
+              style={styles.playIcon}
               tintColor={colors.white}
             />
           </View>
@@ -154,166 +102,118 @@ export const Browse = () => {
     );
   };
 
+  const renderGroup = (group, groupIdx) => {
+    const isLeftLarge = groupIdx % 2 === 0;
+
+    const topThree = group.slice(0, 3);
+    const middleThree = group.slice(3, 6);
+    const bottomThree = group.slice(6, 9);
+
+    return (
+      <View key={`group_${groupIdx}`} style={styles.groupContainer}>
+        <View style={styles.row}>
+          {topThree.map((item) => renderTile(item, false))}
+        </View>
+
+        {middleThree.length > 0 && (
+          <View style={styles.row}>
+            {isLeftLarge ? (
+              <>
+                {renderTile(middleThree[0], true)}
+                <View style={styles.stackedColumn}>
+                  {middleThree[1] && renderTile(middleThree[1], false)}
+                  {middleThree[2] && renderTile(middleThree[2], false)}
+                </View>
+              </>
+            ) : (
+              <>
+                <View style={styles.stackedColumn}>
+                  {middleThree[0] && renderTile(middleThree[0], false)}
+                  {middleThree[1] && renderTile(middleThree[1], false)}
+                </View>
+                {middleThree[2] && renderTile(middleThree[2], true)}
+              </>
+            )}
+          </View>
+        )}
+
+        {bottomThree.length > 0 && (
+          <View style={styles.row}>
+            {bottomThree.map((item) => renderTile(item, false))}
+          </View>
+        )}
+      </View>
+    );
+  };
+
   return (
-    <View style={styles.container}>
-      <StatusBar barStyle="light-content" />
+    <AppBackground>
+      <StatusBar
+        barStyle="light-content"
+        translucent
+        backgroundColor="transparent"
+      />
       <AnimatedScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={[styles.listContent, { paddingTop: insets.top }]}
+        contentContainerStyle={[styles.listContent]}
         onScroll={scrollHandler}
         scrollEventThrottle={16}
       >
-        <View style={styles.headerContent}>
-          <View style={styles.searchRow}>
-            <CustomSearch
-              placeholder={commonText.search}
-              value={search}
-              onChangeText={setSearch}
-              containerStyle={{
-                flex: 1,
-                paddingHorizontal: 0,
-                paddingLeft: scales(16),
-              }}
-            />
-            <RoundIconButton
-              icon={appImages.filter}
-              onPress={() => filterRef.current?.present()}
-            />
-          </View>
-          <View style={styles.carouselContainer}>
-            <CustomCarousel
-              data={CAROUSEL_EVENTS}
-              renderItem={renderCarouselItem}
-            />
-          </View>
+        <View style={styles.searchRow}>
+          <CustomSearch
+            placeholder={commonText.search}
+            value={search}
+            onChangeText={setSearch}
+            containerStyle={styles.searchContainer}
+          />
+          <RoundIconButton
+            icon={appImages.filter}
+            onPress={() => filterRef.current?.present()}
+          />
         </View>
 
-        <View style={styles.gridContainer}>
-          {gridColumns.map((col, colIdx) => (
-            <View key={`col_${colIdx}`} style={styles.gridColumn}>
-              {col.map(renderGridItem)}
-            </View>
-          ))}
-        </View>
+        <View style={styles.gridWrapper}>{layoutGroups.map(renderGroup)}</View>
       </AnimatedScrollView>
 
       <Filter
         ref={filterRef}
         onFilterChange={(filters) => console.log("Applied Filters:", filters)}
       />
-    </View>
+    </AppBackground>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  headerContent: {
-    paddingBottom: scales(10),
+  listContent: {
+    paddingBottom: scales(110),
   },
   searchRow: {
     flexDirection: "row",
     alignItems: "center",
-    paddingRight: scales(16),
-    gap: scales(12),
-    marginBottom: scales(10),
+    paddingHorizontal: HORIZONTAL_PADDING,
+    gap: scales(10),
+    marginBottom: scales(12),
   },
-  listContent: {
-    paddingBottom: scales(100),
+  searchContainer: {
+    flex: 1,
+    paddingHorizontal: 0,
   },
-  carouselContainer: {
-    marginTop: scales(10),
-    alignItems: "center",
-  },
-  carouselItem: {
-    width: "100%",
-    height: scales(230),
-    borderRadius: scales(24),
-    overflow: "hidden",
-    backgroundColor: colors.transparentWhite5,
-    borderWidth: 1,
-    borderColor: colors.transparentWhite10,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.5,
-    shadowRadius: 15,
-    elevation: 10,
-  },
-  carouselImage: {
-    width: "100%",
-    height: "100%",
-    resizeMode: "cover",
-  },
-  carouselGradient: {
-    position: "absolute",
-    left: 0,
-    right: 0,
-    bottom: 0,
-    height: "100%",
-  },
-  carouselContent: {
-    position: "absolute",
-    bottom: 0,
-    left: 0,
-    right: 0,
-    padding: scales(16),
-  },
-  carouselTagRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: scales(8),
-  },
-  carouselTag: {
-    backgroundColor: colors.blue,
-    paddingHorizontal: scales(10),
-    paddingVertical: scales(4),
-    borderRadius: scales(10),
-  },
-  carouselTagText: {
-    color: colors.white,
-    fontFamily: fontFamily.bold,
-    fontSize: scales(10),
-    textTransform: "uppercase",
-  },
-  carouselDate: {
-    backgroundColor: "rgba(255, 255, 255, 0.2)",
-    paddingHorizontal: scales(10),
-    paddingVertical: scales(4),
-    borderRadius: scales(10),
-  },
-  carouselDateText: {
-    color: colors.white,
-    fontFamily: fontFamily.semiBold,
-    fontSize: scales(11),
-  },
-  carouselTitle: {
-    color: colors.white,
-    fontFamily: fontFamily.bold,
-    fontSize: scales(22),
-    marginBottom: scales(4),
-  },
-  carouselSubtitle: {
-    color: colors.transparentWhite85,
-    fontFamily: fontFamily.regular,
-    fontSize: scales(13),
-  },
-  gridContainer: {
-    flexDirection: "row",
+  gridWrapper: {
     paddingHorizontal: HORIZONTAL_PADDING,
     gap: GRID_GAP,
-    marginTop: scales(12),
   },
-  gridColumn: {
-    flex: 1,
-    flexDirection: "column",
+  groupContainer: {
     gap: GRID_GAP,
   },
-  gridTile: {
-    width: "100%",
-    borderRadius: scales(6),
+  row: {
+    flexDirection: "row",
+    gap: GRID_GAP,
+  },
+  stackedColumn: {
+    gap: GRID_GAP,
+  },
+  tile: {
+    borderRadius: scales(4),
     overflow: "hidden",
     backgroundColor: colors.transparentWhite5,
   },
@@ -329,33 +229,21 @@ const styles = StyleSheet.create({
     bottom: 0,
     height: "40%",
   },
-  badgeTopRight: {
+  badgeContainer: {
     position: "absolute",
-    top: scales(6),
-    right: scales(6),
-    backgroundColor: "rgba(0,0,0,0.45)",
-    borderRadius: scales(4),
-    padding: scales(4),
-  },
-  playBadgeIcon: {
-    width: scales(10),
-    height: scales(10),
-    resizeMode: "contain",
-  },
-  tileStats: {
-    position: "absolute",
-    bottom: scales(6),
-    left: scales(6),
-    flexDirection: "row",
+    top: scales(8),
+    right: scales(8),
+    width: scales(22),
+    height: scales(22),
+    borderRadius: scales(11),
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    justifyContent: "center",
     alignItems: "center",
   },
-  tileLikeIcon: {
-    fontSize: scales(10),
-    marginRight: scales(3),
-  },
-  tileLikeCount: {
-    color: colors.white,
-    fontFamily: fontFamily.semiBold,
-    fontSize: scales(10),
+  playIcon: {
+    width: scales(10),
+    height: scales(10),
+    marginLeft: scales(2),
+    resizeMode: "contain",
   },
 });

@@ -125,10 +125,13 @@ const styles = StyleSheet.create({
   },
   background: {
     backgroundColor: "transparent",
-    borderRadius: scales(24),
+    borderTopLeftRadius: scales(28),
+    borderTopRightRadius: scales(28),
+    borderBottomLeftRadius: 0,
+    borderBottomRightRadius: 0,
     overflow: "hidden",
-    borderWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.12)",
+    borderLeftWidth: 0,
+    borderRightWidth: 0,
   },
   handleIndicator: {
     width: scales(36),
@@ -140,7 +143,7 @@ const styles = StyleSheet.create({
   },
   contentContainer: {
     paddingHorizontal: scales(20),
-    paddingTop: scales(12),
+    paddingTop: scales(16),
     paddingBottom: scales(30),
   },
   headerContainer: {
@@ -165,7 +168,7 @@ const styles = StyleSheet.create({
     tintColor: colors.white,
   },
   title: {
-    fontSize: scales(20),
+    fontSize: scales(22),
     fontFamily: fontFamily.bold,
     color: colors.white,
     letterSpacing: 0.3,

@@ -1,121 +1,53 @@
-import React, { useEffect, memo } from "react";
-import {
-  View,
-  Text,
-  Image,
-  TouchableOpacity,
-  StyleSheet,
-  Platform,
-  Dimensions,
-} from "react-native";
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withTiming,
-  withDelay,
-  withRepeat,
-  withSequence,
-  Easing,
-  withSpring,
-  interpolate,
-} from "react-native-reanimated";
-import { appImages, fontFamily } from "../../assets";
+import React from "react";
+import { View, Text, Image, TouchableOpacity } from "react-native";
+import Svg, {
+  Text as SvgText,
+  Defs,
+  LinearGradient as SvgLinearGradient,
+  Stop,
+} from "react-native-svg";
+import { appImages } from "../../assets";
 import { colors, scales } from "../../utils";
-import { goBack, navigate } from "../../navigation/navigationServices";
-import { BlurView } from "@react-native-community/blur";
-import { routesConstants } from "../../navigation/routeConstants";
-
-const { width } = Dimensions.get("window");
-const AnimatedTouchableOpacity =
-  Animated.createAnimatedComponent(TouchableOpacity);
-
-const PulseRing = memo(({ delay, size }) => {
-  const scale = useSharedValue(0.3);
-  const opacity = useSharedValue(0);
-
-  useEffect(() => {
-    opacity.value = withDelay(
-      delay,
-      withRepeat(
-        withSequence(
-          withTiming(0.15, { duration: 400 }),
-          withTiming(0, { duration: 1800 }),
-        ),
-        -1,
-        false,
-      ),
-    );
-    scale.value = withDelay(
-      delay,
-      withRepeat(
-        withTiming(1, { duration: 2200, easing: Easing.out(Easing.ease) }),
-        -1,
-        false,
-      ),
-    );
-  }, []);
-
-  const style = useAnimatedStyle(() => ({
-    position: "absolute",
-    width: size,
-    height: size,
-    borderRadius: size / 2,
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: "rgba(255,255,255,0.5)",
-    opacity: opacity.value,
-    transform: [{ scale: scale.value }],
-  }));
-
-  return <Animated.View style={style} />;
-});
+import { fontFamily } from "../../assets";
+import { goBack, navigate, routesConstants } from "../../navigation";
+import { styles } from "./styles";
 
 export const RoundIconButton = ({ icon, onPress }) => {
   if (!icon) return null;
-  const scale = useSharedValue(0);
-
-  useEffect(() => {
-    scale.value = withSpring(1, { damping: 15, stiffness: 100 });
-  }, []);
-
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: scale.value }],
-  }));
-
   return (
-    <AnimatedTouchableOpacity
+    <TouchableOpacity
       activeOpacity={0.7}
       onPress={onPress}
-      style={[styles.roundButtonWrapper, animatedStyle]}
+      style={styles.roundButtonWrapper}
     >
-      <PulseRing delay={600} size={scales(56)} />
-      {/* <BlurView
-        style={StyleSheet.absoluteFill}
-        blurType="dark"
-        blurAmount={20}
-        reducedTransparencyFallbackColor="transparent"
-      />
-      <View style={[StyleSheet.absoluteFill, styles.buttonOverlay]} /> */}
       <Image source={icon} style={styles.iconImage} tintColor={colors.white} />
-    </AnimatedTouchableOpacity>
+    </TouchableOpacity>
   );
 };
 
 export const HeaderLogo = () => {
-  const letters = [
-    appImages.v,
-    appImages.i,
-    appImages.r,
-    appImages.t,
-    appImages.u,
-    appImages.e,
-  ];
   return (
-    <View style={styles.logoRow}>
-      {letters.map((img, i) => (
-        <View key={i} style={styles.miniLetterWrapper}>
-          <Image source={img} style={styles.miniLetter} resizeMode="contain" />
-        </View>
-      ))}
+    <View style={styles.brandWrapper}>
+      <Svg height={scales(28)} width={scales(140)}>
+        <Defs>
+          <SvgLinearGradient id="brandGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+            <Stop offset="0%" stopColor={colors.orange} />
+            <Stop offset="50%" stopColor={colors.storyRing} />
+            <Stop offset="100%" stopColor={colors.lightRed} />
+          </SvgLinearGradient>
+        </Defs>
+        <SvgText
+          fill="url(#brandGrad)"
+          fontSize={scales(23)}
+          fontWeight="900"
+          x="0"
+          y={scales(21)}
+          fontFamily={fontFamily.black}
+          letterSpacing="-0.5"
+        >
+          IndieMate
+        </SvgText>
+      </Svg>
     </View>
   );
 };
@@ -123,97 +55,14 @@ export const HeaderLogo = () => {
 export const HeaderPill = ({ label, isLogo }) => {
   if (!label && !isLogo) return null;
 
-  const scale = useSharedValue(0.85);
-  const opacity = useSharedValue(0);
-  const translateY = useSharedValue(-12);
-  const scrollX = useSharedValue(0);
-
-  const [containerWidth, setContainerWidth] = React.useState(0);
-  const [textWidth, setTextWidth] = React.useState(0);
-
-  useEffect(() => {
-    scale.value = withDelay(200, withSpring(1, { damping: 12, stiffness: 90 }));
-    opacity.value = withDelay(200, withTiming(1, { duration: 700 }));
-    translateY.value = withDelay(
-      200,
-      withSpring(0, { damping: 12, stiffness: 90 }),
-    );
-  }, []);
-
-  useEffect(() => {
-    if (isLogo || !containerWidth || !textWidth) return;
-
-    const overflow = textWidth - containerWidth;
-    if (overflow > 4) {
-      const scrollDuration = Math.max(2500, overflow * 30);
-      scrollX.value = 0;
-      scrollX.value = withDelay(
-        1200,
-        withRepeat(
-          withSequence(
-            withTiming(-overflow, {
-              duration: scrollDuration,
-              easing: Easing.inOut(Easing.ease),
-            }),
-            withDelay(1200, withTiming(-overflow, { duration: 0 })),
-            withDelay(
-              500,
-              withTiming(0, {
-                duration: scrollDuration,
-                easing: Easing.inOut(Easing.ease),
-              }),
-            ),
-          ),
-          -1,
-          false,
-        ),
-      );
-    } else {
-      scrollX.value = 0;
-    }
-  }, [containerWidth, textWidth, label, isLogo]);
-
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: scale.value }, { translateY: translateY.value }],
-    opacity: opacity.value,
-  }));
-
-  const textAnimatedStyle = useAnimatedStyle(() => ({
-    transform: [{ translateX: scrollX.value }],
-  }));
-
   if (isLogo) {
-    return (
-      <Animated.View style={[styles.headerPillWrapper, animatedStyle]}>
-        <HeaderLogo />
-      </Animated.View>
-    );
+    return <HeaderLogo />;
   }
 
-  const isOverflowing = containerWidth > 0 && textWidth > containerWidth + 4;
-
   return (
-    <Animated.View style={[styles.headerPillWrapper, animatedStyle]}>
-      <View
-        style={[
-          styles.pillTextContainer,
-          isOverflowing && styles.pillTextContainerOverflow,
-        ]}
-        onLayout={(e) => setContainerWidth(e.nativeEvent.layout.width)}
-      >
-        <Animated.View style={textAnimatedStyle}>
-          <Text
-            style={styles.headerLabel}
-            numberOfLines={1}
-            adjustsFontSizeToFit={!isOverflowing}
-            minimumFontScale={0.75}
-            onLayout={(e) => setTextWidth(e.nativeEvent.layout.width)}
-          >
-            {label}
-          </Text>
-        </Animated.View>
-      </View>
-    </Animated.View>
+    <Text style={styles.headerTitle} numberOfLines={1}>
+      {label}
+    </Text>
   );
 };
 
@@ -228,60 +77,29 @@ export const Header = ({
   filterIcon = false,
   onFilterPress,
 }) => {
-  const containerTranslateY = useSharedValue(-50);
-  const containerOpacity = useSharedValue(0);
-  const lineWidth = useSharedValue(0);
-  const lineOpacity = useSharedValue(0);
-
-  useEffect(() => {
-    containerTranslateY.value = withTiming(0, {
-      duration: 700,
-      easing: Easing.out(Easing.ease),
-    });
-    containerOpacity.value = withTiming(1, { duration: 700 });
-    lineWidth.value = withDelay(
-      500,
-      withSpring(width * 0.72, { damping: 20, stiffness: 45 }),
-    );
-    lineOpacity.value = withDelay(500, withTiming(0.5, { duration: 600 }));
-  }, []);
-
-  const containerStyle = useAnimatedStyle(() => ({
-    transform: [{ translateY: containerTranslateY.value }],
-    opacity: containerOpacity.value,
-  }));
-
-  const lineStyle = useAnimatedStyle(() => ({
-    width: lineWidth.value,
-    opacity: lineOpacity.value,
-  }));
+  const hasLeftButton = showBackButton || leftButton;
 
   return (
     <View style={styles.root}>
-      <Animated.View style={[styles.container, containerStyle]}>
-        <View style={styles.sideContainer}>
-          {(showBackButton || leftButton) && (
+      <View style={styles.container}>
+        <View style={styles.leftContainer}>
+          {hasLeftButton && (
             <RoundIconButton
               icon={leftButton ? leftButton : appImages.backarrow}
               onPress={() => (leftButtonPress ? leftButtonPress() : goBack())}
             />
           )}
-        </View>
-
-        <View style={styles.centerContainer}>
           <HeaderPill label={label} isLogo={isHome} />
         </View>
 
-        <View style={styles.sideContainerRight}>
+        <View style={styles.rightContainer}>
           {rightIcon ? (
             <RoundIconButton icon={rightIcon} onPress={onRightPress} />
           ) : (
             isHome && (
               <RoundIconButton
                 icon={appImages.bell}
-                onPress={() => {
-                  navigate(routesConstants.Notification);
-                }}
+                onPress={() => navigate(routesConstants.Notification)}
               />
             )
           )}
@@ -291,121 +109,12 @@ export const Header = ({
               onPress={() => {
                 if (onFilterPress) {
                   onFilterPress();
-                } else {
-                  console.log("Filter icon pressed");
                 }
               }}
             />
           )}
         </View>
-      </Animated.View>
-
-      <Animated.View style={[styles.bottomLine, lineStyle]} />
+      </View>
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  root: {
-    // paddingTop: Platform.OS === "ios" ? scales(0) : scales(10),
-    alignItems: "center",
-    // marginBottom: scales(15),
-  },
-  container: {
-    paddingHorizontal: scales(15),
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    height: scales(50),
-    width: "100%",
-  },
-  sideContainer: {
-    flex: 1,
-    alignItems: "flex-start",
-    justifyContent: "center",
-  },
-  sideContainerRight: {
-    flex: 1,
-    alignItems: "flex-end",
-    justifyContent: "center",
-    flexDirection: "row",
-    gap: scales(10),
-  },
-  centerContainer: {
-    flex: 3,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  roundButtonWrapper: {
-    height: scales(40),
-    width: scales(40),
-    borderRadius: scales(20),
-    overflow: "hidden",
-    justifyContent: "center",
-    alignItems: "center",
-    borderColor: "rgba(255,255,255,0.1)",
-    borderWidth: StyleSheet.hairlineWidth,
-  },
-  buttonOverlay: {
-    backgroundColor: "rgba(255,255,255,0.06)",
-    borderRadius: scales(20),
-  },
-  iconImage: {
-    height: scales(18),
-    width: scales(18),
-    resizeMode: "contain",
-  },
-  headerPillWrapper: {
-    height: scales(40),
-    paddingHorizontal: scales(16),
-    borderRadius: scales(20),
-    maxWidth: "100%",
-    overflow: "hidden",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  pillTextContainer: {
-    maxWidth: "100%",
-    overflow: "hidden",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  pillTextContainerOverflow: {
-    alignItems: "flex-start",
-  },
-  pillOverlay: {
-    backgroundColor: "rgba(255,255,255,0.04)",
-    borderRadius: scales(20),
-  },
-  logoRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  miniLetterWrapper: {
-    marginHorizontal: scales(1),
-  },
-  miniLetter: {
-    width: scales(20),
-    height: scales(25),
-    tintColor: colors.white,
-  },
-  headerLabel: {
-    fontFamily: fontFamily.bold,
-    color: colors.white,
-    fontSize: scales(18),
-    letterSpacing: 2.5,
-    textTransform: "uppercase",
-  },
-  bottomLine: {
-    height: 1,
-    // backgroundColor: colors.white,
-    borderRadius: 1,
-    shadowColor: colors.white,
-    shadowOpacity: 0.6,
-    shadowRadius: 10,
-    shadowOffset: { width: 0, height: 0 },
-    elevation: 8,
-    marginTop: scales(10),
-  },
-});

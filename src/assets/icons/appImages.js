@@ -70,4 +70,7 @@ export const appImages = {
   mute: require("../icons/mute.png"),
   unmute: require("../icons/unmute.png"),
   check: require("../icons/check.png"),
+  report: require("../icons/report.png"),
+  copy: require("../icons/copy.png"),
+  info: require("../icons/info.png"),
 };

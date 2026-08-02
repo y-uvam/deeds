@@ -12,21 +12,21 @@ const CONTENT_TYPES = [
     label: "Bites",
     subtitle: "Trailers, BTS, or your best shots",
     icon: appImages.reels,
-    accent: colors.lightRed,
+    accent: colors.orange,
   },
   {
     id: "movie",
     label: "Projects",
     subtitle: "Long-form video content",
     icon: appImages.slate,
-    accent: colors.purple,
+    accent: colors.storyRing,
   },
   {
     id: "story",
     label: "Slates",
     subtitle: "Share your thoughts with the world",
     icon: appImages.project,
-    accent: colors.blue,
+    accent: colors.lightRed,
   },
 ];
 
@@ -39,10 +39,7 @@ const TypeCard = ({ item, isSelected, onPress }) => (
     <View style={[styles.iconCircle, { backgroundColor: item.accent + "22" }]}>
       <Image
         source={item.icon}
-        style={[
-          styles.typeIcon,
-          { tintColor: isSelected ? item.accent : colors.white },
-        ]}
+        style={[styles.typeIcon, { tintColor: item.accent }]}
         resizeMode="contain"
       />
     </View>
@@ -77,8 +74,6 @@ export const ContentTypeSheet = forwardRef((props, ref) => {
       snapPoints={["60%"]}
       enablePanDownToClose={true}
       useBlur={true}
-      showCloseButton={true}
-      title="Create"
     >
       <View style={styles.content}>
         <Text style={styles.heading}>What are you creating?</Text>
@@ -99,7 +94,7 @@ export const ContentTypeSheet = forwardRef((props, ref) => {
         <CustomButton
           label="Continue"
           onPress={handleNext}
-          disable={!selected}
+          // disable={!selected}
         />
       </View>
       <Spacer height={scales(20)} />
