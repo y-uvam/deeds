@@ -6,6 +6,7 @@ import {
   ScrollView,
   Image,
   TouchableOpacity,
+  StatusBar,
 } from "react-native";
 import {
   AppBackground,
@@ -15,7 +16,8 @@ import {
 } from "../../components";
 import { colors, scales, commonText } from "../../utils";
 import { appImages, fontFamily } from "../../assets";
-import { navigate, routesConstants } from "../../navigation";
+import { navigate, goBack, routesConstants } from "../../navigation";
+import { BlurView } from "@react-native-community/blur";
 import LinearGradient from "react-native-linear-gradient";
 
 const DUMMY_CAST_AND_CREW = [
@@ -138,30 +140,72 @@ export const Movie = ({ route }) => {
 
   return (
     <AppBackground>
-      <Header label={titleText} showBackButton={true} />
+      <StatusBar
+        barStyle="light-content"
+        translucent
+        backgroundColor="transparent"
+      />
 
       <ScrollView
         showsVerticalScrollIndicator={false}
+        bounces={false}
         contentContainerStyle={styles.scrollContent}
       >
-        <View style={styles.posterContainer}>
-          <Image source={posterSource} style={styles.posterImage} />
-          <View style={styles.posterDimOverlay} />
+        <View style={styles.heroContainer}>
+          <Image source={posterSource} style={styles.heroImage} />
+
           <LinearGradient
-            colors={["transparent", colors.background]}
-            style={styles.posterGradient}
+            colors={[
+              "rgba(5, 14, 26, 0.85)",
+              "rgba(5, 20, 36, 0.2)",
+              "rgba(5, 20, 36, 0.98)",
+            ]}
+            locations={[0, 0.45, 1]}
+            style={StyleSheet.absoluteFillObject}
           />
 
           <TouchableOpacity
-            style={styles.playButtonCircle}
-            activeOpacity={0.85}
-            onPress={() => setIsPlaying(!isPlaying)}
+            style={styles.floatingBackBtn}
+            onPress={goBack}
+            activeOpacity={0.7}
+            hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
           >
-            <Image
-              source={appImages.play}
-              style={styles.playIcon}
-              tintColor={colors.white}
-            />
+            <BlurView
+              style={styles.backBlurCircle}
+              blurType="dark"
+              blurAmount={20}
+              reducedTransparencyFallbackColor="rgba(15,15,15,0.9)"
+            >
+              <Image
+                source={appImages.backarrow}
+                style={styles.backIcon}
+                tintColor={colors.white}
+              />
+            </BlurView>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.heroPlayBtn}
+            activeOpacity={0.85}
+            onPress={() => navigate(routesConstants.video)}
+          >
+            <LinearGradient
+              colors={[
+                colors.orange,
+                colors.storyRing,
+                colors.lightRed,
+                colors.purple,
+              ]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={styles.playGradientCircle}
+            >
+              <Image
+                source={appImages.play}
+                style={styles.playIcon}
+                tintColor={colors.white}
+              />
+            </LinearGradient>
           </TouchableOpacity>
         </View>
 
@@ -170,7 +214,23 @@ export const Movie = ({ route }) => {
           <Text style={styles.movieTagline}>
             The rise and battle for supreme control.
           </Text>
-          <Spacer height={scales(14)} />
+
+          <View style={styles.metaRow}>
+            <View style={styles.metaBadge}>
+              <Text style={styles.metaBadgeText}>2026</Text>
+            </View>
+            <View style={styles.metaBadge}>
+              <Text style={styles.metaBadgeText}>U/A 16+</Text>
+            </View>
+            <View style={styles.metaBadge}>
+              <Text style={styles.metaBadgeText}>2h 15m</Text>
+            </View>
+            <View style={styles.metaBadgeAccent}>
+              <Text style={styles.metaBadgeAccentText}>4K Ultra HD</Text>
+            </View>
+          </View>
+
+          <Spacer height={scales(8)} />
 
           <Text style={styles.sectionHeader}>Synopsis</Text>
           <Text style={styles.descriptionText}>{descriptionText}</Text>
@@ -344,9 +404,9 @@ const styles = StyleSheet.create({
   scrollContent: {
     paddingBottom: scales(40),
   },
-  posterContainer: {
+  heroContainer: {
     width: "100%",
-    height: scales(250),
+    height: scales(310),
     position: "relative",
     overflow: "hidden",
   },
@@ -357,93 +417,109 @@ const styles = StyleSheet.create({
     tintColor: colors.yellow,
     marginRight: scales(10),
   },
-  posterImage: {
+  heroImage: {
     width: "100%",
     height: "100%",
     resizeMode: "cover",
   },
-  posterDimOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: "rgba(0, 0, 0, 0.45)",
-  },
-  posterGradient: {
+  floatingBackBtn: {
     position: "absolute",
-    left: 0,
-    right: 0,
-    bottom: 0,
-    height: scales(100),
+    top: Platform.OS === "ios" ? scales(48) : scales(36),
+    left: scales(16),
+    zIndex: 20,
   },
-  playButtonCircle: {
-    position: "absolute",
-    top: scales(95),
-    alignSelf: "center",
-    width: scales(56),
-    height: scales(56),
-    borderRadius: scales(28),
-    backgroundColor: colors.blue,
-    justifyContent: "center",
+  backBlurCircle: {
+    width: scales(38),
+    height: scales(38),
+    borderRadius: scales(19),
     alignItems: "center",
-    elevation: 8,
-    shadowColor: colors.blue,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.5,
-    shadowRadius: 10,
-    zIndex: 10,
+    justifyContent: "center",
+    overflow: "hidden",
+    borderWidth: 1,
+    borderColor: "rgba(255, 255, 255, 0.15)",
+  },
+  backIcon: {
+    width: scales(16),
+    height: scales(16),
+    resizeMode: "contain",
+  },
+  heroPlayBtn: {
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    marginLeft: -scales(32),
+    marginTop: -scales(32),
+    width: scales(64),
+    height: scales(64),
+    borderRadius: scales(32),
+    overflow: "hidden",
+    shadowColor: colors.storyRing,
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.6,
+    shadowRadius: 14,
+    elevation: 10,
+    zIndex: 15,
+  },
+  playGradientCircle: {
+    width: "100%",
+    height: "100%",
+    alignItems: "center",
+    justifyContent: "center",
   },
   playIcon: {
-    width: scales(22),
-    height: scales(22),
+    width: scales(24),
+    height: scales(24),
     resizeMode: "contain",
     marginLeft: scales(3),
   },
-  posterMetaRow: {
-    position: "absolute",
-    bottom: scales(14),
-    left: scales(16),
-    right: scales(16),
-    flexDirection: "row",
-    gap: scales(8),
-  },
-  genreBadge: {
-    backgroundColor: colors.transparentBlack30,
-    paddingHorizontal: scales(10),
-    paddingVertical: scales(4),
-    borderRadius: scales(12),
-    borderWidth: 1,
-    borderColor: colors.transparentWhite12,
-  },
-  genreBadgeText: {
-    color: colors.white,
-    fontFamily: fontFamily.semiBold,
-    fontSize: scales(11),
-  },
-  runtimeBadge: {
-    backgroundColor: colors.transparentBlack30,
-    paddingHorizontal: scales(10),
-    paddingVertical: scales(4),
-    borderRadius: scales(12),
-    borderWidth: 1,
-    borderColor: colors.transparentWhite12,
-  },
-  runtimeBadgeText: {
-    color: colors.transparentWhite85,
-    fontFamily: fontFamily.medium,
-    fontSize: scales(11),
-  },
   detailsContainer: {
     paddingHorizontal: scales(16),
-    marginTop: scales(10),
+    marginTop: scales(14),
   },
   movieTitle: {
     color: colors.white,
     fontFamily: fontFamily.bold,
     fontSize: scales(24),
+    letterSpacing: 0.2,
   },
   movieTagline: {
-    color: colors.blue,
-    fontFamily: fontFamily.medium,
+    color: colors.transparentWhite85,
+    fontFamily: fontFamily.regular,
     fontSize: scales(13),
-    marginTop: scales(2),
+    marginTop: scales(4),
+  },
+  metaRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: scales(8),
+    marginTop: scales(12),
+    marginBottom: scales(4),
+  },
+  metaBadge: {
+    backgroundColor: colors.transparentWhite10,
+    paddingHorizontal: scales(10),
+    paddingVertical: scales(4),
+    borderRadius: scales(10),
+    borderWidth: 1,
+    borderColor: colors.transparentWhite12,
+  },
+  metaBadgeText: {
+    color: colors.transparentWhite85,
+    fontFamily: fontFamily.medium,
+    fontSize: scales(11),
+  },
+  metaBadgeAccent: {
+    backgroundColor: "rgba(245, 60, 109, 0.15)",
+    paddingHorizontal: scales(10),
+    paddingVertical: scales(4),
+    borderRadius: scales(10),
+    borderWidth: 1,
+    borderColor: "rgba(245, 60, 109, 0.35)",
+  },
+  metaBadgeAccentText: {
+    color: colors.white,
+    fontFamily: fontFamily.bold,
+    fontSize: scales(11),
   },
   sectionHeader: {
     color: colors.white,

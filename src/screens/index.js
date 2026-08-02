@@ -27,3 +27,4 @@ export * from "./monetization/monetization";
 export * from "./movie/movie";
 export * from "./ratings/ratings";
 export * from "./intro/intro";
+export * from "./video/video";

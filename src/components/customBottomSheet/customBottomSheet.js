@@ -1,12 +1,5 @@
 import React, { forwardRef, useMemo, useCallback } from "react";
-import {
-  StyleSheet,
-  View,
-  Text,
-  Keyboard,
-  TouchableOpacity,
-  Image,
-} from "react-native";
+import { StyleSheet, View, Text, TouchableOpacity, Image } from "react-native";
 import {
   BottomSheetModal,
   BottomSheetBackdrop,
@@ -23,14 +16,14 @@ const CustomBackground = ({ style, blur }) => {
         <BlurView
           style={[StyleSheet.absoluteFill, { overflow: "hidden" }]}
           blurType="dark"
-          blurAmount={20}
-          reducedTransparencyFallbackColor="#121212"
+          blurAmount={25}
+          reducedTransparencyFallbackColor="#051424"
         />
       ) : (
         <View
           style={[
             StyleSheet.absoluteFill,
-            { backgroundColor: colors.darkblack || "#1E1E1E" },
+            { backgroundColor: colors.background || "#051424" },
           ]}
         />
       )}
@@ -51,6 +44,7 @@ export const CustomBottomSheet = forwardRef(
       showCloseButton = false,
       enableBackdrop = true,
       backdropOpacity = 0.5,
+      style,
     },
     ref,
   ) => {
@@ -86,10 +80,10 @@ export const CustomBottomSheet = forwardRef(
         backdropComponent={renderBackdrop}
         handleComponent={null}
         enableDynamicSizing={true}
-        enablePanDownToClose={false}
+        enablePanDownToClose={enablePanDownToClose}
         keyboardBehavior="interactive"
         keyboardBlurBehavior="restore"
-        style={styles.sheet}
+        style={[styles.sheet, style]}
         onDismiss={() => {}}
       >
         <BottomSheetScrollView
@@ -131,21 +125,29 @@ const styles = StyleSheet.create({
   },
   background: {
     backgroundColor: "transparent",
-    borderTopRightRadius: 30,
-    borderTopLeftRadius: 30,
+    borderRadius: scales(24),
     overflow: "hidden",
+    borderWidth: 1,
+    borderColor: "rgba(255, 255, 255, 0.12)",
   },
-  handleIndicator: {},
+  handleIndicator: {
+    width: scales(36),
+    height: scales(4),
+    borderRadius: scales(2),
+    backgroundColor: "rgba(255, 255, 255, 0.25)",
+    alignSelf: "center",
+    marginBottom: scales(14),
+  },
   contentContainer: {
     paddingHorizontal: scales(20),
-    paddingTop: scales(20),
+    paddingTop: scales(12),
     paddingBottom: scales(30),
   },
   headerContainer: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    marginBottom: scales(20),
+    marginBottom: scales(16),
   },
   headerTextContainer: {
     flex: 1,
@@ -163,7 +165,7 @@ const styles = StyleSheet.create({
     tintColor: colors.white,
   },
   title: {
-    fontSize: scales(24),
+    fontSize: scales(20),
     fontFamily: fontFamily.bold,
     color: colors.white,
     letterSpacing: 0.3,
@@ -172,7 +174,7 @@ const styles = StyleSheet.create({
     fontSize: scales(14),
     fontFamily: fontFamily.regular,
     color: "rgba(255,255,255,0.55)",
-    marginTop: scales(6),
+    marginTop: scales(4),
     letterSpacing: 0.2,
   },
 });

@@ -8,33 +8,23 @@ import Animated, {
   Easing,
   runOnJS,
 } from "react-native-reanimated";
-import Svg, { Path } from "react-native-svg";
+import Svg, { Path, Defs, LinearGradient, Stop } from "react-native-svg";
 import { useNavigation } from "@react-navigation/native";
 import { useSelector } from "react-redux";
 import { routesConstants } from "../../navigation/routeConstants";
 import { AppBackground } from "../../components";
-import { fontFamily } from "../../assets";
 import { colors } from "../../utils";
 
 const { width } = Dimensions.get("window");
 const AnimatedSvgPath = Animated.createAnimatedComponent(Path);
 
-// ---------------------------------------------------------------------------
-// SVG paths for "indiemate" — real bold glyph outlines (outer + inner
-// contour per letter, which is what gives the "double stroke" look), traced
-// from the font and pre-transformed into this 0 0 410 100 viewBox.
-// `length` is the exact computed path length (for strokeDasharray).
-// `start`/`end` are this letter's fraction of the overall word length, used
-// to stagger the draw-on so letters reveal left-to-right in sequence, like
-// a single pen stroke, instead of all animating at once.
-// ---------------------------------------------------------------------------
 const PATHS_DATA = [
   {
     id: "i1",
     start: 0.0,
     end: 0.0611,
-    length: 136.3,
-    d: "M 14.95,72.88 Q 14.95,75.06 13.52,76.53 Q 12.1,78 9.91,78 Q 7.73,78 6.3,76.53 Q 4.87,75.06 4.87,72.88 L 4.87,38.18 Q 4.87,36 6.3,34.53 Q 7.73,33.06 9.91,33.06 Q 12.1,33.06 13.52,34.53 Q 14.95,36 14.95,38.18 L 14.95,72.88 M 9.83,27.6 Q 6.97,27.6 5.8,26.68 Q 4.62,25.75 4.62,23.4 L 4.62,21.8 Q 4.62,19.37 5.92,18.49 Q 7.22,17.6 9.91,17.6 Q 12.85,17.6 14.03,18.53 Q 15.2,19.45 15.2,21.8 L 15.2,23.4 Q 15.2,25.84 13.94,26.72 Q 12.68,27.6 9.83,27.6",
+    length: 135.5,
+    d: "M 14.95,72.88 Q 14.95,75.06 13.52,76.53 Q 12.1,78 9.91,78 Q 7.73,78 6.3,76.53 Q 4.87,75.06 4.87,72.88 L 4.87,20.96 Q 4.87,18.78 6.3,17.31 Q 7.73,15.84 9.91,15.84 Q 12.1,15.84 13.52,17.31 Q 14.95,18.78 14.95,20.96 L 14.95,72.88",
   },
   {
     id: "n1",
@@ -68,8 +58,8 @@ const PATHS_DATA = [
     id: "m1",
     start: 0.4931,
     end: 0.6547,
-    length: 360.6,
-    d: "M 221.09,32.22 Q 227.81,32.22 231,35.45 Q 234.19,38.69 235.2,43.81 L 233.77,43.06 L 234.44,41.71 Q 235.45,39.78 237.55,37.55 Q 239.65,35.33 242.63,33.77 Q 245.62,32.22 249.31,32.22 Q 255.36,32.22 258.51,34.82 Q 261.66,37.43 262.84,41.75 Q 264.01,46.08 264.01,51.37 L 264.01,72.88 Q 264.01,75.06 262.58,76.53 Q 261.16,78 258.97,78 Q 256.79,78 255.36,76.53 Q 253.93,75.06 253.93,72.88 L 253.93,51.37 Q 253.93,48.6 253.26,46.37 Q 252.59,44.15 250.82,42.8 Q 249.06,41.46 245.78,41.46 Q 242.59,41.46 240.32,42.8 Q 238.06,44.15 236.92,46.37 Q 235.79,48.6 235.79,51.37 L 235.79,72.88 Q 235.79,75.06 234.36,76.53 Q 232.93,78 230.75,78 Q 228.56,78 227.14,76.53 Q 225.71,75.06 225.71,72.88 L 225.71,51.37 Q 225.71,48.6 225.04,46.37 Q 224.36,44.15 222.6,42.8 Q 220.84,41.46 217.56,41.46 Q 214.37,41.46 212.1,42.8 Q 209.83,44.15 208.7,46.37 Q 207.56,48.6 207.56,51.37 L 207.56,72.88 Q 207.56,75.06 206.14,76.53 Q 204.71,78 202.52,78 Q 200.34,78 198.91,76.53 Q 197.48,75.06 197.48,72.88 L 197.48,38.18 Q 197.48,36 198.91,34.53 Q 200.34,33.06 202.52,33.06 Q 204.71,33.06 206.14,34.53 Q 207.56,36 207.56,38.18 L 207.56,41.8 L 206.3,41.54 Q 207.06,40.12 208.4,38.48 Q 209.75,36.84 211.68,35.41 Q 213.61,33.98 215.96,33.1 Q 218.32,32.22 221.09,32.22",
+    length: 476.0,
+    d: "M 197.48,72.88 L 197.48,20.96 Q 197.48,18.78 198.91,17.31 Q 200.34,15.84 202.52,15.84 L 228.0,70.0 Q 230.75,76.5 233.5,70.0 L 258.98,15.84 Q 261.16,15.84 262.58,17.31 Q 264.01,18.78 264.01,20.96 L 264.01,72.88 Q 264.01,75.06 262.58,76.53 Q 261.16,78 258.97,78 Q 256.79,78 255.36,76.53 Q 253.93,75.06 253.93,72.88 L 253.93,19.0 L 233.5,52.3 Q 230.75,57.1 228.0,52.3 L 207.56,19.0 L 207.56,72.88 Q 207.56,75.06 206.14,76.53 Q 204.71,78 202.52,78 Q 200.34,78 198.91,76.53 Q 197.48,75.06 197.48,72.88",
   },
   {
     id: "a1",
@@ -100,8 +90,10 @@ const AnimatedPathItem = ({ d, length, progress }) => {
   const animatedProps = useAnimatedProps(() => {
     "worklet";
     const strokeDashoffset = length * (1 - progress.value);
+    const fillOpacity = Math.min(1, Math.pow(progress.value, 1.2));
     return {
       strokeDashoffset,
+      fillOpacity,
     };
   });
 
@@ -112,16 +104,16 @@ const AnimatedPathItem = ({ d, length, progress }) => {
         d={d}
         fill="none"
         stroke="rgba(255, 255, 255, 0.15)"
-        strokeWidth={1.6}
+        strokeWidth={2.8}
         strokeLinecap="round"
         strokeLinejoin="round"
       />
-      {/* Animated drawing stroke, traces the letter's outer + inner contour */}
+      {/* Animated drawing stroke and solid gradient fill */}
       <AnimatedSvgPath
         d={d}
-        fill="none"
-        stroke="#FFFFFF"
-        strokeWidth={1.6}
+        fill="url(#indiemateGradient)"
+        stroke="url(#indiemateGradient)"
+        strokeWidth={2.8}
         strokeLinecap="round"
         strokeLinejoin="round"
         strokeDasharray={`${length} ${length}`}
@@ -185,6 +177,22 @@ export const Splash = () => {
       <Animated.View style={[styles.container, screenStyle]}>
         <View style={styles.svgWrapper}>
           <Svg viewBox="0 0 410 100" width={svgWidth} height={svgHeight}>
+            <Defs>
+              <LinearGradient
+                id="indiemateGradient"
+                gradientUnits="userSpaceOnUse"
+                x1="0"
+                y1="0"
+                x2="410"
+                y2="0"
+              >
+                <Stop offset="0%" stopColor={colors.orange} />
+                <Stop offset="25%" stopColor={colors.storyRing} />
+                <Stop offset="50%" stopColor={colors.lightRed} />
+                <Stop offset="75%" stopColor={colors.purple} />
+                <Stop offset="100%" stopColor={colors.magenta} />
+              </LinearGradient>
+            </Defs>
             {PATHS_DATA.map((item) => (
               <AnimatedPathItem
                 key={item.id}

@@ -28,7 +28,7 @@ const DUMMY_REELS = [
   {
     id: "reel2",
     videoUrl:
-      "https://test-videos.co.uk/vids/jellyfish/mp4/h264/720/Jellyfish_720_10s_1MB.mp4",
+      "https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/720/Big_Buck_Bunny_720_10s_1MB.mp4",
     username: "wellness_journey",
     caption: "Take a moment to enjoy nature's beauty #mindfulness #peace",
     likes: 1832,
@@ -37,7 +37,7 @@ const DUMMY_REELS = [
   {
     id: "reel3",
     videoUrl:
-      "https://test-videos.co.uk/vids/sintel/mp4/h264/720/Sintel_720_10s_1MB.mp4",
+      "https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/720/Big_Buck_Bunny_720_10s_1MB.mp4",
     username: "peaceful_mind",
     caption:
       "Forest walks to clear the thoughts and find center #nature #meditation",

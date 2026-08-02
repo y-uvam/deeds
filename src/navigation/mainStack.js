@@ -29,6 +29,7 @@ import {
   Monetization,
   Movie,
   Intro,
+  Video,
 } from "../screens";
 import { BottomTab } from "./bottomTab";
 import { Ratings } from "../screens/ratings/ratings";
@@ -84,6 +85,13 @@ const MainStack = () => {
       <Screen name={routesConstants.movie} component={Movie} />
       <Screen name={routesConstants.ratings} component={Ratings} />
       <Screen name={routesConstants.intro} component={Intro} />
+      <Screen
+        name={routesConstants.video}
+        component={Video}
+        options={{
+          animation: "slide_from_right",
+        }}
+      />
       <Screen
         name={routesConstants.accountPrivacy}
         component={AccountPrivacy}

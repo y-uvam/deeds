@@ -30,4 +30,5 @@ export const routesConstants = {
   movie: "Movie",
   ratings: "Ratings",
   intro: "Intro",
+  video: "Video",
 };
