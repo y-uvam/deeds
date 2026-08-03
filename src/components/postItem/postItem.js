@@ -209,7 +209,7 @@ const ImageCarousel = ({ images = [], onDoubleTap }) => {
               style={styles.blurBadge}
               blurType="dark"
               blurAmount={12}
-              reducedTransparencyFallbackColor="#000"
+              reducedTransparencyFallbackColor={colors.black}
             >
               <View style={styles.badgeInner}>
                 <Text style={styles.badgeText}>
@@ -225,7 +225,7 @@ const ImageCarousel = ({ images = [], onDoubleTap }) => {
               style={styles.dotsBlur}
               blurType="dark"
               blurAmount={10}
-              reducedTransparencyFallbackColor="#000"
+              reducedTransparencyFallbackColor={colors.black}
             >
               <View style={styles.dotsInner}>
                 {images.map((_, i) => (

@@ -465,7 +465,7 @@ export const Video = () => {
             <BlurView
               style={[styles.blurPill, styles.centerSkipBtn]}
               blurType="dark"
-              blurAmount={22}
+              blurAmount={4}
               reducedTransparencyFallbackColor="rgba(15,15,15,0.92)"
             >
               <TouchableOpacity

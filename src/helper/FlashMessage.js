@@ -23,7 +23,7 @@ const CustomToastCard = ({ text1, text2, type }) => {
           style={[StyleSheet.absoluteFill, { overflow: "hidden" }]}
           blurType="dark"
           blurAmount={20}
-          reducedTransparencyFallbackColor="#121212"
+          reducedTransparencyFallbackColor={colors.blurFallback}
         />
 
         <View style={styles.toastTextContainer}>

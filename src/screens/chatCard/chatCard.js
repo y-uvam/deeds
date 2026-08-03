@@ -330,7 +330,7 @@ const styles = StyleSheet.create({
     color: colors.white,
   },
   otherMessageText: {
-    color: "#E5E5E5",
+    color: colors.lightGray,
   },
   timeText: {
     fontSize: scales(10),

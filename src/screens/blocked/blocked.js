@@ -1,15 +1,42 @@
 import React, { useState } from "react";
-import { View, Text, StyleSheet, FlatList, Image, TouchableOpacity } from "react-native";
-import { AppBackground, Header, ProfileComponent } from "../../components";
+import {
+  View,
+  Text,
+  StyleSheet,
+  FlatList,
+  Image,
+  TouchableOpacity,
+} from "react-native";
+import {
+  AppBackground,
+  CustomButton,
+  Header,
+  ProfileComponent,
+} from "../../components";
 import { colors, scales, commonText } from "../../utils";
 import { appImages, fontFamily } from "../../assets";
 import { showCustomMessage } from "../../helper/FlashMessage";
 
 export const Blocked = () => {
   const [blockedUsers, setBlockedUsers] = useState([
-    { id: "1", name: "John Doe", username: "johndoe", avatar: appImages.dummyuser },
-    { id: "2", name: "Jane Smith", username: "janesmith", avatar: appImages.dummyuser },
-    { id: "3", name: "Alex Johnson", username: "alex_j", avatar: appImages.dummyuser },
+    {
+      id: "1",
+      name: "John Doe",
+      username: "johndoe",
+      avatar: appImages.dummyuser,
+    },
+    {
+      id: "2",
+      name: "Jane Smith",
+      username: "janesmith",
+      avatar: appImages.dummyuser,
+    },
+    {
+      id: "3",
+      name: "Alex Johnson",
+      username: "alex_j",
+      avatar: appImages.dummyuser,
+    },
   ]);
 
   const handleUnblock = (user) => {
@@ -23,18 +50,24 @@ export const Blocked = () => {
         <ProfileComponent
           name={item.name}
           userId={item.username}
+          profileImage={item.avatar}
           image={item.avatar}
+          style={{ paddingHorizontal: 0 }}
         />
       </View>
-      <TouchableOpacity style={styles.unblockButton} onPress={() => handleUnblock(item)}>
-        <Text style={styles.unblockText}>Unblock</Text>
-      </TouchableOpacity>
+      <CustomButton
+        label="Unblock"
+        buttonWidth={scales(100)}
+        buttonStyle={styles.unblockButton}
+        labelStyle={styles.unblockText}
+        onPress={() => handleUnblock(item)}
+      />
     </View>
   );
 
   return (
     <AppBackground>
-      <Header label={commonText.blocked} showBackButton={true} />
+      <Header label={commonText.blockedAccounts} showBackButton={true} />
       {blockedUsers.length > 0 ? (
         <FlatList
           data={blockedUsers}
@@ -66,14 +99,13 @@ const styles = StyleSheet.create({
     marginBottom: scales(12),
   },
   unblockButton: {
-    backgroundColor: colors.white,
-    paddingHorizontal: scales(16),
-    paddingVertical: scales(8),
+    width: scales(100),
     borderRadius: scales(20),
+    height: scales(38),
   },
   unblockText: {
-    fontFamily: fontFamily.bold,
-    color: colors.black,
+    fontFamily: fontFamily.semiBold,
+    color: colors.white,
     fontSize: scales(14),
   },
   emptyContainer: {

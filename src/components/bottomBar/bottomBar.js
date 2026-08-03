@@ -241,7 +241,7 @@ const styles = StyleSheet.create({
   container: {
     height: BAR_HEIGHT,
     borderRadius: BAR_HEIGHT / 2,
-    shadowColor: "#000",
+    shadowColor: colors.black,
     shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.4,
     shadowRadius: 14,

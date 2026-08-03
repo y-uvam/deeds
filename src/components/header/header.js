@@ -31,10 +31,15 @@ export const HeaderLogo = () => {
       <Svg height={scales(28)} width={scales(140)}>
         <Defs>
           <SvgLinearGradient id="brandGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+            <Stop offset="0%" stopColor={colors.white} />
+            <Stop offset="50%" stopColor={colors.white} />
+            <Stop offset="100%" stopColor={colors.white} />
+          </SvgLinearGradient>
+          {/* <SvgLinearGradient id="brandGrad" x1="0%" y1="0%" x2="100%" y2="0%">
             <Stop offset="0%" stopColor={colors.orange} />
             <Stop offset="50%" stopColor={colors.storyRing} />
             <Stop offset="100%" stopColor={colors.lightRed} />
-          </SvgLinearGradient>
+          </SvgLinearGradient> */}
         </Defs>
         <SvgText
           fill="url(#brandGrad)"
@@ -83,6 +88,11 @@ export const Header = ({
   return (
     <View style={styles.root}>
       <View style={styles.container}>
+        {isHome && !customTitle && (
+          <View style={styles.centerContainer} pointerEvents="box-none">
+            <HeaderLogo />
+          </View>
+        )}
         <View style={styles.leftContainer}>
           {hasLeftButton && (
             <RoundIconButton
@@ -90,7 +100,11 @@ export const Header = ({
               onPress={() => (leftButtonPress ? leftButtonPress() : goBack())}
             />
           )}
-          {customTitle ? customTitle : <HeaderPill label={label} isLogo={isHome} />}
+          {customTitle ? (
+            customTitle
+          ) : (
+            !isHome && <HeaderPill label={label} isLogo={isHome} />
+          )}
         </View>
 
         <View style={styles.rightContainer}>

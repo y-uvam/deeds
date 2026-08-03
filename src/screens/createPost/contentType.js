@@ -1,10 +1,11 @@
-import React, { useState, forwardRef } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
+import React, { useState, forwardRef, memo, useCallback } from "react";
+import { View, Text, TouchableOpacity, Image, ScrollView } from "react-native";
 import { CustomBottomSheet, Spacer, CustomButton } from "../../components";
-import { colors, scales } from "../../utils";
-import { fontFamily, appImages } from "../../assets";
+import { colors, scales, commonText } from "../../utils";
+import { appImages } from "../../assets";
 import { navigate } from "../../navigation/navigationServices";
 import { routesConstants } from "../../navigation/routeConstants";
+import { styles } from "./contentTypeStyles";
 
 const CONTENT_TYPES = [
   {
@@ -18,19 +19,26 @@ const CONTENT_TYPES = [
     id: "movie",
     label: "Projects",
     subtitle: "Long-form video content",
-    icon: appImages.slate,
+    icon: appImages.project,
     accent: colors.storyRing,
   },
   {
-    id: "story",
+    id: "slates",
     label: "Slates",
     subtitle: "Share your thoughts with the world",
-    icon: appImages.project,
+    icon: appImages.slate,
     accent: colors.lightRed,
   },
+  // {
+  //   id: "story",
+  //   label: "Story",
+  //   subtitle: "Share quick updates & moments with fans",
+  //   icon: appImages.camera || appImages.gallery,
+  //   accent: colors.purple,
+  // },
 ];
 
-const TypeCard = ({ item, isSelected, onPress }) => (
+const TypeCard = memo(({ item, isSelected, onPress }) => (
   <TouchableOpacity
     style={[styles.typeCard, isSelected && { borderColor: item.accent }]}
     onPress={onPress}
@@ -57,118 +65,53 @@ const TypeCard = ({ item, isSelected, onPress }) => (
       )}
     </View>
   </TouchableOpacity>
-);
+));
 
 export const ContentTypeSheet = forwardRef((props, ref) => {
   const [selected, setSelected] = useState(null);
 
-  const handleNext = () => {
+  const handleNext = useCallback(() => {
     if (!selected) return;
     ref.current?.dismiss();
     navigate(routesConstants.selectMedia, { contentType: selected });
-  };
+  }, [selected, ref]);
+
+  const handleSelect = useCallback((item) => {
+    setSelected(item);
+  }, []);
 
   return (
     <CustomBottomSheet
       ref={ref}
-      snapPoints={["60%"]}
+      snapPoints={["75%"]}
       enablePanDownToClose={true}
       useBlur={true}
     >
-      <View style={styles.content}>
-        <Text style={styles.heading}>What are you creating?</Text>
-        <Text style={styles.subheading}>Choose a type to get started</Text>
-        <Spacer height={scales(24)} />
+      <ScrollView showsVerticalScrollIndicator={false} style={styles.content}>
+        <Text style={styles.heading}>{commonText.whatAreYouCreating}</Text>
+        <Text style={styles.subheading}>
+          {commonText.chooseATypeToGetStarted}
+        </Text>
+        <Spacer height={scales(20)} />
 
         {CONTENT_TYPES.map((item) => (
           <TypeCard
             key={item.id}
             item={item}
             isSelected={selected?.id === item.id}
-            onPress={() => setSelected(item)}
+            onPress={() => handleSelect(item)}
           />
         ))}
-      </View>
+      </ScrollView>
 
-      <View style={styles.footer}>
+      <View>
         <CustomButton
-          label="Continue"
+          label={commonText.continue}
           onPress={handleNext}
-          // disable={!selected}
+          disable={!selected}
         />
       </View>
       <Spacer height={scales(20)} />
     </CustomBottomSheet>
   );
-});
-
-const styles = StyleSheet.create({
-  content: {
-    flex: 1,
-  },
-  heading: {
-    color: colors.white,
-    fontFamily: fontFamily.bold,
-    fontSize: scales(22),
-  },
-  subheading: {
-    color: colors.transparentWhite40,
-    fontFamily: fontFamily.regular,
-    fontSize: scales(13),
-    marginTop: scales(4),
-  },
-  typeCard: {
-    flexDirection: "row",
-    alignItems: "center",
-    borderWidth: 1,
-    borderColor: colors.transparentWhite15,
-    borderRadius: scales(16),
-    paddingHorizontal: scales(16),
-    paddingVertical: scales(16),
-    marginBottom: scales(12),
-    backgroundColor: colors.transparentWhite5,
-    gap: scales(14),
-  },
-  iconCircle: {
-    width: scales(48),
-    height: scales(48),
-    borderRadius: scales(24),
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  typeIcon: {
-    width: scales(22),
-    height: scales(22),
-  },
-  typeTextBlock: {
-    flex: 1,
-  },
-  typeLabel: {
-    color: colors.white,
-    fontFamily: fontFamily.bold,
-    fontSize: scales(16),
-  },
-  typeSubtitle: {
-    color: colors.transparentWhite40,
-    fontFamily: fontFamily.regular,
-    fontSize: scales(12),
-    marginTop: scales(2),
-  },
-  radioOuter: {
-    width: scales(20),
-    height: scales(20),
-    borderRadius: scales(10),
-    borderWidth: 2,
-    borderColor: colors.transparentWhite40,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  radioInner: {
-    width: scales(10),
-    height: scales(10),
-    borderRadius: scales(5),
-  },
-  footer: {
-    // paddingBottom: scales(30),
-  },
 });

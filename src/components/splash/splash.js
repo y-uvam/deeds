@@ -14,6 +14,7 @@ import Animated, {
   withTiming,
   Easing,
 } from "react-native-reanimated";
+import { colors } from "../../utils";
 
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 
@@ -141,7 +142,7 @@ const styles = StyleSheet.create({
   },
   text: {
     marginHorizontal: 10,
-    color: "#fff",
+    color: colors.white,
     fontSize: 24,
     fontWeight: "800",
     letterSpacing: 4,

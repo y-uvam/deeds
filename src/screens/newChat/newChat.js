@@ -127,7 +127,7 @@ const styles = StyleSheet.create({
     width: scales(12),
     height: scales(12),
     borderRadius: scales(6),
-    backgroundColor: "#00D15D",
+    backgroundColor: colors.onlineGreen,
     borderWidth: 2,
     borderColor: colors.black,
   },

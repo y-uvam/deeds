@@ -14,6 +14,15 @@ export const styles = StyleSheet.create({
     height: scales(52),
     width: "100%",
   },
+  centerContainer: {
+    position: "absolute",
+    left: scales(30),
+    right: 0,
+    top: 0,
+    bottom: 0,
+    justifyContent: "center",
+    alignItems: "center",
+  },
   leftContainer: {
     flex: 1,
     flexDirection: "row",

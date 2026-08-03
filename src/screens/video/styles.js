@@ -117,10 +117,8 @@ export const styles = StyleSheet.create({
     zIndex: 10,
   },
   blurPill: {
-    borderRadius: scales(24),
+    borderRadius: scales(100),
     overflow: "hidden",
-    borderWidth: 1,
-    borderColor: colors.transparentWhite12,
   },
   bottomRow: {
     flexDirection: "row",
@@ -194,7 +192,6 @@ export const styles = StyleSheet.create({
   topDoneGradientBtn: {
     minWidth: scales(70),
     height: scales(32),
-    paddingHorizontal: scales(14),
     borderRadius: scales(16),
     alignItems: "center",
     justifyContent: "center",

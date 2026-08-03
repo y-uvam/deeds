@@ -17,13 +17,13 @@ const CustomBackground = ({ style, blur }) => {
           style={[StyleSheet.absoluteFill, { overflow: "hidden" }]}
           blurType="dark"
           blurAmount={25}
-          reducedTransparencyFallbackColor="#051424"
+          reducedTransparencyFallbackColor={colors.background}
         />
       ) : (
         <View
           style={[
             StyleSheet.absoluteFill,
-            { backgroundColor: colors.background || "#051424" },
+            { backgroundColor: colors.background },
           ]}
         />
       )}

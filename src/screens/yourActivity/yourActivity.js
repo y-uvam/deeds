@@ -49,7 +49,7 @@ export const YourActivity = () => {
             }
           />
           <NextButton
-            leftIcon={appImages.browse}
+            leftIcon={appImages.history}
             label="History"
             onPress={() =>
               navigate(routesConstants.savedPosts, { type: "History" })

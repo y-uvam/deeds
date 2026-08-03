@@ -67,7 +67,6 @@ const styles = StyleSheet.create({
     opacity: 0.5,
   },
   textWrapper: {
-    paddingTop: Platform.OS === "ios" ? scales(6) : scales(3),
     alignItems: "center",
     justifyContent: "center",
     width: "100%",

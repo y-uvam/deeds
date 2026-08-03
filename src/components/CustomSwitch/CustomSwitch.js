@@ -1,18 +1,18 @@
-import React, { useEffect } from 'react';
-import { Pressable, StyleSheet } from 'react-native';
+import React, { useEffect } from "react";
+import { Pressable, StyleSheet } from "react-native";
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withSpring,
   interpolateColor,
   useDerivedValue,
-} from 'react-native-reanimated';
-import { colors, scales } from '../../utils';
+} from "react-native-reanimated";
+import { colors, scales } from "../../utils";
 
 export const CustomSwitch = ({
   value = false,
   onValueChange,
-  activeColor = colors.green,
+  activeColor = colors.storyRing,
   inactiveColor = colors.gray,
 }) => {
   const switchTranslate = useSharedValue(value ? scales(20) : 0);
@@ -33,7 +33,7 @@ export const CustomSwitch = ({
       backgroundColor: interpolateColor(
         progress.value,
         [0, 1],
-        [inactiveColor || '#D1D1D6', activeColor || '#34C759']
+        [inactiveColor || colors.switchInactive, activeColor || colors.switchActive],
       ),
     };
   });
@@ -59,15 +59,15 @@ const styles = StyleSheet.create({
     height: scales(30),
     borderRadius: scales(20),
     padding: scales(5),
-    justifyContent: 'center',
+    justifyContent: "center",
   },
   thumb: {
     width: scales(20),
     height: scales(20),
     borderRadius: scales(10),
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.white,
     elevation: 3,
-    shadowColor: '#000',
+    shadowColor: colors.black,
     shadowOffset: {
       width: 0,
       height: 2,

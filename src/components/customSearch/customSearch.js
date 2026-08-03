@@ -21,6 +21,7 @@ export const CustomSearch = ({
   onChangeText,
   placeholder = "Search",
   containerStyle,
+  activeColor = colors.storyRing,
   onFocus: onFocusProp,
   onBlur: onBlurProp,
   onCancel: onCancelProp,
@@ -78,7 +79,7 @@ export const CustomSearch = ({
 
   const borderColor = glowAnim.interpolate({
     inputRange: [0, 1],
-    outputRange: [colors.profileDivider, colors.blue],
+    outputRange: [colors.profileDivider, activeColor],
   });
 
   return (
@@ -100,7 +101,11 @@ export const CustomSearch = ({
             source={appImages.browse}
             style={[
               styles.searchIcon,
-              { tintColor: isFocused ? colors.blue : colors.profileHandleText },
+              {
+                tintColor: isFocused
+                  ? activeColor
+                  : colors.profileHandleText,
+              },
             ]}
           />
           <TextInput
@@ -112,7 +117,7 @@ export const CustomSearch = ({
             placeholderTextColor="rgba(255, 255, 255, 0.4)"
             onFocus={handleFocus}
             onBlur={handleBlur}
-            selectionColor={colors.blue}
+            selectionColor={activeColor}
             autoCapitalize="none"
           />
           {value?.length > 0 && (

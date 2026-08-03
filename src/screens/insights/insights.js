@@ -13,8 +13,8 @@ import { colors, scales } from "../../utils";
 import { fontFamily, appImages } from "../../assets";
 
 const THEME_GRADIENT = [colors.orange, colors.storyRing, colors.lightRed];
-const SUBTITLE_COLOR = "#B0B5C0";
-const DIM_LABEL_COLOR = "#8E93A0";
+const SUBTITLE_COLOR = colors.subtitleGray;
+const DIM_LABEL_COLOR = colors.dimLabelGray;
 
 const PERIOD_DATA = {
   "24 Hours": {

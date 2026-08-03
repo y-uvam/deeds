@@ -159,20 +159,10 @@ export const Ratings = ({ route }) => {
 
       <Spacer height={scales(16)} />
 
-      <TouchableOpacity
-        style={styles.addRatingBarBtn}
-        activeOpacity={0.85}
+      <CustomButton
+        label={"Rate Movie & Write Review"}
         onPress={handleOpenAddSheet}
-      >
-        <Image
-          source={appImages.plus}
-          style={styles.plusIconImage}
-          tintColor={colors.white}
-          resizeMode="contain"
-        />
-        <Text style={styles.addRatingBtnText}>Rate Movie & Write Review</Text>
-      </TouchableOpacity>
-
+      />
       <Spacer height={scales(20)} />
 
       <View style={styles.filterRow}>
@@ -430,8 +420,8 @@ const styles = StyleSheet.create({
     borderColor: colors.transparentWhite12,
   },
   filterChipActive: {
-    backgroundColor: colors.blue + "22",
-    borderColor: colors.blue,
+    backgroundColor: colors.storyRing + "22",
+    borderColor: colors.storyRing,
   },
   filterChipText: {
     color: colors.transparentWhite40,
@@ -439,7 +429,7 @@ const styles = StyleSheet.create({
     fontSize: scales(12),
   },
   filterChipTextActive: {
-    color: colors.blue,
+    color: colors.storyRing,
     fontFamily: fontFamily.bold,
   },
   reviewCard: {

@@ -36,8 +36,8 @@ export const authStyles = StyleSheet.create({
   button: {
     borderRadius: scales(14),
     paddingVertical: scales(17),
-    backgroundColor: "#1E7BFF",
-    shadowColor: "#1E7BFF",
+    backgroundColor: colors.primaryBlue,
+    shadowColor: colors.primaryBlue,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.55,
     shadowRadius: 12,

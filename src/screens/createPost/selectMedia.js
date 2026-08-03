@@ -1,21 +1,11 @@
-import React, { useState, useMemo } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  Image,
-  FlatList,
-  Dimensions,
-} from "react-native";
-import { AppBackground, Header, Spacer, CustomButton } from "../../components";
-import { colors, scales } from "../../utils";
-import { fontFamily, appImages } from "../../assets";
+import React, { useState, useMemo, useCallback, memo } from "react";
+import { View, Text, TouchableOpacity, Image, FlatList } from "react-native";
+import { AppBackground, Header, CustomButton } from "../../components";
+import { colors, commonText } from "../../utils";
+import { appImages } from "../../assets";
 import { navigate } from "../../navigation/navigationServices";
 import { routesConstants } from "../../navigation/routeConstants";
-
-const { width } = Dimensions.get("window");
-const THUMB_SIZE = (width - scales(52)) / 3;
+import { styles } from "./selectMediaStyles";
 
 const MOCK_MEDIA = Array.from({ length: 18 }, (_, i) => ({
   id: String(i),
@@ -24,7 +14,7 @@ const MOCK_MEDIA = Array.from({ length: 18 }, (_, i) => ({
   duration: i % 3 === 0 ? `0:${15 + ((i * 7) % 45)}` : null,
 }));
 
-const MediaThumb = ({ item, isSelected, selectionIndex, onPress }) => (
+const MediaThumb = memo(({ item, isSelected, selectionIndex, onPress }) => (
   <TouchableOpacity
     style={[styles.thumb, isSelected && styles.thumbSelected]}
     onPress={onPress}
@@ -49,16 +39,13 @@ const MediaThumb = ({ item, isSelected, selectionIndex, onPress }) => (
       </View>
     )}
   </TouchableOpacity>
-);
+));
 
 export const SelectMedia = ({ route }) => {
   const { contentType } = route.params ?? {};
-
-  // Slates ("story") allows selecting multiple items; Bites ("bites") and Projects ("movie") allow selecting 1 video
   const isMulti = contentType?.id === "story" || contentType?.id === "slates";
   const [selected, setSelected] = useState([]);
 
-  // Filter media items to show only videos for Bites and Projects; show images & videos for Slates
   const mediaData = useMemo(() => {
     if (contentType?.id === "bites" || contentType?.id === "movie") {
       return MOCK_MEDIA.filter((item) => item.type === "video");
@@ -66,62 +53,76 @@ export const SelectMedia = ({ route }) => {
     return MOCK_MEDIA;
   }, [contentType?.id]);
 
-  const handleSelect = (item) => {
-    if (!isMulti) {
-      setSelected([item]);
-      return;
-    }
-    const exists = selected.find((s) => s.id === item.id);
-    if (exists) {
-      setSelected(selected.filter((s) => s.id !== item.id));
-    } else if (selected.length < 10) {
-      setSelected([...selected, item]);
-    }
-  };
+  const handleSelect = useCallback(
+    (item) => {
+      if (!isMulti) {
+        setSelected([item]);
+        return;
+      }
+      setSelected((prev) => {
+        const exists = prev.find((s) => s.id === item.id);
+        if (exists) {
+          return prev.filter((s) => s.id !== item.id);
+        }
+        if (prev.length < 10) {
+          return [...prev, item];
+        }
+        return prev;
+      });
+    },
+    [isMulti]
+  );
 
-  const handleNext = () => {
+  const handleNext = useCallback(() => {
     if (!selected.length) return;
     navigate(routesConstants.metadata, { contentType, media: selected });
-  };
+  }, [selected, contentType]);
+
+  const renderItem = useCallback(
+    ({ item }) => {
+      const idx = selected.findIndex((s) => s.id === item.id);
+      return (
+        <MediaThumb
+          item={item}
+          isSelected={idx !== -1}
+          selectionIndex={isMulti ? idx + 1 : 1}
+          onPress={() => handleSelect(item)}
+        />
+      );
+    },
+    [selected, isMulti, handleSelect]
+  );
+
+  const keyExtractor = useCallback((item) => item.id, []);
 
   return (
     <AppBackground>
-      <Header label="Select Media" showBackButton />
+      <Header label={commonText.selectMedia} showBackButton />
 
       <View style={styles.info}>
-        <Text style={styles.infoLabel}>{contentType?.label ?? "Content"}</Text>
+        <Text style={styles.infoLabel}>{contentType?.label ?? commonText.content}</Text>
         {isMulti ? (
-          <Text style={styles.infoCount}>{selected.length} / 10 selected</Text>
+          <Text style={styles.infoCount}>{selected.length} {commonText.outOf10Selected}</Text>
         ) : (
           <Text style={styles.infoCount}>
-            {selected.length ? "1 video selected" : "Select 1 video"}
+            {selected.length ? commonText.oneVideoSelected : commonText.selectOneVideo}
           </Text>
         )}
       </View>
 
       <FlatList
         data={mediaData}
-        keyExtractor={(item) => item.id}
+        keyExtractor={keyExtractor}
         numColumns={3}
         contentContainerStyle={styles.grid}
         columnWrapperStyle={styles.gridRow}
         showsVerticalScrollIndicator={false}
-        renderItem={({ item }) => {
-          const idx = selected.findIndex((s) => s.id === item.id);
-          return (
-            <MediaThumb
-              item={item}
-              isSelected={idx !== -1}
-              selectionIndex={isMulti ? idx + 1 : 1}
-              onPress={() => handleSelect(item)}
-            />
-          );
-        }}
+        renderItem={renderItem}
       />
 
       <View style={styles.footer}>
         <CustomButton
-          label="Next"
+          label={commonText.next}
           onPress={handleNext}
           disable={!selected.length}
         />
@@ -129,92 +130,3 @@ export const SelectMedia = ({ route }) => {
     </AppBackground>
   );
 };
-
-const styles = StyleSheet.create({
-  info: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingHorizontal: scales(20),
-    paddingVertical: scales(10),
-  },
-  infoLabel: {
-    color: colors.white,
-    fontFamily: fontFamily.bold,
-    fontSize: scales(15),
-  },
-  infoCount: {
-    color: colors.transparentWhite40,
-    fontFamily: fontFamily.regular,
-    fontSize: scales(13),
-  },
-  grid: {
-    paddingHorizontal: scales(16),
-    paddingBottom: scales(20),
-    gap: scales(4),
-  },
-  gridRow: {
-    gap: scales(4),
-  },
-  thumb: {
-    width: THUMB_SIZE,
-    height: THUMB_SIZE,
-    borderRadius: scales(8),
-    overflow: "hidden",
-    borderWidth: 2,
-    borderColor: "transparent",
-  },
-  thumbSelected: {
-    borderColor: colors.blue,
-  },
-  thumbImage: {
-    width: "100%",
-    height: "100%",
-  },
-  videoBadge: {
-    position: "absolute",
-    bottom: scales(4),
-    left: scales(4),
-    flexDirection: "row",
-    alignItems: "center",
-    gap: scales(3),
-    backgroundColor: colors.transparentBlack30,
-    borderRadius: scales(4),
-    paddingHorizontal: scales(4),
-    paddingVertical: scales(2),
-  },
-  playIcon: {
-    width: scales(10),
-    height: scales(10),
-    resizeMode: "contain",
-  },
-  durationText: {
-    color: colors.white,
-    fontFamily: fontFamily.bold,
-    fontSize: scales(9),
-  },
-  selectionOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: colors.transparentBlack30,
-    justifyContent: "flex-start",
-    alignItems: "flex-end",
-    padding: scales(6),
-  },
-  selectionBadge: {
-    width: scales(22),
-    height: scales(22),
-    borderRadius: scales(11),
-    backgroundColor: colors.blue,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  selectionNum: {
-    color: colors.white,
-    fontFamily: fontFamily.bold,
-    fontSize: scales(11),
-  },
-  footer: {
-    paddingHorizontal: scales(20),
-    paddingBottom: scales(30),
-  },
-});

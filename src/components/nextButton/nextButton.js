@@ -28,14 +28,7 @@ export const NextButton = ({
             resizeMode="contain"
           />
         )}
-        <Text
-          style={[
-            styles.label,
-            isSelected && { fontFamily: fontFamily.semiBold, color: colors.blue },
-          ]}
-        >
-          {label}
-        </Text>
+        <Text style={[styles.label]}>{label}</Text>
       </View>
       {isSwitch ? (
         <CustomSwitch

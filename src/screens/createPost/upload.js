@@ -1,21 +1,16 @@
-import React, { useEffect, useRef, useState } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  Animated,
-  Image,
-  TouchableOpacity,
-} from "react-native";
+import React, { useEffect, useRef, useState, memo } from "react";
+import { View, Text, Animated, TouchableOpacity } from "react-native";
+import LottieView from "lottie-react-native";
 import { AppBackground, Spacer } from "../../components";
-import { colors, scales } from "../../utils";
-import { fontFamily, appImages } from "../../assets";
-import { navigate, goBack } from "../../navigation/navigationServices";
+import { colors, scales, commonText } from "../../utils";
+import { animations } from "../../animations/animations";
+import { navigate, reset } from "../../navigation/navigationServices";
 import { routesConstants } from "../../navigation/routeConstants";
+import { styles } from "./uploadStyles";
 
 const STEPS = ["Preparing", "Uploading", "Processing", "Publishing"];
 
-const ProgressBar = ({ progress }) => {
+const ProgressBar = memo(({ progress }) => {
   const width = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
@@ -24,7 +19,7 @@ const ProgressBar = ({ progress }) => {
       duration: 400,
       useNativeDriver: false,
     }).start();
-  }, [progress]);
+  }, [progress, width]);
 
   const barWidth = width.interpolate({
     inputRange: [0, 100],
@@ -36,10 +31,10 @@ const ProgressBar = ({ progress }) => {
       <Animated.View style={[styles.trackFill, { width: barWidth }]} />
     </View>
   );
-};
+});
 
 export const Upload = ({ route }) => {
-  const { contentType, media = [], metadata = {} } = route.params ?? {};
+  const { contentType } = route.params ?? {};
   const [progress, setProgress] = useState(0);
   const [stepIndex, setStepIndex] = useState(0);
   const [done, setDone] = useState(false);
@@ -59,30 +54,42 @@ export const Upload = ({ route }) => {
       });
     }, 300);
 
-    return () => clearInterval(intervalRef.current);
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+    };
   }, []);
 
   return (
     <AppBackground>
-      <Spacer height={scales(60)} />
-
       <View style={styles.container}>
         <View style={styles.iconWrapper}>
           {done ? (
-            <Image source={appImages.like} style={styles.doneIcon} tintColor={colors.lightGreen} />
+            <LottieView
+              source={animations.success}
+              autoPlay
+              loop={false}
+              style={styles.lottieIcon}
+            />
           ) : (
-            <Image source={appImages.send} style={styles.uploadIcon} tintColor={colors.blue} />
+            <LottieView
+              source={animations.loader}
+              autoPlay
+              loop
+              style={styles.lottieIcon}
+            />
           )}
         </View>
 
         <Spacer height={scales(28)} />
 
         <Text style={styles.title}>
-          {done ? "Published!" : "Uploading your " + (contentType?.label ?? "post")}
+          {done
+            ? commonText.published
+            : "Uploading your " + (contentType?.label ?? commonText.post)}
         </Text>
         <Text style={styles.subtitle}>
           {done
-            ? "Your post is live. Go share it with the world 🌍"
+            ? commonText.yourPostIsLive
             : STEPS[stepIndex] + "..."}
         </Text>
 
@@ -94,38 +101,16 @@ export const Upload = ({ route }) => {
 
         <Spacer height={scales(12)} />
 
-        <View style={styles.stepsRow}>
-          {STEPS.map((step, i) => (
-            <View key={step} style={styles.stepItem}>
-              <View
-                style={[
-                  styles.stepDot,
-                  i <= stepIndex && styles.stepDotActive,
-                  done && styles.stepDotDone,
-                ]}
-              />
-              <Text
-                style={[
-                  styles.stepText,
-                  i <= stepIndex && styles.stepTextActive,
-                ]}
-              >
-                {step}
-              </Text>
-            </View>
-          ))}
-        </View>
-
         {done && (
           <>
             <Spacer height={scales(40)} />
             <View style={styles.doneActions}>
               <TouchableOpacity
                 style={styles.doneBtn}
-                onPress={() => navigate(routesConstants.Home)}
+                onPress={() => reset(routesConstants.BottomTabs)}
                 activeOpacity={0.8}
               >
-                <Text style={styles.doneBtnText}>Go to Feed</Text>
+                <Text style={styles.doneBtnText}>{commonText.goToFeed}</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={[styles.doneBtn, styles.doneBtnSecondary]}
@@ -133,7 +118,7 @@ export const Upload = ({ route }) => {
                 activeOpacity={0.8}
               >
                 <Text style={[styles.doneBtnText, styles.doneBtnSecondaryText]}>
-                  View Post
+                  {commonText.viewPost}
                 </Text>
               </TouchableOpacity>
             </View>
@@ -143,117 +128,3 @@ export const Upload = ({ route }) => {
     </AppBackground>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: "center",
-    paddingHorizontal: scales(32),
-  },
-  iconWrapper: {
-    width: scales(80),
-    height: scales(80),
-    borderRadius: scales(40),
-    backgroundColor: colors.transparentWhite5,
-    borderWidth: 1,
-    borderColor: colors.transparentWhite12,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  uploadIcon: {
-    width: scales(32),
-    height: scales(32),
-    resizeMode: "contain",
-  },
-  doneIcon: {
-    width: scales(36),
-    height: scales(36),
-    resizeMode: "contain",
-  },
-  title: {
-    color: colors.white,
-    fontFamily: fontFamily.bold,
-    fontSize: scales(20),
-    textAlign: "center",
-  },
-  subtitle: {
-    color: colors.transparentWhite40,
-    fontFamily: fontFamily.regular,
-    fontSize: scales(14),
-    textAlign: "center",
-    marginTop: scales(6),
-  },
-  trackOuter: {
-    width: "100%",
-    height: scales(6),
-    borderRadius: scales(3),
-    backgroundColor: colors.transparentWhite10,
-    overflow: "hidden",
-  },
-  trackFill: {
-    height: "100%",
-    borderRadius: scales(3),
-    backgroundColor: colors.blue,
-  },
-  percent: {
-    color: colors.blue,
-    fontFamily: fontFamily.bold,
-    fontSize: scales(13),
-    marginTop: scales(8),
-    alignSelf: "flex-end",
-  },
-  stepsRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    width: "100%",
-    marginTop: scales(20),
-  },
-  stepItem: {
-    alignItems: "center",
-    gap: scales(4),
-  },
-  stepDot: {
-    width: scales(8),
-    height: scales(8),
-    borderRadius: scales(4),
-    backgroundColor: colors.transparentWhite15,
-  },
-  stepDotActive: {
-    backgroundColor: colors.blue,
-  },
-  stepDotDone: {
-    backgroundColor: colors.lightGreen,
-  },
-  stepText: {
-    color: colors.transparentWhite40,
-    fontFamily: fontFamily.regular,
-    fontSize: scales(10),
-  },
-  stepTextActive: {
-    color: colors.white,
-    fontFamily: fontFamily.medium,
-  },
-  doneActions: {
-    width: "100%",
-    gap: scales(12),
-  },
-  doneBtn: {
-    backgroundColor: colors.blue,
-    paddingVertical: scales(14),
-    borderRadius: scales(12),
-    alignItems: "center",
-  },
-  doneBtnText: {
-    color: colors.white,
-    fontFamily: fontFamily.bold,
-    fontSize: scales(15),
-  },
-  doneBtnSecondary: {
-    backgroundColor: colors.transparentWhite5,
-    borderWidth: 1,
-    borderColor: colors.transparentWhite15,
-  },
-  doneBtnSecondaryText: {
-    color: colors.transparentWhite85,
-  },
-});

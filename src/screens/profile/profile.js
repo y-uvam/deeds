@@ -10,7 +10,12 @@ import {
   FlatList,
   ScrollView,
 } from "react-native";
-import { Spacer, CustomSkeleton, AppBackground } from "../../components";
+import {
+  Spacer,
+  CustomSkeleton,
+  AppBackground,
+  CustomButton,
+} from "../../components";
 import { colors, scales, commonText } from "../../utils";
 import { useSelector } from "react-redux";
 import { fontFamily, appImages } from "../../assets";
@@ -19,6 +24,7 @@ import { navigate, routesConstants } from "../../navigation";
 import AnimatedRN from "react-native-reanimated";
 import { useTabBarScrollHandler } from "../../context/TabBarContext";
 import Share from "react-native-share";
+import LinearGradient from "react-native-linear-gradient";
 
 const { width } = Dimensions.get("window");
 const AnimatedRNScrollView = AnimatedRN.createAnimatedComponent(ScrollView);
@@ -164,7 +170,9 @@ export const Profile = () => {
         <View style={styles.statDivider} />
         <TouchableOpacity
           style={styles.statBox}
-          onPress={() => navigate(routesConstants.followers, { type: "followers" })}
+          onPress={() =>
+            navigate(routesConstants.followers, { type: "followers" })
+          }
           activeOpacity={0.7}
         >
           <Text style={styles.statBoxValue}>125K</Text>
@@ -173,7 +181,9 @@ export const Profile = () => {
         <View style={styles.statDivider} />
         <TouchableOpacity
           style={styles.statBox}
-          onPress={() => navigate(routesConstants.followers, { type: "following" })}
+          onPress={() =>
+            navigate(routesConstants.followers, { type: "following" })
+          }
           activeOpacity={0.7}
         >
           <Text style={styles.statBoxValue}>450</Text>
@@ -182,6 +192,147 @@ export const Profile = () => {
       </View>
     </View>
   );
+
+  const renderProfileCompletion = () => {
+    const setupSteps = [
+      {
+        id: "step_name",
+        title: "Name & Handle",
+        icon: appImages.check || appImages.dummyuser,
+        buttonText: "Done",
+        completed: true,
+        action: null,
+      },
+      {
+        id: "step_bio",
+        title: "Add Bio",
+        icon: appImages.edit || appImages.post,
+        buttonText: "Add",
+        completed: !!(profileData?.bio && profileData?.bio.trim() !== ""),
+        action: () => navigate(routesConstants.editProfile),
+      },
+      {
+        id: "step_photo",
+        title: "Cover Banner",
+        icon: appImages.gallery || appImages.dummyuser,
+        buttonText: "Upload",
+        completed: false,
+        action: () => navigate(routesConstants.editProfile),
+      },
+      {
+        id: "step_post",
+        title: "First Bite",
+        icon: appImages.post || appImages.reels,
+        buttonText: "Create",
+        completed: false,
+        action: () => navigate(routesConstants.selectMedia || "SelectMedia"),
+      },
+      {
+        id: "step_social",
+        title: "Link Socials",
+        icon: appImages.share || appImages.link,
+        buttonText: "Link",
+        completed: false,
+        action: () => navigate(routesConstants.editProfile),
+      },
+    ];
+
+    const totalSteps = setupSteps.length;
+    const completedSteps = setupSteps.filter((s) => s.completed).length;
+    const progressPercent = Math.round((completedSteps / totalSteps) * 100);
+
+    return (
+      <View style={styles.minimalCompletionSection}>
+        {/* Compact Summary Header */}
+        <View style={styles.minimalHeaderRow}>
+          <View style={styles.minimalHeaderLeft}>
+            <View style={styles.progressDot} />
+            <Text style={styles.minimalHeaderText}>
+              {commonText.profileSetup}{" "}
+              <Text style={styles.minimalPercentText}>
+                • {progressPercent}%
+              </Text>
+            </Text>
+          </View>
+          <View style={styles.miniProgressTrack}>
+            <LinearGradient
+              colors={[colors.orange, colors.storyRing, colors.lightRed]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+              style={[
+                styles.miniProgressFill,
+                { width: `${progressPercent}%` },
+              ]}
+            />
+          </View>
+        </View>
+
+        {/* Minimal Capsule Carousel */}
+        <FlatList
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          data={setupSteps}
+          keyExtractor={(item) => item.id}
+          contentContainerStyle={styles.minimalCarouselContainer}
+          renderItem={({ item }) => (
+            <TouchableOpacity
+              activeOpacity={item.completed ? 1 : 0.8}
+              onPress={item.action ? item.action : null}
+              style={[
+                styles.minimalPillCard,
+                item.completed && styles.minimalPillCardDone,
+              ]}
+            >
+              <View
+                style={[
+                  styles.minimalIconRing,
+                  item.completed && styles.minimalIconRingDone,
+                ]}
+              >
+                <Image
+                  source={item.completed ? appImages.check : item.icon}
+                  style={[
+                    styles.minimalIcon,
+                    item.completed
+                      ? {
+                          tintColor: colors.lightGreen,
+                          width: scales(14),
+                          height: scales(14),
+                        }
+                      : { tintColor: colors.white },
+                  ]}
+                />
+              </View>
+
+              <Text
+                style={[
+                  styles.minimalPillTitle,
+                  item.completed && styles.minimalPillTitleDone,
+                ]}
+                numberOfLines={1}
+              >
+                {item.title}
+              </Text>
+
+              <View style={styles.minimalActionWrapper}>
+                {item.completed ? (
+                  <Text style={styles.minimalDoneText}>{commonText.done}</Text>
+                ) : (
+                  <CustomButton
+                    label={item.buttonText}
+                    onPress={item.action}
+                    buttonWidth={scales(66)}
+                    buttonStyle={styles.minimalBtn}
+                    labelStyle={styles.minimalBtnText}
+                  />
+                )}
+              </View>
+            </TouchableOpacity>
+          )}
+        />
+      </View>
+    );
+  };
 
   const renderHighlights = () => (
     <View style={styles.highlightsSection}>
@@ -337,6 +488,8 @@ export const Profile = () => {
         {renderCoverPhoto()}
         {renderProfileCard()}
         <Spacer height={scales(20)} />
+        {renderProfileCompletion()}
+        <Spacer height={scales(10)} />
         {renderHighlights()}
         <Spacer height={scales(20)} />
         {renderTabs()}
@@ -604,5 +757,112 @@ const styles = StyleSheet.create({
     color: "rgba(255, 255, 255, 0.5)",
     fontFamily: fontFamily.medium,
     fontSize: scales(14),
+  },
+  minimalCompletionSection: {
+    marginBottom: scales(4),
+  },
+  minimalHeaderRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingHorizontal: scales(16),
+    marginBottom: scales(10),
+  },
+  minimalHeaderLeft: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: scales(8),
+  },
+  progressDot: {
+    width: scales(8),
+    height: scales(8),
+    borderRadius: scales(4),
+    backgroundColor: colors.storyRing,
+  },
+  minimalHeaderText: {
+    fontFamily: fontFamily.medium,
+    fontSize: scales(13),
+    color: "rgba(255, 255, 255, 0.7)",
+  },
+  minimalPercentText: {
+    fontFamily: fontFamily.bold,
+    color: colors.white,
+  },
+  miniProgressTrack: {
+    width: scales(70),
+    height: scales(5),
+    backgroundColor: "rgba(255, 255, 255, 0.1)",
+    borderRadius: scales(2.5),
+    overflow: "hidden",
+  },
+  miniProgressFill: {
+    height: "100%",
+    borderRadius: scales(2.5),
+  },
+  minimalCarouselContainer: {
+    paddingHorizontal: scales(16),
+  },
+  minimalPillCard: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: colors.transparentWhite5,
+    height: scales(52),
+    borderRadius: scales(26),
+    paddingLeft: scales(8),
+    paddingRight: scales(10),
+    marginRight: scales(10),
+    borderWidth: 1,
+    borderColor: "rgba(255, 255, 255, 0.1)",
+  },
+  minimalPillCardDone: {
+    backgroundColor: "rgba(255, 255, 255, 0.02)",
+    borderColor: "rgba(255, 255, 255, 0.05)",
+  },
+  minimalIconRing: {
+    width: scales(36),
+    height: scales(36),
+    borderRadius: scales(18),
+    backgroundColor: "rgba(255, 255, 255, 0.1)",
+    justifyContent: "center",
+    alignItems: "center",
+    marginRight: scales(10),
+  },
+  minimalIconRingDone: {
+    backgroundColor: "rgba(0, 200, 150, 0.12)",
+  },
+  minimalIcon: {
+    width: scales(16),
+    height: scales(16),
+    resizeMode: "contain",
+  },
+  minimalPillTitle: {
+    fontFamily: fontFamily.semiBold,
+    fontSize: scales(14),
+    color: colors.white,
+    marginRight: scales(12),
+  },
+  minimalPillTitleDone: {
+    fontFamily: fontFamily.medium,
+    color: "rgba(255, 255, 255, 0.5)",
+  },
+  minimalActionWrapper: {
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  minimalDoneText: {
+    fontFamily: fontFamily.semiBold,
+    fontSize: scales(12),
+    color: colors.lightGreen,
+    paddingHorizontal: scales(6),
+  },
+  minimalBtn: {
+    height: scales(34),
+    borderRadius: scales(17),
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  minimalBtnText: {
+    fontSize: scales(12),
+    fontFamily: fontFamily.semiBold,
   },
 });

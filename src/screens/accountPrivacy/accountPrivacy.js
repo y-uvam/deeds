@@ -20,7 +20,7 @@ export const AccountPrivacy = () => {
     setIsPrivate(value);
     showCustomMessage(
       value ? "Account is now Private" : "Account is now Public",
-      "success"
+      "success",
     );
   };
 
@@ -28,7 +28,7 @@ export const AccountPrivacy = () => {
     <AppBackground>
       <Header label={commonText.accountPrivacy} showBackButton={true} />
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        <Section title="Account Privacy">
+        <Section title={"Your Privacy"}>
           <NextButton
             leftIcon={appImages.lock}
             label="Private Account"

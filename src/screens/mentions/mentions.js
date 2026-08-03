@@ -43,10 +43,7 @@ export const TagsAndMentions = () => {
 
   return (
     <AppBackground>
-      <Header
-        label={commonText.tagsAndMentions || "Tags & Mentions"}
-        showBackButton={true}
-      />
+      <Header label={commonText.tagsAndMentions} showBackButton={true} />
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
@@ -63,7 +60,9 @@ export const TagsAndMentions = () => {
                 leftIcon={item.icon}
                 label={item.label}
                 isSelected={isSel}
-                rightIcon={isSel ? appImages.check : null}
+                isSwitch={true}
+                switchValue={isSel}
+                onSwitchChange={() => handleSelectTag(item.label)}
                 onPress={() => handleSelectTag(item.label)}
               />
             );
@@ -82,7 +81,9 @@ export const TagsAndMentions = () => {
                 leftIcon={item.icon}
                 label={item.label}
                 isSelected={isSel}
-                rightIcon={isSel ? appImages.check : null}
+                isSwitch={true}
+                switchValue={isSel}
+                onSwitchChange={() => handleSelectMention(item.label)}
                 onPress={() => handleSelectMention(item.label)}
               />
             );

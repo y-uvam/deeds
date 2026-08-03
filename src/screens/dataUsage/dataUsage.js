@@ -1,6 +1,20 @@
 import React, { useState, useRef, useCallback } from "react";
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image } from "react-native";
-import { AppBackground, Header, NextButton, Spacer, CustomBottomSheet, CustomButton } from "../../components";
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+  Image,
+} from "react-native";
+import {
+  AppBackground,
+  Header,
+  NextButton,
+  Spacer,
+  CustomBottomSheet,
+  CustomButton,
+} from "../../components";
 import { colors, scales, commonText } from "../../utils";
 import { appImages, fontFamily } from "../../assets";
 import { showCustomMessage } from "../../helper/FlashMessage";
@@ -30,7 +44,10 @@ export const DataUsage = () => {
 
   const handleConfirmUpgrade = () => {
     upgradeSheetRef.current?.dismiss();
-    showCustomMessage(`Successfully selected the ${selectedTier} Cloud Plan!`, "success");
+    showCustomMessage(
+      `Successfully selected the ${selectedTier} Cloud Plan!`,
+      "success",
+    );
   };
 
   const renderStorageCard = () => (
@@ -54,7 +71,9 @@ export const DataUsage = () => {
         <Text style={styles.usedNum}>14.8 GB</Text>
         <Text style={styles.totalNum}> / 20 GB used</Text>
       </View>
-      <Text style={styles.remainingText}>5.2 GB of free storage remaining to upload movies</Text>
+      <Text style={styles.remainingText}>
+        5.2 GB of free storage remaining to upload movies
+      </Text>
 
       <View style={styles.progressBarBg}>
         <View style={styles.progressBarFill} />
@@ -70,7 +89,9 @@ export const DataUsage = () => {
           <Text style={styles.breakdownText}>Posters (2.4 GB)</Text>
         </View>
         <View style={styles.breakdownItem}>
-          <View style={[styles.dot, { backgroundColor: colors.transparentWhite60 }]} />
+          <View
+            style={[styles.dot, { backgroundColor: colors.transparentWhite60 }]}
+          />
           <Text style={styles.breakdownText}>Drafts (1.0 GB)</Text>
         </View>
       </View>
@@ -97,12 +118,26 @@ export const DataUsage = () => {
       >
         <View style={styles.tierHeader}>
           <View style={styles.tierTitleRow}>
-            <Text style={[styles.tierName, isSelected && styles.tierNameActive]}>{title}</Text>
-            <View style={[styles.sizeBadge, isSelected && styles.sizeBadgeActive]}>
-              <Text style={[styles.sizeText, isSelected && styles.sizeTextActive]}>{size}</Text>
+            <Text
+              style={[styles.tierName, isSelected && styles.tierNameActive]}
+            >
+              {title}
+            </Text>
+            <View
+              style={[styles.sizeBadge, isSelected && styles.sizeBadgeActive]}
+            >
+              <Text
+                style={[styles.sizeText, isSelected && styles.sizeTextActive]}
+              >
+                {size}
+              </Text>
             </View>
           </View>
-          <Text style={[styles.tierPrice, isSelected && styles.tierPriceActive]}>{price}</Text>
+          <Text
+            style={[styles.tierPrice, isSelected && styles.tierPriceActive]}
+          >
+            {price}
+          </Text>
         </View>
         <Text style={styles.tierDesc}>{desc}</Text>
       </TouchableOpacity>
@@ -111,41 +146,17 @@ export const DataUsage = () => {
 
   return (
     <AppBackground>
-      <Header label={commonText.dataUsage || "Storage & Data"} showBackButton={true} />
-      <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+      <Header
+        label={commonText.dataUsage || "Storage & Data"}
+        showBackButton={true}
+      />
+      <ScrollView
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+      >
         {renderStorageCard()}
 
         <Section title="Storage Cleanup & Management">
-          <NextButton
-            leftIcon={appImages.archive}
-            label="Review & Archive Older Movies"
-            onPress={() =>
-              showCustomMessage("Scanning your video catalog for archival space...", "info")
-            }
-          />
-          <NextButton
-            leftIcon={appImages.slate}
-            label="Auto-Clean Unused Drafts"
-            isSwitch={true}
-            switchValue={autoCleanDrafts}
-            onSwitchChange={(val) => {
-              setAutoCleanDrafts(val);
-              showCustomMessage(
-                val
-                  ? "Auto-cleaning of unused movie drafts enabled"
-                  : "Auto-cleaning disabled",
-                "info"
-              );
-            }}
-          />
-          <NextButton
-            leftIcon={appImages.bin}
-            label="Clear Temporary App Cache"
-            onPress={handleClearCache}
-          />
-        </Section>
-
-        <Section title="Upload & Sync Preferences">
           <NextButton
             leftIcon={appImages.imageupload}
             label="Smart Media Compression"
@@ -157,29 +168,40 @@ export const DataUsage = () => {
                 val
                   ? "Smart video compression enabled to save your 20 GB quota"
                   : "Uploading in raw uncompressed format",
-                "info"
+                "info",
               );
             }}
           />
+
           <NextButton
-            leftIcon={appImages.saved}
-            label="Background Cloud Sync"
+            leftIcon={appImages.slate}
+            label="Auto-Clean Unused Drafts"
             isSwitch={true}
-            switchValue={backgroundSync}
+            switchValue={autoCleanDrafts}
             onSwitchChange={(val) => {
-              setBackgroundSync(val);
+              setAutoCleanDrafts(val);
               showCustomMessage(
-                val ? "Background cloud syncing enabled" : "Background sync disabled",
-                "info"
+                val
+                  ? "Auto-cleaning of unused movie drafts enabled"
+                  : "Auto-cleaning disabled",
+                "info",
               );
             }}
           />
-          <NextButton
-            leftIcon={appImages.share}
-            label="Request Full Media Archive"
+          {/* <NextButton
+            leftIcon={appImages.archive}
+            label="Review & Archive Older Movies"
             onPress={() =>
-              showCustomMessage("Your ZIP archive backup request has been initiated.", "success")
+              showCustomMessage(
+                "Scanning your video catalog for archival space...",
+                "info",
+              )
             }
+          /> */}
+          <NextButton
+            leftIcon={appImages.bin}
+            label="Clear Temporary App Cache"
+            onPress={handleClearCache}
           />
         </Section>
       </ScrollView>
@@ -194,7 +216,9 @@ export const DataUsage = () => {
       >
         <View style={styles.sheetContainer}>
           <Text style={styles.sheetHeaderDesc}>
-            You have used 14.8 GB of your 20 GB free tier. Choose a high-speed studio tier to continue uploading unlimited cinema slates and movies.
+            You have used 14.8 GB of your 20 GB free tier. Choose a high-speed
+            studio tier to continue uploading unlimited cinema slates and
+            movies.
           </Text>
 
           <Spacer height={scales(16)} />
@@ -203,7 +227,7 @@ export const DataUsage = () => {
             "Creator Plus",
             "50 GB",
             "$2.99 / mo",
-            "Perfect for regular creators uploading weekly video content and trailers."
+            "Perfect for regular creators uploading weekly video content and trailers.",
           )}
           <Spacer height={scales(12)} />
           {renderTierOption(
@@ -211,11 +235,14 @@ export const DataUsage = () => {
             "Studio Pro",
             "200 GB",
             "$7.99 / mo",
-            "Designed for production studios with ultra-high definition movies & raw slates."
+            "Designed for production studios with ultra-high definition movies & raw slates.",
           )}
 
           <Spacer height={scales(24)} />
-          <CustomButton label={`Upgrade to ${selectedTier} Plan`} onPress={handleConfirmUpgrade} />
+          <CustomButton
+            label={`Upgrade to ${selectedTier} Plan`}
+            onPress={handleConfirmUpgrade}
+          />
         </View>
       </CustomBottomSheet>
     </AppBackground>
@@ -409,7 +436,7 @@ const styles = StyleSheet.create({
     fontSize: scales(11),
   },
   sizeTextActive: {
-    color: colors.black || "#000",
+    color: colors.black,
   },
   tierPrice: {
     color: colors.white,

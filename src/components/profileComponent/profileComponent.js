@@ -1,21 +1,31 @@
+import React from "react";
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { colors, scales } from "../../utils";
-import { fontFamily } from "../../assets";
+import { appImages, fontFamily } from "../../assets";
 import { navigate, routesConstants } from "../../navigation";
 
-export const ProfileComponent = ({ userId, name, profileImage, style }) => {
+export const ProfileComponent = ({ userId, name, profileImage, image, style }) => {
+  const avatarSource = profileImage || image || appImages.dummyuser;
+
   return (
     <View style={[styles.container, style]}>
       <TouchableOpacity
+        activeOpacity={0.8}
         onPress={() => {
           navigate(routesConstants.Profile);
         }}
       >
-        <Image source={profileImage} style={styles.profileImage} />
+        <Image source={avatarSource} style={styles.profileImage} />
       </TouchableOpacity>
-      <View>
-        <Text style={styles.profileName}>{name}</Text>
-        {!!userId && <Text style={styles.profileUsername}>@{userId}</Text>}
+      <View style={styles.textContainer}>
+        <Text style={styles.profileName} numberOfLines={1}>
+          {name}
+        </Text>
+        {!!userId && (
+          <Text style={styles.profileUsername} numberOfLines={1}>
+            @{userId}
+          </Text>
+        )}
       </View>
     </View>
   );
@@ -27,12 +37,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: scales(10),
     flexDirection: "row",
     alignItems: "center",
-    gap: 10,
+    gap: scales(10),
   },
   profileImage: {
     width: scales(40),
     height: scales(40),
-    borderRadius: scales(25),
+    borderRadius: scales(20),
+  },
+  textContainer: {
+    flex: 1,
+    justifyContent: "center",
   },
   profileName: {
     fontFamily: fontFamily.regular,
@@ -46,3 +60,4 @@ const styles = StyleSheet.create({
     marginTop: scales(2),
   },
 });
+

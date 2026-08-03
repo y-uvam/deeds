@@ -33,7 +33,7 @@ const InfoRow = memo(({ label, value, onPress, isLast }) => (
     </View>
     <View style={styles.rowValueContainer}>
       <Text style={styles.value} numberOfLines={1}>
-        {value || "Add " + label}
+        {value || commonText.addPrefix + label}
       </Text>
       <Image source={appImages.backarrow} style={styles.chevron} />
     </View>
@@ -166,18 +166,18 @@ export const Editprofile = () => {
       >
         <View style={styles.optionsContainer}>
           <ImageOption
-            label="Take Photo"
+            label={commonText.takePhoto}
             icon={appImages.camera}
             onPress={() => {}}
           />
           <ImageOption
-            label="Choose Gallery"
+            label={commonText.chooseGallery}
             icon={appImages.gallery}
             onPress={() => {}}
           />
           {profileData?.profileImage && (
             <ImageOption
-              label="Remove current"
+              label={commonText.removeCurrent}
               icon={appImages.bin}
               isDestructive={true}
               onPress={() => {}}
