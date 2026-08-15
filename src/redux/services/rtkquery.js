@@ -1,8 +1,9 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { DataManager } from "../../helper/dataManager";
+import { tokenManager } from "../../helper/createMMKV";
+import { API_BASE_URL, API_IMAGE_URL } from "@env";
 
-export const BASE_URL = "http://192.168.3.121:7007/api/v1/"; //Local
-export const IMAGE_URL = "http://192.168.3.121:7002/"; //Localß
+export const BASE_URL = API_BASE_URL; //Local
+export const IMAGE_URL = API_IMAGE_URL; //Local
 
 export const emptySplitApi = createApi({
   reducerPath: "api",
@@ -10,9 +11,8 @@ export const emptySplitApi = createApi({
     baseUrl: BASE_URL,
     credentials: "include",
     timeout: 60000,
-    prepareHeaders: async (headers, { getState }) => {
-      const access_token = await DataManager.getAccessToken();
-
+    prepareHeaders: async (headers) => {
+      const access_token = tokenManager.getToken();
       if (access_token) {
         headers.set("Authorization", `Bearer ${access_token}`);
       }

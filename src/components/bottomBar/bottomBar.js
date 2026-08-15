@@ -17,6 +17,7 @@ import Animated, {
   Easing,
 } from "react-native-reanimated";
 import { useTabBar } from "../../context/TabBarContext";
+import { useHaptics } from "../../hooks/haptics";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
@@ -124,6 +125,7 @@ const TabItem = ({ tab, index, isFocused, onPress, isCollapsed }) => {
 };
 
 export const BottomBar = () => {
+  const triggerHaptic = useHaptics();
   const insets = useSafeAreaInsets();
   const { isCollapsed } = useTabBar();
   const [selectedIndex, setSelectedIndex] = useState(1);
@@ -213,7 +215,10 @@ export const BottomBar = () => {
                 tab={tab}
                 index={index}
                 isFocused={selectedIndex === tab.id}
-                onPress={() => handleTabPress(tab)}
+                onPress={() => {
+                  triggerHaptic("selection");
+                  handleTabPress(tab);
+                }}
                 isCollapsed={isCollapsed}
               />
             ))}

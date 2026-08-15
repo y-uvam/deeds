@@ -1,5 +1,12 @@
 import React, { useState, useMemo, useCallback, memo } from "react";
-import { View, Text, TouchableOpacity, Image, FlatList } from "react-native";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  Image,
+  FlatList,
+  Vibration,
+} from "react-native";
 import { AppBackground, Header, CustomButton } from "../../components";
 import { colors, commonText } from "../../utils";
 import { appImages } from "../../assets";
@@ -70,7 +77,7 @@ export const SelectMedia = ({ route }) => {
         return prev;
       });
     },
-    [isMulti]
+    [isMulti],
   );
 
   const handleNext = useCallback(() => {
@@ -86,11 +93,12 @@ export const SelectMedia = ({ route }) => {
           item={item}
           isSelected={idx !== -1}
           selectionIndex={isMulti ? idx + 1 : 1}
-          onPress={() => handleSelect(item)}
+          onPress={() => Vibration.vibrate(1000)}
+          // onPress={() => handleSelect(item)}
         />
       );
     },
-    [selected, isMulti, handleSelect]
+    [selected, isMulti, handleSelect],
   );
 
   const keyExtractor = useCallback((item) => item.id, []);
@@ -100,12 +108,18 @@ export const SelectMedia = ({ route }) => {
       <Header label={commonText.selectMedia} showBackButton />
 
       <View style={styles.info}>
-        <Text style={styles.infoLabel}>{contentType?.label ?? commonText.content}</Text>
+        <Text style={styles.infoLabel}>
+          {contentType?.label ?? commonText.content}
+        </Text>
         {isMulti ? (
-          <Text style={styles.infoCount}>{selected.length} {commonText.outOf10Selected}</Text>
+          <Text style={styles.infoCount}>
+            {selected.length} {commonText.outOf10Selected}
+          </Text>
         ) : (
           <Text style={styles.infoCount}>
-            {selected.length ? commonText.oneVideoSelected : commonText.selectOneVideo}
+            {selected.length
+              ? commonText.oneVideoSelected
+              : commonText.selectOneVideo}
           </Text>
         )}
       </View>

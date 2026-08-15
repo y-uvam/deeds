@@ -21,6 +21,7 @@ import {
 import { colors, commonText, scales } from "../../utils";
 import { appImages, fontFamily } from "../../assets";
 import { setProfileData } from "../../redux/slices/persistedSlice";
+import { useImagePicker } from "../../hooks/imagePicker";
 
 const InfoRow = memo(({ label, value, onPress, isLast }) => (
   <TouchableOpacity
@@ -60,6 +61,7 @@ const ImageOption = memo(({ label, icon, onPress, isDestructive }) => (
 export const Editprofile = () => {
   const dispatch = useDispatch();
   const profileData = useSelector((state) => state.persist.profileData);
+  const { openGallery, openCamera } = useImagePicker();
   const editSheetRef = useRef(null);
   const imageSheetRef = useRef(null);
 
@@ -168,19 +170,60 @@ export const Editprofile = () => {
           <ImageOption
             label={commonText.takePhoto}
             icon={appImages.camera}
-            onPress={() => {}}
+            onPress={async () => {
+              const images = await openCamera({
+                cropping: true,
+                width: 400,
+                height: 400,
+                mediaType: "photo",
+              });
+              if (images && images.length > 0) {
+                dispatch(
+                  setProfileData({
+                    ...profileData,
+                    profileImage: { uri: images[0].path },
+                  }),
+                );
+                imageSheetRef.current?.dismiss();
+              }
+            }}
           />
           <ImageOption
             label={commonText.chooseGallery}
             icon={appImages.gallery}
-            onPress={() => {}}
+            onPress={async () => {
+              const images = await openGallery({
+                cropping: true,
+                width: 400,
+                height: 400,
+                mediaType: "photo",
+                multiple: false,
+              });
+              if (images && images.length > 0) {
+                dispatch(
+                  setProfileData({
+                    ...profileData,
+                    profileImage: { uri: images[0].path },
+                  }),
+                );
+                imageSheetRef.current?.dismiss();
+              }
+            }}
           />
           {profileData?.profileImage && (
             <ImageOption
               label={commonText.removeCurrent}
               icon={appImages.bin}
               isDestructive={true}
-              onPress={() => {}}
+              onPress={() => {
+                dispatch(
+                  setProfileData({
+                    ...profileData,
+                    profileImage: null,
+                  }),
+                );
+                imageSheetRef.current?.dismiss();
+              }}
             />
           )}
         </View>

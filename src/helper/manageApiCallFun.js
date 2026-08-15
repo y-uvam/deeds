@@ -1,5 +1,5 @@
+import { tokenManager } from "./createMMKV";
 import { reset, routesConstants } from "../navigation";
-import { DataManager } from "./dataManager";
 import { showCustomMessage } from "./FlashMessage";
 import { validationConstants } from "../utils";
 import networkUtils from "./networkUtils";
@@ -8,7 +8,7 @@ export const managerApiCall = async (
   initialCall,
   payload,
   onSuccess,
-  onFail = () => {}
+  onFail = () => {},
 ) => {
   const isConnected = await networkUtils();
   if (isConnected) {
@@ -18,7 +18,7 @@ export const managerApiCall = async (
 
       console.log("Api Response comming:", response);
       if (response?.error?.status === 401) {
-        await DataManager.clearDataManager();
+        tokenManager.clearToken();
         showCustomMessage(response?.error?.data?.message, "danger");
         reset(routesConstants.Login);
       }

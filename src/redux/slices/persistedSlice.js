@@ -1,7 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-  token: null,
   profileData: undefined,
   isLoggedIn: false,
   loginType: null,
@@ -11,9 +10,6 @@ const persistedSlice = createSlice({
   name: "persist",
   initialState,
   reducers: {
-    setToken: (state, action) => {
-      state.token = action.payload;
-    },
     setProfileData: (state, action) => {
       state.profileData = action.payload;
     },
@@ -28,7 +24,6 @@ const persistedSlice = createSlice({
 });
 
 export const {
-  setToken,
   resetPersistStore,
   setProfileData,
   setIsLoggedIn,

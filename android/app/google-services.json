@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "590105080127",
+    "project_id": "indiemate-c588e",
+    "storage_bucket": "indiemate-c588e.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:590105080127:android:3eb343e391cb481ec0e38a",
+        "android_client_info": {
+          "package_name": "com.indiemate"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "590105080127-nj41pkkmpn32p5ebbf9s44rrgkhbmv2f.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.indiemate",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "590105080127-th300dg59flfnnf0091nmop74mqt6l0p.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBeFTg4o-qGgqMLGyEHxgeZ4l0lnVPoZeo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "590105080127-th300dg59flfnnf0091nmop74mqt6l0p.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "590105080127-h1601c1ij3l936f65ojdb5naoar8o5ut.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.indiemate"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

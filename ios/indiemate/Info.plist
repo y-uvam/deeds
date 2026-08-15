@@ -28,10 +28,18 @@
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
 			<key>CFBundleURLName</key>
-			<string>sinema</string>
+			<string>com.indiemate</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>sinema</string>
+				<string>com.indiemate</string>
+			</array>
+		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.googleusercontent.apps.590105080127-h1601c1ij3l936f65ojdb5naoar8o5ut</string>
 			</array>
 		</dict>
 	</array>

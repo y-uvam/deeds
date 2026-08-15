@@ -1,4 +1,5 @@
-import React, { useCallback, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import { GOOGLE_WEB_CLIENT_ID } from "@env";
 import {
   Dimensions,
   Image,
@@ -11,62 +12,37 @@ import {
 import LinearGradient from "react-native-linear-gradient";
 import LottieView from "lottie-react-native";
 import { animations } from "../../animations/animations";
-import { appImages, fontFamily } from "../../assets";
+import { appImages } from "../../assets";
 import { colors, scales, topInset } from "../../utils";
 import { commonText } from "../../utils/commonText";
 import { useDispatch } from "react-redux";
-import {
-  setIsLoggedIn,
-  setLoginType,
-  setProfileData,
-} from "../../redux/slices/persistedSlice";
-import {
-  CustomBottomSheet,
-  CustomButton,
-  CustomInput,
-  Spacer,
-} from "../../components";
+import { CustomBottomSheet } from "../../components";
 import { goBack, reset } from "../../navigation/navigationServices";
-import { routesConstants } from "../../navigation/routeConstants";
+import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import { showCustomMessage } from "../../helper/FlashMessage";
+import { routesConstants } from "../../navigation";
 
 const { width: SCREEN_W } = Dimensions.get("window");
 
 export const Login = () => {
   const dispatch = useDispatch();
   const termsSheetRef = useRef(null);
-  const usernameSheetRef = useRef(null);
 
   const [legalTitle, setLegalTitle] = useState("Terms of Service");
-  const [selectedProvider, setSelectedProvider] = useState("Google");
-  const [username, setUsername] = useState("");
 
-  const handleSocialPress = useCallback((provider) => {
-    setSelectedProvider(provider);
-    setUsername("");
-    usernameSheetRef.current?.present();
-  }, []);
-
-  const handleCompleteAuth = useCallback(() => {
-    const trimmed = username.trim();
-    if (!trimmed) {
-      showCustomMessage("Please enter a username to continue.", "danger");
-      return;
+  const handleSocialPress = useCallback(async (provider) => {
+    if (provider === "Google") {
+      try {
+        await GoogleSignin.hasPlayServices();
+        const userInfo = await GoogleSignin.signIn();
+        console.log(userInfo);
+        reset(routesConstants.BottomTabs);
+      } catch (error) {
+        console.log(error);
+        showCustomMessage(error.message, "error");
+      }
     }
-
-    dispatch(setIsLoggedIn(true));
-    dispatch(setLoginType(selectedProvider));
-    dispatch(
-      setProfileData({
-        name: trimmed,
-        handle: `@${trimmed.toLowerCase().replace(/\s+/g, "")}`,
-      })
-    );
-
-    usernameSheetRef.current?.dismiss();
-    showCustomMessage(`Welcome @${trimmed}! Signed in with ${selectedProvider}`, "success");
-    reset(routesConstants.BottomTabs);
-  }, [username, selectedProvider, dispatch]);
+  }, []);
 
   const handleBack = useCallback(() => {
     goBack();
@@ -75,6 +51,13 @@ export const Login = () => {
   const openLegalSheet = useCallback((title) => {
     setLegalTitle(title);
     termsSheetRef.current?.present();
+  }, []);
+
+  useEffect(() => {
+    GoogleSignin.configure({
+      webClientId: GOOGLE_WEB_CLIENT_ID,
+      iosClientId: GOOGLE_WEB_CLIENT_ID,
+    });
   }, []);
 
   return (
@@ -181,32 +164,6 @@ export const Login = () => {
         </View>
       </View>
 
-      {/* Username Setup Bottom Sheet */}
-      <CustomBottomSheet
-        ref={usernameSheetRef}
-        snapPoints={["50%"]}
-        enablePanDownToClose={true}
-        useBlur={true}
-        enableBackdrop={true}
-        showCloseButton={true}
-        title={`Sign in with ${selectedProvider}`}
-        subtitle="Choose a unique username to create your Virtue profile."
-      >
-        <View style={styles.sheetForm}>
-          <CustomInput
-            label="Username"
-            placeholder="e.g. unique_creator"
-            value={username}
-            onChangeText={setUsername}
-            isBottomSheet={true}
-            autoFocus={true}
-          />
-          <Spacer height={scales(16)} />
-          <CustomButton label="Continue" onPress={handleCompleteAuth} />
-        </View>
-      </CustomBottomSheet>
-
-      {/* Terms & Conditions / Privacy Policy Bottom Sheet */}
       <CustomBottomSheet
         ref={termsSheetRef}
         snapPoints={["85%"]}
