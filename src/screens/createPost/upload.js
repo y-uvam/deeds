@@ -60,7 +60,7 @@ export const Upload = ({ route }) => {
   }, []);
 
   return (
-    <AppBackground>
+    <AppBackground showAuthAnimation={true}>
       <View style={styles.container}>
         <View style={styles.iconWrapper}>
           {done ? (
@@ -88,9 +88,7 @@ export const Upload = ({ route }) => {
             : "Uploading your " + (contentType?.label ?? commonText.post)}
         </Text>
         <Text style={styles.subtitle}>
-          {done
-            ? commonText.yourPostIsLive
-            : STEPS[stepIndex] + "..."}
+          {done ? commonText.yourPostIsLive : STEPS[stepIndex] + "..."}
         </Text>
 
         <Spacer height={scales(32)} />

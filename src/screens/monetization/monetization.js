@@ -9,7 +9,13 @@ import {
   Platform,
 } from "react-native";
 import LottieView from "lottie-react-native";
-import { AppBackground, Header, CustomInput, CustomButton, Spacer } from "../../components";
+import {
+  AppBackground,
+  Header,
+  CustomInput,
+  CustomButton,
+  Spacer,
+} from "../../components";
 import { commonText } from "../../utils";
 import { appImages } from "../../assets";
 import { animations } from "../../animations/animations";
@@ -23,7 +29,9 @@ const CheckboxItem = ({ checked, label, onToggle }) => (
     activeOpacity={0.8}
   >
     <View style={[styles.checkBox, checked && styles.checkBoxChecked]}>
-      {checked && <Image source={appImages.check} style={styles.checkBoxIcon} />}
+      {checked && (
+        <Image source={appImages.check} style={styles.checkBoxIcon} />
+      )}
     </View>
     <Text style={styles.agreementText}>{label}</Text>
   </TouchableOpacity>
@@ -53,7 +61,7 @@ export const Monetization = () => {
   }, [canSubmit]);
 
   return (
-    <AppBackground>
+    <AppBackground showAuthAnimation={true}>
       <Header label={commonText.monetization} showBackButton={true} />
       <KeyboardAvoidingView
         style={{ flex: 1 }}
@@ -89,12 +97,18 @@ export const Monetization = () => {
             <>
               {/* Hero Title and Subtitle */}
               <View style={styles.heroContainer}>
-                <Text style={styles.title}>{commonText.monetizeMasterpieces}</Text>
-                <Text style={styles.subtitle}>{commonText.monetizationSubtitle}</Text>
+                <Text style={styles.title}>
+                  {commonText.monetizeMasterpieces}
+                </Text>
+                <Text style={styles.subtitle}>
+                  {commonText.monetizationSubtitle}
+                </Text>
               </View>
 
               {/* Eligibility Checklist Card */}
-              <Text style={styles.sectionTitle}>{commonText.eligibilityChecklist}</Text>
+              <Text style={styles.sectionTitle}>
+                {commonText.eligibilityChecklist}
+              </Text>
               <View style={styles.card}>
                 <View style={styles.checkRow}>
                   <View style={styles.checkCircle}>
@@ -112,7 +126,9 @@ export const Monetization = () => {
               </View>
 
               {/* Application Form */}
-              <Text style={styles.sectionTitle}>{commonText.applicationForm}</Text>
+              <Text style={styles.sectionTitle}>
+                {commonText.applicationForm}
+              </Text>
               <View style={styles.card}>
                 <View style={styles.inputSpacing}>
                   <CustomInput
@@ -141,7 +157,9 @@ export const Monetization = () => {
               </View>
 
               {/* Legal Agreements */}
-              <Text style={styles.sectionTitle}>{commonText.legalAgreements}</Text>
+              <Text style={styles.sectionTitle}>
+                {commonText.legalAgreements}
+              </Text>
               <View style={styles.card}>
                 <CheckboxItem
                   checked={agreeCopyright}

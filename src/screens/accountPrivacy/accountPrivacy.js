@@ -25,7 +25,7 @@ export const AccountPrivacy = () => {
   };
 
   return (
-    <AppBackground>
+    <AppBackground showAuthAnimation={true}>
       <Header label={commonText.accountPrivacy} showBackButton={true} />
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <Section title={"Your Privacy"}>

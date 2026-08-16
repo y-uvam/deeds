@@ -348,7 +348,7 @@ export const Finance = () => {
   );
 
   return (
-    <AppBackground>
+    <AppBackground showAuthAnimation={true}>
       <Header label="Finance & Earnings" showBackButton={true} />
       {renderPeriodSelector()}
       <Animated.ScrollView

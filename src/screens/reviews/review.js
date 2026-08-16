@@ -187,7 +187,7 @@ export const Reviews = ({ route }) => {
   const itemSeparator = useCallback(() => <Spacer height={scales(16)} />, []);
 
   return (
-    <AppBackground>
+    <AppBackground showAuthAnimation={true}>
       <Header label={headerTitle} showBackButton={true} />
 
       <FlatList
@@ -245,4 +245,3 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
 });
-

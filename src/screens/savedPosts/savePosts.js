@@ -40,7 +40,7 @@ export const SavedPosts = ({ route }) => {
   );
 
   return (
-    <AppBackground>
+    <AppBackground showAuthAnimation={true}>
       <Header label={route?.params?.type} showBackButton={true} />
 
       <FlatList

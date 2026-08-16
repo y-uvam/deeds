@@ -222,18 +222,10 @@ export const Profile = () => {
       {
         id: "step_post",
         title: "First Bite",
-        icon: appImages.post || appImages.reels,
+        icon: appImages.reels || appImages.reels,
         buttonText: "Create",
         completed: false,
         action: () => navigate(routesConstants.selectMedia || "SelectMedia"),
-      },
-      {
-        id: "step_social",
-        title: "Link Socials",
-        icon: appImages.share || appImages.link,
-        buttonText: "Link",
-        completed: false,
-        action: () => navigate(routesConstants.editProfile),
       },
     ];
 
@@ -478,7 +470,7 @@ export const Profile = () => {
   }
 
   return (
-    <AppBackground isTopInset={false}>
+    <AppBackground isTopInset={false} showAuthAnimation={true}>
       <AnimatedRNScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.listContent}

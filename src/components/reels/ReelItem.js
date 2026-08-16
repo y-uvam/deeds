@@ -33,17 +33,11 @@ const ListItem = ({ image, label, onPress, isDestructive }) => (
   >
     <Image
       source={image}
-      style={[
-        styles.listIcon,
-        isDestructive && { tintColor: colors.lightRed },
-      ]}
+      style={[styles.listIcon, isDestructive && { tintColor: colors.lightRed }]}
       tintColor={isDestructive ? colors.lightRed : colors.white}
     />
     <Text
-      style={[
-        styles.listText,
-        isDestructive && { color: colors.lightRed },
-      ]}
+      style={[styles.listText, isDestructive && { color: colors.lightRed }]}
     >
       {label}
     </Text>
@@ -119,7 +113,7 @@ export const ReelItem = memo(({ item, isActive, isMuted, onToggleMute }) => {
       const nextState = !prev;
       showCustomMessage(
         nextState ? "Following creator" : "Unfollowed creator",
-        nextState ? "success" : "info"
+        nextState ? "success" : "info",
       );
       return nextState;
     });
@@ -131,233 +125,221 @@ export const ReelItem = memo(({ item, isActive, isMuted, onToggleMute }) => {
 
   return (
     <View style={styles.container}>
-        <Pressable onPress={handlePressVideo} style={StyleSheet.absoluteFill}>
-          {isActive && (
-            <Video
-              source={{ uri: item.videoUrl }}
-              style={StyleSheet.absoluteFill}
-              resizeMode="cover"
-              repeat
-              paused={!isActive}
-              muted={isMuted}
-              playInBackground={false}
-              playWhenInactive={false}
-              ignoreSilentSwitch="ignore"
-            />
-          )}
-        </Pressable>
-
-        {showLikeAnim && (
-          <LottieView
-            source={animations.like}
-            autoPlay
-            loop={false}
-            style={styles.likeAnimCorner}
+      <Pressable onPress={handlePressVideo} style={StyleSheet.absoluteFill}>
+        {isActive && (
+          <Video
+            source={{ uri: item.videoUrl }}
+            style={StyleSheet.absoluteFill}
+            resizeMode="cover"
+            repeat
+            paused={!isActive}
+            muted={isMuted}
+            playInBackground={false}
+            playWhenInactive={false}
+            ignoreSilentSwitch="ignore"
           />
         )}
-        {showSaveAnim && (
-          <LottieView
-            source={animations.save}
-            autoPlay
-            loop={false}
-            style={styles.saveAnimCorner}
-          />
-        )}
+      </Pressable>
 
-        <View
-          style={[styles.topProfileContainer, { top: insets.top + scales(0) }]}
+      {showLikeAnim && (
+        <LottieView
+          source={animations.like}
+          autoPlay
+          loop={false}
+          style={styles.likeAnimCorner}
+        />
+      )}
+      {showSaveAnim && (
+        <LottieView
+          source={animations.save}
+          autoPlay
+          loop={false}
+          style={styles.saveAnimCorner}
+        />
+      )}
+
+      <View
+        style={[styles.topProfileContainer, { top: insets.top + scales(0) }]}
+      >
+        <BlurView
+          style={[StyleSheet.absoluteFill, styles.blurView]}
+          blurType="dark"
+          blurAmount={5}
+          reducedTransparencyFallbackColor={colors.background}
+        />
+        <TouchableOpacity
+          style={styles.profileClickArea}
+          onPress={handleProfilePress}
+          activeOpacity={0.8}
         >
-          <BlurView
-            style={[StyleSheet.absoluteFill, styles.blurView]}
-            blurType="dark"
-            blurAmount={5}
-            reducedTransparencyFallbackColor={colors.background}
-          />
-          <TouchableOpacity
-            style={styles.profileClickArea}
-            onPress={handleProfilePress}
-            activeOpacity={0.8}
-          >
-            <Image source={appImages.dummyuser} style={styles.profileImage} />
-            <View style={styles.topProfileText}>
-              <Text style={styles.username}>
-                {item.username || "creator_username"}
-              </Text>
-              <Text style={styles.musicText}>Original Audio</Text>
-            </View>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[
-              styles.followButton,
-              isFollowing && styles.followingButton,
-            ]}
-            onPress={handleFollow}
-            activeOpacity={0.8}
-          >
-            <Text
-              style={[
-                styles.followText,
-                isFollowing && styles.followingText,
-              ]}
-            >
-              {isFollowing ? "Following" : "Follow"}
+          <Image source={appImages.dummyuser} style={styles.profileImage} />
+          <View style={styles.topProfileText}>
+            <Text style={styles.username}>
+              {item.username || "creator_username"}
             </Text>
-          </TouchableOpacity>
-        </View>
-
-        <View
-          style={[
-            styles.bottomContainer,
-            { bottom: insets.bottom + scales(80) },
-          ]}
+            <Text style={styles.musicText}>Original Audio</Text>
+          </View>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.followButton, isFollowing && styles.followingButton]}
+          onPress={handleFollow}
+          activeOpacity={0.8}
         >
-          <Text style={styles.caption} numberOfLines={2}>
-            {item.caption ||
-              "This is a gorgeous placeholder caption for the reel! #wellness #growth"}
+          <Text
+            style={[styles.followText, isFollowing && styles.followingText]}
+          >
+            {isFollowing ? "Following" : "Follow"}
           </Text>
+        </TouchableOpacity>
+      </View>
 
-          <View style={styles.floatingActionBarContainer}>
-            <View style={styles.floatingActionBar}>
-              <TouchableOpacity
-                onPress={handlePressLike}
-                style={styles.horizontalActionButton}
-              >
-                <Image
-                  source={appImages.heart}
-                  style={[
-                    styles.actionIcon,
-                    liked && { tintColor: colors.red },
-                  ]}
-                />
-                <Text style={styles.actionText}>{likesCount}</Text>
-              </TouchableOpacity>
+      <View
+        style={[styles.bottomContainer, { bottom: insets.bottom + scales(80) }]}
+      >
+        <Text style={styles.caption} numberOfLines={2}>
+          {item.caption ||
+            "This is a gorgeous placeholder caption for the reel! #wellness #growth"}
+        </Text>
 
-              <TouchableOpacity
-                onPress={() => commentSheetRef.current?.present()}
-                style={styles.horizontalActionButton}
-              >
-                <Image source={appImages.comment} style={styles.actionIcon} />
-                <Text style={styles.actionText}>{item.comments || 45}</Text>
-              </TouchableOpacity>
+        <View style={styles.floatingActionBarContainer}>
+          <View style={styles.floatingActionBar}>
+            <TouchableOpacity
+              onPress={handlePressLike}
+              style={styles.horizontalActionButton}
+            >
+              <Image
+                source={appImages.heart}
+                style={[styles.actionIcon, liked && { tintColor: colors.red }]}
+              />
+              <Text style={styles.actionText}>{likesCount}</Text>
+            </TouchableOpacity>
 
-              <TouchableOpacity
-                onPress={handleSharePost}
-                style={styles.horizontalActionButton}
-              >
-                <Image source={appImages.send} style={styles.actionIcon} />
-                <Text style={styles.actionText}>Share</Text>
-              </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => commentSheetRef.current?.present()}
+              style={styles.horizontalActionButton}
+            >
+              <Image source={appImages.comment} style={styles.actionIcon} />
+              <Text style={styles.actionText}>{item.comments || 45}</Text>
+            </TouchableOpacity>
 
-              <TouchableOpacity
-                onPress={() => moreSheetRef.current?.present()}
-                style={styles.horizontalActionButton}
-              >
-                <Image source={appImages.threeDots} style={styles.actionIcon} />
-              </TouchableOpacity>
-            </View>
+            <TouchableOpacity
+              onPress={handleSharePost}
+              style={styles.horizontalActionButton}
+            >
+              <Image source={appImages.send} style={styles.actionIcon} />
+              <Text style={styles.actionText}>Share</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={() => moreSheetRef.current?.present()}
+              style={styles.horizontalActionButton}
+            >
+              <Image source={appImages.threeDots} style={styles.actionIcon} />
+            </TouchableOpacity>
           </View>
         </View>
-
-        <RnAnimated.View
-          style={[styles.muteIndicatorContainer, { opacity: fadeAnim }]}
-          pointerEvents="none"
-        >
-          <View style={styles.muteIndicatorCircle}>
-            <Image
-              source={isMuted ? appImages.play : appImages.pause}
-              style={styles.play}
-            />
-          </View>
-        </RnAnimated.View>
-
-        <CommentSheet ref={commentSheetRef} />
-        <CustomBottomSheet
-          ref={moreSheetRef}
-          snapPoints={["54%"]}
-          useBlur={true}
-          enablePanDownToClose={true}
-          enableBackdrop={true}
-          showCloseButton={true}
-          title="Reel Options"
-          subtitle="Select an action for this reel"
-        >
-          <View style={styles.listItemContainer}>
-            <ListItem
-              image={appImages.info}
-              label="Full Details"
-              onPress={() => {
-                moreSheetRef.current?.dismiss();
-                navigation.navigate(routesConstants.movie);
-              }}
-            />
-            <ListItem
-              image={saved ? appImages.saved : appImages.save}
-              label={saved ? "Remove from Saved" : "Save Reel"}
-              onPress={() => {
-                handleSave();
-                moreSheetRef.current?.dismiss();
-                showCustomMessage(
-                  saved ? "Removed from saved reels" : "Saved to your library",
-                  "success"
-                );
-              }}
-            />
-            <ListItem
-              image={appImages.send}
-              label="Share Reel"
-              onPress={() => {
-                moreSheetRef.current?.dismiss();
-                handleSharePost();
-              }}
-            />
-            <ListItem
-              image={appImages.copy}
-              label="Copy Link"
-              onPress={() => {
-                moreSheetRef.current?.dismiss();
-                showCustomMessage("Reel link copied to clipboard", "info");
-              }}
-            />
-            <ListItem
-              image={appImages.follow}
-              label="Follow Creator"
-              onPress={() => {
-                moreSheetRef.current?.dismiss();
-                showCustomMessage("Followed creator", "success");
-              }}
-            />
-            <ListItem
-              image={appImages.bell}
-              label="Mute Creator"
-              onPress={() => {
-                moreSheetRef.current?.dismiss();
-                showCustomMessage("Muted creator reels", "info");
-              }}
-            />
-            <ListItem
-              image={appImages.blocked}
-              label="Block User"
-              isDestructive={true}
-              onPress={() => {
-                moreSheetRef.current?.dismiss();
-                showCustomMessage("Blocked user", "danger");
-              }}
-            />
-            <ListItem
-              image={appImages.report}
-              label="Report Reel"
-              isDestructive={true}
-              onPress={() => {
-                moreSheetRef.current?.dismiss();
-                showCustomMessage(
-                  "Report submitted. Thank you for keeping IndieMate safe.",
-                  "danger"
-                );
-              }}
-            />
-          </View>
-        </CustomBottomSheet>
       </View>
+
+      <RnAnimated.View
+        style={[styles.muteIndicatorContainer, { opacity: fadeAnim }]}
+        pointerEvents="none"
+      >
+        <View style={styles.muteIndicatorCircle}>
+          <Image
+            source={isMuted ? appImages.play : appImages.pause}
+            style={styles.play}
+          />
+        </View>
+      </RnAnimated.View>
+
+      <CommentSheet ref={commentSheetRef} />
+      <CustomBottomSheet
+        ref={moreSheetRef}
+        snapPoints={["65%"]}
+        useBlur={true}
+        enablePanDownToClose={true}
+        enableBackdrop={true}
+        showCloseButton={true}
+        title="Reel Options"
+        subtitle="Select an action for this reel"
+      >
+        <View style={styles.listItemContainer}>
+          <ListItem
+            image={appImages.info}
+            label="Full Details"
+            onPress={() => {
+              moreSheetRef.current?.dismiss();
+              navigation.navigate(routesConstants.movie);
+            }}
+          />
+          <ListItem
+            image={saved ? appImages.saved : appImages.save}
+            label={saved ? "Remove from Saved" : "Save Reel"}
+            onPress={() => {
+              handleSave();
+              moreSheetRef.current?.dismiss();
+              showCustomMessage(
+                saved ? "Removed from saved reels" : "Saved to your library",
+                "success",
+              );
+            }}
+          />
+          <ListItem
+            image={appImages.send}
+            label="Share Reel"
+            onPress={() => {
+              moreSheetRef.current?.dismiss();
+              handleSharePost();
+            }}
+          />
+          <ListItem
+            image={appImages.copy}
+            label="Copy Link"
+            onPress={() => {
+              moreSheetRef.current?.dismiss();
+              showCustomMessage("Reel link copied to clipboard", "info");
+            }}
+          />
+          <ListItem
+            image={appImages.follow}
+            label="Follow Creator"
+            onPress={() => {
+              moreSheetRef.current?.dismiss();
+              showCustomMessage("Followed creator", "success");
+            }}
+          />
+          <ListItem
+            image={appImages.bell}
+            label="Mute Creator"
+            onPress={() => {
+              moreSheetRef.current?.dismiss();
+              showCustomMessage("Muted creator reels", "info");
+            }}
+          />
+          <ListItem
+            image={appImages.blocked}
+            label="Block User"
+            isDestructive={true}
+            onPress={() => {
+              moreSheetRef.current?.dismiss();
+              showCustomMessage("Blocked user", "danger");
+            }}
+          />
+          <ListItem
+            image={appImages.report}
+            label="Report Reel"
+            isDestructive={true}
+            onPress={() => {
+              moreSheetRef.current?.dismiss();
+              showCustomMessage(
+                "Report submitted. Thank you for keeping IndieMate safe.",
+                "danger",
+              );
+            }}
+          />
+        </View>
+      </CustomBottomSheet>
+    </View>
   );
 });
 
@@ -509,9 +491,7 @@ const styles = StyleSheet.create({
     height: scales(28),
     tintColor: colors.white,
   },
-  listItemContainer: {
-    paddingVertical: scales(10),
-  },
+  listItemContainer: {},
   listItem: {
     flexDirection: "row",
     alignItems: "center",

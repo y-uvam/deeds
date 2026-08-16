@@ -61,7 +61,7 @@ export const Home = () => {
   const renderItem = useCallback(({ item }) => <PostItem item={item} />, []);
 
   return (
-    <AppBackground>
+    <AppBackground showAuthAnimation={true}>
       <Header
         isHome={true}
         leftButton={appImages.plus}

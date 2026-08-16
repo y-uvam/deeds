@@ -14,6 +14,7 @@ import { useDispatch } from "react-redux";
 import { resetPersistStore } from "../../redux/slices/persistedSlice";
 import { showCustomMessage } from "../../helper/FlashMessage";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { tokenManager } from "../../helper/createMMKV";
 
 export const Settings = () => {
   const dispatch = useDispatch();
@@ -25,6 +26,7 @@ export const Settings = () => {
     await AsyncStorage.clear();
     showCustomMessage("Logged out successfully.", "info");
     reset(routesConstants.intro);
+    tokenManager.clearToken();
   }, [dispatch]);
 
   const openLogoutConfirm = () => {
@@ -57,7 +59,7 @@ export const Settings = () => {
   );
 
   return (
-    <AppBackground>
+    <AppBackground showAuthAnimation={true}>
       <Header label={commonText.settings} showBackButton={true} />
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <Section title="Account & Activity">

@@ -15,7 +15,7 @@ export const YourActivity = () => {
   );
 
   return (
-    <AppBackground>
+    <AppBackground showAuthAnimation={true}>
       <Header label={commonText.yourActivity} showBackButton={true} />
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <Section title="Interactions">

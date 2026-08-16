@@ -145,7 +145,7 @@ export const DataUsage = () => {
   };
 
   return (
-    <AppBackground>
+    <AppBackground showAuthAnimation={true}>
       <Header
         label={commonText.dataUsage || "Storage & Data"}
         showBackButton={true}

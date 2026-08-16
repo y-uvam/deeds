@@ -1,7 +1,7 @@
-import { MMKV } from "react-native-mmkv";
+import { createMMKV } from "react-native-mmkv";
 import { MMKV_ENCRYPTION_KEY } from "@env";
 
-export const storage = new MMKV({
+export const storage = createMMKV({
   id: "secure-app-storage",
   encryptionKey: MMKV_ENCRYPTION_KEY,
 });
@@ -14,6 +14,6 @@ export const tokenManager = {
     return storage.getString("jwt_token");
   },
   clearToken: () => {
-    storage.delete("jwt_token");
+    storage.remove("jwt_token");
   },
 };

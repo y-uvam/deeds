@@ -83,7 +83,7 @@ export const ContentTypeSheet = forwardRef((props, ref) => {
   return (
     <CustomBottomSheet
       ref={ref}
-      snapPoints={["75%"]}
+      snapPoints={["58%"]}
       enablePanDownToClose={true}
       useBlur={true}
     >

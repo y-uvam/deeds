@@ -42,7 +42,7 @@ export const TagsAndMentions = () => {
   ];
 
   return (
-    <AppBackground>
+    <AppBackground showAuthAnimation={true}>
       <Header label={commonText.tagsAndMentions} showBackButton={true} />
       <ScrollView
         contentContainerStyle={styles.scrollContent}

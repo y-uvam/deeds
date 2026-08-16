@@ -14,8 +14,6 @@ import {TabBarProvider} from './src/context/TabBarContext';
 function AppContent() {
   const isDarkMode = useColorScheme() === 'dark';
   const dispatch = useDispatch();
-// and please keeep i mind use common components colors commontexts spacers 
-// and right code in optimise way and dont add nything etc. and also please dont addd any comments
   const userData = {
     _id: '1',
     name: 'Yuvam Dhanda',

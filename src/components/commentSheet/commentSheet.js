@@ -1,5 +1,13 @@
 import React, { forwardRef, useState, useCallback } from "react";
-import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Image,
+  TouchableOpacity,
+  Platform,
+} from "react-native";
+import { BottomSheetFlatList } from "@gorhom/bottom-sheet";
 import { CustomBottomSheet } from "../customBottomSheet/customBottomSheet";
 import { CustomSkeleton } from "../customSkeleton/customSkeleton";
 import { CustomInput } from "../customInput/customInput";
@@ -47,38 +55,60 @@ export const CommentSheet = forwardRef((props, ref) => {
   const [commentText, setCommentText] = useState("");
   const [comments, setComments] = useState([]);
 
-  const handleSheetChanges = useCallback((index) => {
-    if (index >= 0 && isLoading) {
-      setTimeout(() => {
-        setComments(DUMMY_COMMENTS);
-        setIsLoading(false);
-      }, 1000);
-    } else if (index === -1) {
-      setIsLoading(true);
-      setCommentText("");
-      setComments([]);
-    }
-  }, [isLoading]);
+  const handleSheetChanges = useCallback(
+    (index) => {
+      if (index >= 0 && isLoading) {
+        setTimeout(() => {
+          setComments(DUMMY_COMMENTS);
+          setIsLoading(false);
+        }, 1000);
+      } else if (index === -1) {
+        setIsLoading(true);
+        setCommentText("");
+        setComments([]);
+      }
+    },
+    [isLoading],
+  );
 
-  const renderComment = useCallback((item) => (
-    <View key={item.id} style={styles.commentRow}>
-      <View style={styles.commentContent}>
-        <View style={styles.profileWrapper}>
-          <ProfileComponent name={item.user} profileImage={item.avatar} />
+  const handleSendComment = useCallback(() => {
+    if (!commentText.trim()) return;
+    const newComment = {
+      id: Date.now().toString(),
+      user: "You",
+      avatar: appImages.dummyuser,
+      text: commentText.trim(),
+      time: "Just now",
+      likes: 0,
+    };
+    setComments((prev) => [newComment, ...prev]);
+    setCommentText("");
+  }, [commentText]);
+
+  const renderComment = useCallback(
+    ({ item }) => (
+      <View key={item.id} style={styles.commentRow}>
+        <View style={styles.commentContent}>
+          <View style={styles.profileWrapper}>
+            <ProfileComponent name={item.user} profileImage={item.avatar} />
+          </View>
+          <View style={styles.commentTextWrapper}>
+            <Text style={styles.commentText}>{item.text}</Text>
+            <TouchableOpacity activeOpacity={0.7}>
+              <Text style={styles.replyText}>Reply • {item.time}</Text>
+            </TouchableOpacity>
+          </View>
         </View>
-        <View style={styles.commentTextWrapper}>
-          <Text style={styles.commentText}>{item.text}</Text>
-          <TouchableOpacity activeOpacity={0.7}>
-            <Text style={styles.replyText}>Reply • {item.time}</Text>
-          </TouchableOpacity>
-        </View>
+        <TouchableOpacity style={styles.likeButton} activeOpacity={0.7}>
+          <Image source={appImages.heart} style={styles.heartIcon} />
+          <Text style={styles.likeCount}>{item.likes}</Text>
+        </TouchableOpacity>
       </View>
-      <TouchableOpacity style={styles.likeButton} activeOpacity={0.7}>
-        <Image source={appImages.heart} style={styles.heartIcon} />
-        <Text style={styles.likeCount}>{item.likes}</Text>
-      </TouchableOpacity>
-    </View>
-  ), []);
+    ),
+    [],
+  );
+
+  const keyExtractor = useCallback((item) => item.id.toString(), []);
 
   const renderSkeleton = () => (
     <View style={styles.skeletonContainer}>
@@ -92,19 +122,30 @@ export const CommentSheet = forwardRef((props, ref) => {
     <CustomBottomSheet
       ref={ref}
       title="Comments"
-      snapPoints={["60%", "90%"]}
+      snapPoints={["80%"]}
       useBlur={true}
       enablePanDownToClose={true}
       showCloseButton={true}
       onSheetChanges={handleSheetChanges}
+      isScrollView={false}
     >
       <View style={styles.content}>
         {isLoading ? (
           renderSkeleton()
         ) : (
-          <View style={styles.commentsList}>
-            {comments.map(renderComment)}
-          </View>
+          <BottomSheetFlatList
+            data={comments}
+            renderItem={renderComment}
+            keyExtractor={keyExtractor}
+            style={styles.flatList}
+            contentContainerStyle={styles.commentsList}
+            showsVerticalScrollIndicator={false}
+            keyboardShouldPersistTaps="handled"
+            initialNumToRender={10}
+            maxToRenderPerBatch={10}
+            windowSize={5}
+            removeClippedSubviews={Platform.OS === "android"}
+          />
         )}
 
         <View style={styles.inputContainer}>
@@ -117,9 +158,11 @@ export const CommentSheet = forwardRef((props, ref) => {
             height={46}
             containerStyle={styles.inputWrapper}
           />
-          <TouchableOpacity 
-            style={[styles.sendButton, !commentText.trim() && { opacity: 0.4 }]} 
+          <TouchableOpacity
+            style={[styles.sendButton, !commentText.trim() && { opacity: 0.4 }]}
             disabled={!commentText.trim()}
+            onPress={handleSendComment}
+            activeOpacity={0.7}
           >
             <Image source={appImages.send} style={styles.sendIcon} />
           </TouchableOpacity>
@@ -133,11 +176,15 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
   },
+  flatList: {
+    flex: 1,
+  },
   skeletonContainer: {
     marginTop: scales(10),
+    flex: 1,
   },
   commentsList: {
-    paddingBottom: scales(20),
+    paddingBottom: scales(10),
   },
   commentRow: {
     flexDirection: "row",
@@ -146,13 +193,13 @@ const styles = StyleSheet.create({
   },
   profileWrapper: {
     height: scales(40),
-    marginLeft: -scales(10), // Offset ProfileComponent's internal padding
+    marginLeft: -scales(10),
   },
   commentContent: {
     flex: 1,
   },
   commentTextWrapper: {
-    paddingLeft: scales(40), // Align with text next to avatar
+    paddingLeft: scales(40),
     paddingRight: scales(10),
   },
   commentText: {
@@ -189,8 +236,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderTopWidth: 1,
     borderTopColor: colors.transparentWhite15,
-    paddingTop: scales(16),
-    marginTop: scales(10),
+    paddingTop: scales(10),
+    paddingBottom: Platform.OS === "ios" ? scales(10) : scales(6),
   },
   inputAvatar: {
     width: scales(36),
@@ -201,6 +248,7 @@ const styles = StyleSheet.create({
   inputWrapper: {
     flex: 1,
     marginBottom: 0,
+    marginVertical: 0,
   },
   sendButton: {
     width: scales(46),

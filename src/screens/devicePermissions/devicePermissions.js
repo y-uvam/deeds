@@ -17,7 +17,7 @@ export const DevicePermissions = () => {
     setPermissions((prev) => ({ ...prev, [key]: value }));
     showCustomMessage(
       `${label} access ${value ? "enabled" : "disabled"}`,
-      value ? "success" : "info"
+      value ? "success" : "info",
     );
   };
 
@@ -29,7 +29,7 @@ export const DevicePermissions = () => {
   );
 
   return (
-    <AppBackground>
+    <AppBackground showAuthAnimation={true}>
       <Header label={commonText.DevicePermissions} showBackButton={true} />
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <Section title="Device Permissions">
@@ -59,7 +59,9 @@ export const DevicePermissions = () => {
             label="Push Notifications"
             isSwitch={true}
             switchValue={permissions.notifications}
-            onSwitchChange={(val) => handleToggle("notifications", "Notifications", val)}
+            onSwitchChange={(val) =>
+              handleToggle("notifications", "Notifications", val)
+            }
           />
         </Section>
       </ScrollView>

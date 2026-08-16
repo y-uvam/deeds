@@ -14,7 +14,7 @@ export const Post = ({ route }) => {
   } = route?.params || {};
 
   return (
-    <AppBackground>
+    <AppBackground showAuthAnimation={true}>
       <Header label={commonText.posts} showBackButton={true} />
       <ScrollView
         showsVerticalScrollIndicator={false}

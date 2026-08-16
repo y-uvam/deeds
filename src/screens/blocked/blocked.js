@@ -66,7 +66,7 @@ export const Blocked = () => {
   );
 
   return (
-    <AppBackground>
+    <AppBackground showAuthAnimation={true}>
       <Header label={commonText.blockedAccounts} showBackButton={true} />
       {blockedUsers.length > 0 ? (
         <FlatList

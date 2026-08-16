@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useRef } from "react";
+import React, { useState, useCallback, useRef, memo } from "react";
 import {
   View,
   Text,
@@ -10,17 +10,18 @@ import {
   Platform,
   TextInput,
 } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import {
   AppBackground,
   Header,
-  Spacer,
   ProfileComponent,
   CustomBottomSheet,
 } from "../../components";
-import { colors, scales } from "../../utils";
+import { colors, scales, commonText } from "../../utils";
 import { appImages, fontFamily } from "../../assets";
 import { goBack, navigate, routesConstants } from "../../navigation";
 import { showCustomMessage } from "../../helper/FlashMessage";
+import { useImagePicker } from "../../hooks/imagePicker";
 
 const INITIAL_MESSAGES = [
   {
@@ -55,7 +56,7 @@ const INITIAL_MESSAGES = [
   },
 ];
 
-const MessageBubble = ({ message }) => {
+const MessageBubble = memo(({ message }) => {
   const isMe = message.sender === "me";
   return (
     <View
@@ -67,14 +68,23 @@ const MessageBubble = ({ message }) => {
       <View
         style={[styles.bubble, isMe ? styles.myBubble : styles.otherBubble]}
       >
-        <Text
-          style={[
-            styles.messageText,
-            isMe ? styles.myMessageText : styles.otherMessageText,
-          ]}
-        >
-          {message.text}
-        </Text>
+        {message.image && (
+          <Image
+            source={{ uri: message.image }}
+            style={styles.messageImage}
+            resizeMode="cover"
+          />
+        )}
+        {message.text ? (
+          <Text
+            style={[
+              styles.messageText,
+              isMe ? styles.myMessageText : styles.otherMessageText,
+            ]}
+          >
+            {message.text}
+          </Text>
+        ) : null}
         <Text
           style={[
             styles.timeText,
@@ -86,22 +96,16 @@ const MessageBubble = ({ message }) => {
       </View>
     </View>
   );
-};
-
-const QUICK_REPLIES = [
-  "I'm here.",
-  "On my way!",
-  "Where are you?",
-  "Wait 5 mins.",
-  "OK.",
-  "Can't talk now.",
-];
+});
 
 export const ChatCard = () => {
+  const insets = useSafeAreaInsets();
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState(INITIAL_MESSAGES);
   const flatListRef = useRef(null);
   const userOptionsSheetRef = useRef(null);
+  const attachSheetRef = useRef(null);
+  const { openGallery, openCamera } = useImagePicker();
 
   const ListItem = ({ image, label, onPress, isDestructive }) => {
     return (
@@ -123,13 +127,33 @@ export const ChatCard = () => {
     );
   };
 
-  const sendMessage = (text) => {
+  const ImageOption = ({ label, icon, onPress, isDestructive }) => (
+    <TouchableOpacity
+      style={styles.optionRow}
+      onPress={onPress}
+      activeOpacity={0.7}
+    >
+      <Image
+        source={icon}
+        style={[styles.optionIcon, isDestructive && { tintColor: colors.red }]}
+        resizeMode="contain"
+      />
+      <Text
+        style={[styles.optionLabel, isDestructive && { color: colors.red }]}
+      >
+        {label}
+      </Text>
+    </TouchableOpacity>
+  );
+
+  const sendMessage = (text, imageUri = null) => {
     const finalMsg = typeof text === "string" ? text : message;
-    if (finalMsg.trim().length === 0) return;
+    if (!imageUri && finalMsg.trim().length === 0) return;
 
     const newMessage = {
       id: Date.now().toString(),
       text: finalMsg.trim(),
+      image: imageUri,
       sender: "me",
       time: new Date().toLocaleTimeString([], {
         hour: "2-digit",
@@ -138,11 +162,34 @@ export const ChatCard = () => {
     };
 
     setMessages((prev) => [...prev, newMessage]);
-    if (typeof text !== "string") setMessage("");
+    if (!imageUri && typeof text !== "string") setMessage("");
 
     setTimeout(() => {
       flatListRef.current?.scrollToEnd({ animated: true });
     }, 100);
+  };
+
+  const handlePickCamera = async () => {
+    attachSheetRef.current?.dismiss();
+    const images = await openCamera({
+      cropping: false,
+      mediaType: "photo",
+    });
+    if (images && images.length > 0) {
+      sendMessage("", images[0].path);
+    }
+  };
+
+  const handlePickGallery = async () => {
+    attachSheetRef.current?.dismiss();
+    const images = await openGallery({
+      cropping: false,
+      mediaType: "any",
+      multiple: false,
+    });
+    if (images && images.length > 0) {
+      sendMessage("", images[0].path);
+    }
   };
 
   const renderItem = useCallback(
@@ -151,7 +198,7 @@ export const ChatCard = () => {
   );
 
   return (
-    <AppBackground>
+    <AppBackground showAuthAnimation={true}>
       <Header
         showBackButton={true}
         onBackPress={() => goBack()}
@@ -166,24 +213,37 @@ export const ChatCard = () => {
         onRightPress={() => userOptionsSheetRef.current?.present()}
       />
 
-      <FlatList
-        ref={flatListRef}
-        data={messages}
-        keyExtractor={(item) => item.id}
-        renderItem={renderItem}
-        contentContainerStyle={styles.listContent}
-        showsVerticalScrollIndicator={false}
-        onContentSizeChange={() =>
-          flatListRef.current?.scrollToEnd({ animated: false })
-        }
-      />
-
       <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        keyboardVerticalOffset={Platform.OS === "ios" ? scales(10) : 0}
+        style={styles.flexContainer}
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
       >
-        <View style={styles.inputWrapper}>
-          <TouchableOpacity style={styles.attachBtn}>
+        <FlatList
+          ref={flatListRef}
+          data={messages}
+          keyExtractor={(item) => item.id}
+          renderItem={renderItem}
+          style={styles.flexList}
+          contentContainerStyle={styles.listContent}
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
+          onContentSizeChange={() =>
+            flatListRef.current?.scrollToEnd({ animated: false })
+          }
+        />
+
+        <View
+          style={[
+            styles.inputWrapper,
+            {
+              paddingBottom: insets.bottom > 0 ? insets.bottom : scales(12),
+            },
+          ]}
+        >
+          <TouchableOpacity
+            style={styles.attachBtn}
+            onPress={() => attachSheetRef.current?.present()}
+            activeOpacity={0.7}
+          >
             <Image source={appImages.plus} style={styles.icon} />
           </TouchableOpacity>
 
@@ -200,8 +260,9 @@ export const ChatCard = () => {
 
           <TouchableOpacity
             style={[styles.sendBtn, !message.trim() && styles.sendBtnDisabled]}
-            onPress={sendMessage}
+            onPress={() => sendMessage(message)}
             disabled={!message.trim()}
+            activeOpacity={0.8}
           >
             <Image
               source={appImages.send}
@@ -209,12 +270,37 @@ export const ChatCard = () => {
             />
           </TouchableOpacity>
         </View>
-        <Spacer height={Platform.OS === "ios" ? scales(30) : scales(10)} />
       </KeyboardAvoidingView>
 
+      {/* Attach Media Sheet */}
+      <CustomBottomSheet
+        ref={attachSheetRef}
+        snapPoints={["32%"]}
+        useBlur={true}
+        enablePanDownToClose={true}
+        enableBackdrop={true}
+        showCloseButton={true}
+        title="Share Content"
+        subtitle="Select media to send in chat"
+      >
+        <View style={styles.optionsContainer}>
+          <ImageOption
+            label={commonText.takePhoto}
+            icon={appImages.camera}
+            onPress={handlePickCamera}
+          />
+          <ImageOption
+            label={commonText.chooseGallery}
+            icon={appImages.gallery}
+            onPress={handlePickGallery}
+          />
+        </View>
+      </CustomBottomSheet>
+
+      {/* User Options Sheet */}
       <CustomBottomSheet
         ref={userOptionsSheetRef}
-        snapPoints={["54%"]}
+        snapPoints={["64%"]}
         useBlur={true}
         enablePanDownToClose={true}
         enableBackdrop={true}
@@ -292,9 +378,15 @@ export const ChatCard = () => {
 };
 
 const styles = StyleSheet.create({
+  flexContainer: {
+    flex: 1,
+  },
+  flexList: {
+    flex: 1,
+  },
   listContent: {
     paddingHorizontal: scales(20),
-    paddingBottom: scales(20),
+    paddingBottom: scales(16),
     paddingTop: scales(10),
   },
   bubbleWrapper: {
@@ -321,6 +413,12 @@ const styles = StyleSheet.create({
     backgroundColor: colors.darkblack,
     borderBottomLeftRadius: scales(4),
   },
+  messageImage: {
+    width: scales(200),
+    height: scales(150),
+    borderRadius: scales(14),
+    marginBottom: scales(6),
+  },
   messageText: {
     fontSize: scales(15),
     fontFamily: fontFamily.regular,
@@ -346,24 +444,25 @@ const styles = StyleSheet.create({
   },
   inputWrapper: {
     flexDirection: "row",
-    alignItems: "flex-end",
+    alignItems: "center",
     paddingHorizontal: scales(15),
-    paddingVertical: scales(10),
+    paddingTop: scales(10),
+    borderTopWidth: 1,
+    borderTopColor: colors.transparentWhite15,
   },
   attachBtn: {
-    width: scales(44),
-    height: scales(44),
+    width: scales(40),
+    height: scales(40),
     justifyContent: "center",
     alignItems: "center",
-    marginBottom: scales(2),
   },
   inputContainer: {
     flex: 1,
-    backgroundColor: "rgba(255,255,255,0.05)",
+    backgroundColor: "rgba(255,255,255,0.08)",
     borderRadius: scales(22),
     marginHorizontal: scales(8),
     paddingHorizontal: scales(15),
-    paddingVertical: Platform.OS === "ios" ? scales(10) : scales(2),
+    paddingVertical: Platform.OS === "ios" ? scales(10) : scales(4),
     minHeight: scales(44),
     maxHeight: scales(100),
     justifyContent: "center",
@@ -372,15 +471,15 @@ const styles = StyleSheet.create({
     color: colors.white,
     fontSize: scales(15),
     fontFamily: fontFamily.regular,
+    paddingVertical: 0,
   },
   sendBtn: {
-    width: scales(44),
-    height: scales(44),
+    width: scales(42),
+    height: scales(42),
     backgroundColor: colors.blue,
-    borderRadius: scales(22),
+    borderRadius: scales(21),
     justifyContent: "center",
     alignItems: "center",
-    marginBottom: scales(2),
   },
   sendBtnDisabled: {
     backgroundColor: "rgba(255,255,255,0.1)",
@@ -390,6 +489,25 @@ const styles = StyleSheet.create({
     height: scales(20),
     resizeMode: "contain",
     tintColor: "rgba(255,255,255,0.6)",
+  },
+  optionsContainer: {
+    paddingBottom: scales(10),
+  },
+  optionRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: scales(14),
+    gap: scales(12),
+  },
+  optionIcon: {
+    width: scales(22),
+    height: scales(22),
+    tintColor: colors.white,
+  },
+  optionLabel: {
+    color: colors.white,
+    fontSize: scales(16),
+    fontFamily: fontFamily.medium,
   },
   listItemContainer: {
     paddingVertical: scales(4),

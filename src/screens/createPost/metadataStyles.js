@@ -570,6 +570,7 @@ export const styles = StyleSheet.create({
     borderColor: colors.transparentWhite12,
     marginTop: scales(10),
     gap: scales(12),
+    marginHorizontal: scales(20),
   },
   checkBox: {
     width: scales(22),
@@ -579,7 +580,7 @@ export const styles = StyleSheet.create({
     borderColor: colors.storyRing,
     alignItems: "center",
     justifyContent: "center",
-    marginTop: scales(1),
+    marginTop: scales(7),
   },
   checkBoxChecked: {
     backgroundColor: colors.storyRing,

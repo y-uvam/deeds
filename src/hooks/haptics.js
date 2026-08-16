@@ -7,7 +7,7 @@ const options = {
 };
 
 export const useHaptics = () => {
-  const haptics = useCallback((type = "impactLight") => {
+  const haptics = useCallback((type = "impactLarge") => {
     console.log("Triggering haptic feedback:", type);
     ReactNativeHapticFeedback.trigger(type, options);
   }, []);

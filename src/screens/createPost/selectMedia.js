@@ -1,104 +1,164 @@
-import React, { useState, useMemo, useCallback, memo } from "react";
+import React, { useState, useCallback, memo } from "react";
 import {
   View,
   Text,
   TouchableOpacity,
   Image,
   FlatList,
-  Vibration,
 } from "react-native";
 import { AppBackground, Header, CustomButton } from "../../components";
-import { colors, commonText } from "../../utils";
+import { commonText } from "../../utils";
 import { appImages } from "../../assets";
 import { navigate } from "../../navigation/navigationServices";
 import { routesConstants } from "../../navigation/routeConstants";
+import { useImagePicker } from "../../hooks/imagePicker";
 import { styles } from "./selectMediaStyles";
 
-const MOCK_MEDIA = Array.from({ length: 18 }, (_, i) => ({
-  id: String(i),
-  uri: `https://picsum.photos/seed/${i + 10}/300/300`,
-  type: i % 3 === 0 ? "video" : "image",
-  duration: i % 3 === 0 ? `0:${15 + ((i * 7) % 45)}` : null,
-}));
-
-const MediaThumb = memo(({ item, isSelected, selectionIndex, onPress }) => (
-  <TouchableOpacity
-    style={[styles.thumb, isSelected && styles.thumbSelected]}
-    onPress={onPress}
-    activeOpacity={0.8}
-  >
+const MediaThumb = memo(({ item, index, isMulti, onRemove }) => (
+  <View style={styles.thumb}>
     <Image source={{ uri: item.uri }} style={styles.thumbImage} />
+
+    {isMulti && (
+      <View style={styles.indexBadge}>
+        <Text style={styles.indexText}>{index + 1}</Text>
+      </View>
+    )}
+
     {item.type === "video" && (
       <View style={styles.videoBadge}>
-        <Image
-          source={appImages.play}
-          style={styles.playIcon}
-          tintColor={colors.white}
-        />
-        <Text style={styles.durationText}>{item.duration}</Text>
+        <Image source={appImages.play} style={styles.playIcon} />
+        {item.duration ? (
+          <Text style={styles.durationText}>{item.duration}</Text>
+        ) : null}
       </View>
     )}
-    {isSelected && (
-      <View style={styles.selectionOverlay}>
-        <View style={styles.selectionBadge}>
-          <Text style={styles.selectionNum}>{selectionIndex}</Text>
-        </View>
-      </View>
-    )}
-  </TouchableOpacity>
+
+    <TouchableOpacity
+      style={styles.removeBtn}
+      onPress={() => onRemove(item.id)}
+      activeOpacity={0.7}
+      hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+    >
+      <Image source={appImages.close} style={styles.removeIcon} />
+    </TouchableOpacity>
+  </View>
 ));
 
 export const SelectMedia = ({ route }) => {
   const { contentType } = route.params ?? {};
+  const isVideoOnly =
+    contentType?.id === "bites" || contentType?.id === "movie";
   const isMulti = contentType?.id === "story" || contentType?.id === "slates";
+
   const [selected, setSelected] = useState([]);
+  const { openGallery, openCamera } = useImagePicker();
 
-  const mediaData = useMemo(() => {
-    if (contentType?.id === "bites" || contentType?.id === "movie") {
-      return MOCK_MEDIA.filter((item) => item.type === "video");
-    }
-    return MOCK_MEDIA;
-  }, [contentType?.id]);
+  const handlePickFromGallery = useCallback(async () => {
+    const maxAllowed = isMulti ? 10 - selected.length : 1;
+    if (maxAllowed <= 0) return;
 
-  const handleSelect = useCallback(
-    (item) => {
-      if (!isMulti) {
-        setSelected([item]);
-        return;
+    const result = await openGallery({
+      mediaType: isVideoOnly ? "video" : "any",
+      multiple: isMulti,
+      cropping: false,
+    });
+
+    if (result && result.length > 0) {
+      const formatted = result.map((f, idx) => ({
+        id: `${Date.now()}_${idx}`,
+        uri: f.path,
+        type: f.isImage ? "image" : "video",
+        name: f.name,
+        size: f.size,
+        mime: f.mime,
+        width: f.width,
+        height: f.height,
+      }));
+
+      if (isMulti) {
+        setSelected((prev) => [...prev, ...formatted].slice(0, 10));
+      } else {
+        setSelected(formatted.slice(0, 1));
       }
-      setSelected((prev) => {
-        const exists = prev.find((s) => s.id === item.id);
-        if (exists) {
-          return prev.filter((s) => s.id !== item.id);
-        }
-        if (prev.length < 10) {
-          return [...prev, item];
-        }
-        return prev;
-      });
-    },
-    [isMulti],
-  );
+    }
+  }, [isMulti, isVideoOnly, selected.length, openGallery]);
+
+  const handlePickFromCamera = useCallback(async () => {
+    const result = await openCamera({
+      mediaType: isVideoOnly ? "video" : "photo",
+      cropping: false,
+    });
+
+    if (result && result.length > 0) {
+      const formatted = result.map((f, idx) => ({
+        id: `${Date.now()}_${idx}`,
+        uri: f.path,
+        type: f.isImage ? "image" : "video",
+        name: f.name,
+        size: f.size,
+        mime: f.mime,
+        width: f.width,
+        height: f.height,
+      }));
+
+      if (isMulti) {
+        setSelected((prev) => [...prev, ...formatted].slice(0, 10));
+      } else {
+        setSelected(formatted.slice(0, 1));
+      }
+    }
+  }, [isMulti, isVideoOnly, openCamera]);
+
+  const handleRemoveItem = useCallback((id) => {
+    setSelected((prev) => prev.filter((item) => item.id !== id));
+  }, []);
 
   const handleNext = useCallback(() => {
     if (!selected.length) return;
     navigate(routesConstants.metadata, { contentType, media: selected });
   }, [selected, contentType]);
 
+  // Combine selected list with an "+ Add More" tile if multi-select and < 10
+  const gridData = selected.map((item, idx) => ({
+    ...item,
+    index: idx,
+    isAddButton: false,
+  }));
+
+  if (isMulti && selected.length > 0 && selected.length < 10) {
+    gridData.push({
+      id: "add_more_tile",
+      isAddButton: true,
+    });
+  }
+
   const renderItem = useCallback(
-    ({ item }) => {
-      const idx = selected.findIndex((s) => s.id === item.id);
+    ({ item, index }) => {
+      if (item.isAddButton) {
+        return (
+          <TouchableOpacity
+            style={styles.addMoreTile}
+            onPress={handlePickFromGallery}
+            activeOpacity={0.7}
+          >
+            <View style={styles.addMoreIconCircle}>
+              <Image source={appImages.plus} style={styles.addMoreIcon} />
+            </View>
+            <Text style={styles.addMoreText}>Add More</Text>
+          </TouchableOpacity>
+        );
+      }
+
       return (
         <MediaThumb
           item={item}
-          isSelected={idx !== -1}
-          selectionIndex={isMulti ? idx + 1 : 1}
-          onPress={() => Vibration.vibrate(1000)}
-          // onPress={() => handleSelect(item)}
+          index={item.index ?? index}
+          isMulti={isMulti}
+          onRemove={handleRemoveItem}
         />
       );
     },
-    [selected, isMulti, handleSelect],
+    [isMulti, handleRemoveItem, handlePickFromGallery],
   );
 
   const keyExtractor = useCallback((item) => item.id, []);
@@ -117,22 +177,76 @@ export const SelectMedia = ({ route }) => {
           </Text>
         ) : (
           <Text style={styles.infoCount}>
-            {selected.length
-              ? commonText.oneVideoSelected
-              : commonText.selectOneVideo}
+            {selected.length ? "1 media selected" : "No media selected"}
           </Text>
         )}
       </View>
 
-      <FlatList
-        data={mediaData}
-        keyExtractor={keyExtractor}
-        numColumns={3}
-        contentContainerStyle={styles.grid}
-        columnWrapperStyle={styles.gridRow}
-        showsVerticalScrollIndicator={false}
-        renderItem={renderItem}
-      />
+      {/* Primary Upload Button / Dropzone */}
+      <View style={styles.uploadSection}>
+        <TouchableOpacity
+          style={styles.uploadCard}
+          onPress={handlePickFromGallery}
+          activeOpacity={0.8}
+        >
+          <View style={styles.uploadIconCircle}>
+            <Image
+              source={appImages.imageupload}
+              style={styles.uploadIcon}
+            />
+          </View>
+          <Text style={styles.uploadTitle}>
+            {selected.length > 0 ? "Change / Upload More" : "Upload from Gallery"}
+          </Text>
+          <Text style={styles.uploadSubtitle}>
+            {isVideoOnly
+              ? "Select video files from your device library"
+              : isMulti
+              ? "Select up to 10 photos or videos from your device"
+              : "Select a photo or video from your device library"}
+          </Text>
+
+          <View style={styles.quickActionRow}>
+            <TouchableOpacity
+              style={styles.quickBtn}
+              onPress={handlePickFromGallery}
+              activeOpacity={0.7}
+            >
+              <Image source={appImages.gallery} style={styles.quickBtnIcon} />
+              <Text style={styles.quickBtnText}>Gallery</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.quickBtn}
+              onPress={handlePickFromCamera}
+              activeOpacity={0.7}
+            >
+              <Image source={appImages.camera} style={styles.quickBtnIcon} />
+              <Text style={styles.quickBtnText}>Camera</Text>
+            </TouchableOpacity>
+          </View>
+        </TouchableOpacity>
+      </View>
+
+      {/* Selected media list or empty placeholder */}
+      {selected.length > 0 ? (
+        <FlatList
+          data={gridData}
+          keyExtractor={keyExtractor}
+          numColumns={3}
+          contentContainerStyle={styles.grid}
+          columnWrapperStyle={styles.gridRow}
+          showsVerticalScrollIndicator={false}
+          renderItem={renderItem}
+        />
+      ) : (
+        <View style={styles.emptyStateContainer}>
+          <Text style={styles.emptyStateText}>
+            No media uploaded yet. Tap the button above to choose from your
+            gallery.
+          </Text>
+        </View>
+      )}
 
       <View style={styles.footer}>
         <CustomButton

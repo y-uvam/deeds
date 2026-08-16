@@ -425,7 +425,7 @@ export const PostItem = ({
       <CommentSheet ref={commentSheetRef} />
       <CustomBottomSheet
         ref={moreSheetRef}
-        snapPoints={["54%"]}
+        snapPoints={["70%"]}
         useBlur={true}
         enablePanDownToClose={true}
         enableBackdrop={true}

@@ -57,7 +57,10 @@ export const CustomInput = memo(
 
     const borderColor = glowAnim.interpolate({
       inputRange: [0, 1],
-      outputRange: [errors ? colors.red : colors.transparentWhite15, colors.blue],
+      outputRange: [
+        errors ? colors.red : colors.transparentWhite15,
+        colors.blue,
+      ],
     });
     const backgroundColor = glowAnim.interpolate({
       inputRange: [0, 1],
@@ -90,7 +93,11 @@ export const CustomInput = memo(
                 source={icon}
                 style={[
                   styles.leftIcon,
-                  { tintColor: isFocused ? colors.blue : colors.profileHandleText },
+                  {
+                    tintColor: isFocused
+                      ? colors.background
+                      : colors.profileHandleText,
+                  },
                 ]}
               />
             )}
@@ -131,7 +138,11 @@ export const CustomInput = memo(
                   source={secureText ? appImages.eyeclose : appImages.eyeopen}
                   style={[
                     styles.eyeImage,
-                    { tintColor: isFocused ? colors.blue : colors.profileHandleText },
+                    {
+                      tintColor: isFocused
+                        ? colors.blue
+                        : colors.profileHandleText,
+                    },
                   ]}
                 />
               </TouchableOpacity>

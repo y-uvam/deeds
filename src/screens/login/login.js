@@ -3,6 +3,7 @@ import { GOOGLE_WEB_CLIENT_ID } from "@env";
 import {
   Dimensions,
   Image,
+  Platform,
   StatusBar,
   StyleSheet,
   Text,
@@ -12,7 +13,7 @@ import {
 import LinearGradient from "react-native-linear-gradient";
 import LottieView from "lottie-react-native";
 import { animations } from "../../animations/animations";
-import { appImages } from "../../assets";
+import { appImages, fontFamily } from "../../assets";
 import { colors, scales, topInset } from "../../utils";
 import { commonText } from "../../utils/commonText";
 import { useDispatch } from "react-redux";
@@ -21,6 +22,8 @@ import { goBack, reset } from "../../navigation/navigationServices";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import { showCustomMessage } from "../../helper/FlashMessage";
 import { routesConstants } from "../../navigation";
+import { useHaptics } from "../../hooks/haptics";
+import { tokenManager } from "../../helper/createMMKV";
 
 const { width: SCREEN_W } = Dimensions.get("window");
 
@@ -36,10 +39,12 @@ export const Login = () => {
         await GoogleSignin.hasPlayServices();
         const userInfo = await GoogleSignin.signIn();
         console.log(userInfo);
-        reset(routesConstants.BottomTabs);
+        tokenManager.setToken(userInfo?.data?.idToken);
       } catch (error) {
         console.log(error);
         showCustomMessage(error.message, "error");
+      } finally {
+        reset(routesConstants.BottomTabs);
       }
     }
   }, []);
@@ -114,35 +119,37 @@ export const Login = () => {
             <Text style={styles.authBtnText}>Continue with Google</Text>
           </TouchableOpacity>
 
-          {/* OR Divider */}
-          <View style={styles.dividerRow}>
-            <View style={styles.dividerLine} />
-            <Text style={styles.dividerText}>OR</Text>
-            <View style={styles.dividerLine} />
-          </View>
+          {Platform.OS === "ios" && (
+            <>
+              <View style={styles.dividerRow}>
+                <View style={styles.dividerLine} />
+                <Text style={styles.dividerText}>OR</Text>
+                <View style={styles.dividerLine} />
+              </View>
 
-          <TouchableOpacity
-            style={styles.authBtn}
-            activeOpacity={0.82}
-            onPress={() => handleSocialPress("Apple")}
-          >
-            <LottieView
-              source={animations.Apple}
-              autoPlay
-              loop
-              style={styles.btnLottieApple}
-              colorFilters={[
-                {
-                  keypath: "**",
-                  color: colors.white,
-                },
-              ]}
-            />
-            <Text style={styles.authBtnText}>Continue with Apple</Text>
-          </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.authBtn}
+                activeOpacity={0.82}
+                onPress={() => handleSocialPress("Apple")}
+              >
+                <LottieView
+                  source={animations.Apple}
+                  autoPlay
+                  loop
+                  style={styles.btnLottieApple}
+                  colorFilters={[
+                    {
+                      keypath: "**",
+                      color: colors.white,
+                    },
+                  ]}
+                />
+                <Text style={styles.authBtnText}>Continue with Apple</Text>
+              </TouchableOpacity>
+            </>
+          )}
         </View>
 
-        {/* Trust Footer */}
         <View style={styles.footerContainer}>
           <Text style={styles.footerText}>
             By continuing, you agree to our{" "}

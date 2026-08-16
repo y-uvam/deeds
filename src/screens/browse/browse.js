@@ -147,7 +147,7 @@ export const Browse = () => {
   };
 
   return (
-    <AppBackground>
+    <AppBackground showAuthAnimation={true}>
       <StatusBar
         barStyle="light-content"
         translucent

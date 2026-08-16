@@ -14,6 +14,7 @@ import { useSelector } from "react-redux";
 import { routesConstants } from "../../navigation/routeConstants";
 import { AppBackground } from "../../components";
 import { colors } from "../../utils";
+import { tokenManager } from "../../helper/createMMKV";
 
 const { width } = Dimensions.get("window");
 const AnimatedSvgPath = Animated.createAnimatedComponent(Path);
@@ -84,8 +85,6 @@ const PATHS_DATA = [
   },
 ];
 
-// All letters share the same 0->1 progress value, so every letter draws
-// on at once (in sync), rather than one after another.
 const AnimatedPathItem = ({ d, length, progress }) => {
   const animatedProps = useAnimatedProps(() => {
     "worklet";
@@ -99,7 +98,6 @@ const AnimatedPathItem = ({ d, length, progress }) => {
 
   return (
     <>
-      {/* Dim background outline of the full letter shape */}
       <Path
         d={d}
         fill="none"
@@ -108,7 +106,6 @@ const AnimatedPathItem = ({ d, length, progress }) => {
         strokeLinecap="round"
         strokeLinejoin="round"
       />
-      {/* Animated drawing stroke and solid gradient fill */}
       <AnimatedSvgPath
         d={d}
         fill="url(#indiemateGradient)"
@@ -125,12 +122,10 @@ const AnimatedPathItem = ({ d, length, progress }) => {
 
 export const Splash = () => {
   const navigation = useNavigation();
-  const isLoggedIn = useSelector((state) => state.persist?.isLoggedIn);
-
+  const isLoggedIn = tokenManager.getToken() !== null;
   const strokeProgress = useSharedValue(0);
   const screenOpacity = useSharedValue(1);
 
-  // Handle rapid, immediate navigation after animation completes
   const handleCompleteAndNavigate = useCallback(() => {
     screenOpacity.value = withTiming(
       0,
@@ -146,7 +141,6 @@ export const Splash = () => {
   }, [isLoggedIn, navigation, screenOpacity]);
 
   useEffect(() => {
-    // Animate stroke Dashoffset over exactly 4 seconds and transition instantly when finished
     strokeProgress.value = withTiming(
       1,
       {
@@ -166,7 +160,6 @@ export const Splash = () => {
     opacity: screenOpacity.value,
   }));
 
-  // viewBox is 410 x 100 for the "indiemate" wordmark
   const svgWidth = Math.min(width * 0.6, 260);
   const svgHeight = svgWidth * (100 / 410);
 

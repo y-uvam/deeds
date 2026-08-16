@@ -410,7 +410,7 @@ export const Insights = () => {
   );
 
   return (
-    <AppBackground>
+    <AppBackground showAuthAnimation={true}>
       <Header label="Studio Insights & Analytics" showBackButton={true} />
       <ScrollView
         contentContainerStyle={styles.scrollContent}

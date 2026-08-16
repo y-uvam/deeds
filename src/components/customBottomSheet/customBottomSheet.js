@@ -1,10 +1,26 @@
-import React, { forwardRef, useMemo, useCallback } from "react";
-import { StyleSheet, View, Text, TouchableOpacity, Image } from "react-native";
+import React, {
+  forwardRef,
+  useMemo,
+  useCallback,
+  useRef,
+  useEffect,
+  useImperativeHandle,
+} from "react";
+import {
+  StyleSheet,
+  View,
+  Text,
+  TouchableOpacity,
+  Image,
+  Platform,
+  Keyboard,
+} from "react-native";
 import {
   BottomSheetModal,
   BottomSheetBackdrop,
   BottomSheetScrollView,
 } from "@gorhom/bottom-sheet";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { colors, scales } from "../../utils";
 import { fontFamily, appImages } from "../../assets";
 import { BlurView } from "@react-native-community/blur";
@@ -45,9 +61,28 @@ export const CustomBottomSheet = forwardRef(
       enableBackdrop = true,
       backdropOpacity = 0.5,
       style,
+      isScrollView = true,
+      footerComponent,
+      topInset: customTopInset,
+      keyboardBehavior = "interactive",
     },
     ref,
   ) => {
+    const internalRef = useRef(null);
+    useImperativeHandle(ref, () => internalRef.current);
+
+    useEffect(() => {
+      const hideEvent =
+        Platform.OS === "ios" ? "keyboardWillHide" : "keyboardDidHide";
+      const sub = Keyboard.addListener(hideEvent, () => {
+        internalRef.current?.snapToIndex(0);
+      });
+      return () => sub.remove();
+    }, []);
+
+    const insets = useSafeAreaInsets();
+    const resolvedTopInset =
+      customTopInset !== undefined ? customTopInset : insets.top + scales(6);
     const points = useMemo(() => snapPoints, [snapPoints]);
 
     const renderBackdrop = useCallback(
@@ -71,49 +106,63 @@ export const CustomBottomSheet = forwardRef(
       [useBlur],
     );
 
+    const renderHeader = () => {
+      if (!title && !subtitle && !showCloseButton) return null;
+      return (
+        <View style={styles.headerContainer}>
+          <View style={styles.headerTextContainer}>
+            {!!title && <Text style={styles.title}>{title}</Text>}
+            {!!subtitle && <Text style={styles.subtitle}>{subtitle}</Text>}
+          </View>
+          {showCloseButton && (
+            <TouchableOpacity
+              onPress={() => internalRef.current?.dismiss()}
+              style={styles.closeButton}
+              activeOpacity={0.7}
+            >
+              <Image source={appImages.close} style={styles.closeIcon} />
+            </TouchableOpacity>
+          )}
+        </View>
+      );
+    };
+
     return (
       <BottomSheetModal
-        ref={ref}
+        ref={internalRef}
         snapPoints={points}
+        topInset={resolvedTopInset}
         onChange={onSheetChanges}
         backgroundComponent={renderBackground}
         backdropComponent={renderBackdrop}
+        footerComponent={footerComponent}
         handleComponent={null}
-        enableDynamicSizing={true}
+        enableDynamicSizing={false}
         enablePanDownToClose={enablePanDownToClose}
-        keyboardBehavior="interactive"
+        keyboardBehavior={keyboardBehavior}
         keyboardBlurBehavior="restore"
+        android_keyboardInputMode="adjustResize"
         style={[styles.sheet, style]}
         onDismiss={() => {}}
       >
-        <BottomSheetScrollView
-          contentContainerStyle={[
-            styles.contentContainer,
-            { minHeight: points[0] },
-          ]}
-          keyboardShouldPersistTaps="handled"
-          showsVerticalScrollIndicator={false}
-        >
-          {(title || subtitle || showCloseButton) && (
-            <View style={styles.headerContainer}>
-              <View style={styles.headerTextContainer}>
-                {!!title && <Text style={styles.title}>{title}</Text>}
-                {!!subtitle && <Text style={styles.subtitle}>{subtitle}</Text>}
-              </View>
-              {showCloseButton && (
-                <TouchableOpacity
-                  onPress={() => ref.current?.dismiss()}
-                  style={styles.closeButton}
-                  activeOpacity={0.7}
-                >
-                  <Image source={appImages.close} style={styles.closeIcon} />
-                </TouchableOpacity>
-              )}
-            </View>
-          )}
-
-          {children}
-        </BottomSheetScrollView>
+        {isScrollView ? (
+          <BottomSheetScrollView
+            contentContainerStyle={[
+              styles.contentContainer,
+              { minHeight: points[0] },
+            ]}
+            keyboardShouldPersistTaps="handled"
+            showsVerticalScrollIndicator={false}
+          >
+            {renderHeader()}
+            {children}
+          </BottomSheetScrollView>
+        ) : (
+          <View style={styles.contentContainerFull}>
+            {renderHeader()}
+            {children}
+          </View>
+        )}
       </BottomSheetModal>
     );
   },
@@ -145,6 +194,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: scales(20),
     paddingTop: scales(16),
     paddingBottom: scales(30),
+  },
+  contentContainerFull: {
+    flex: 1,
+    height: "100%",
+    paddingHorizontal: scales(20),
+    paddingTop: scales(16),
+    paddingBottom: Platform.OS === "ios" ? scales(14) : scales(8),
   },
   headerContainer: {
     flexDirection: "row",

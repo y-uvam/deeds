@@ -111,7 +111,7 @@ export const Chat = () => {
   const renderItem = useCallback(({ item }) => <ChatItem item={item} />, []);
 
   return (
-    <AppBackground>
+    <AppBackground showAuthAnimation={true}>
       <Header
         label="Messages"
         showBackButton={false}

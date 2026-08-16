@@ -947,7 +947,7 @@ export const MetaData = ({ route }) => {
       <KeyboardAvoidingView
         style={styles.flex}
         behavior={Platform.OS === "ios" ? "padding" : undefined}
-        keyboardVerticalOffset={80}
+        // keyboardVerticalOffset={80}
       >
         <ScrollView
           showsVerticalScrollIndicator={false}

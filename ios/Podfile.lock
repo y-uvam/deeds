@@ -3730,7 +3730,7 @@ SPEC CHECKSUMS:
   RNGestureHandler: f97d19585553412302394c42495cdaf499589d34
   RNGoogleSignin: 44bff1aeca8d5fb0a4d3d597a56c0782d6dc4ee9
   RNImageCropPicker: 5fd4ceaead64d8c53c787e4e559004f97bc76df7
-  RNPermissions: 8eebc75e90274344756f6bed0de751bf0ffca8d0
+  RNPermissions: ae231882754ca1e99fb28ae28626c5e9982d96f3
   RNReactNativeHapticFeedback: b309b317c95fc3b9bc8276da1a78dae34b6ed46e
   RNReanimated: 13bac9adbcb69373652e3ac53bd4c5efbc8e4ac0
   RNScreens: 7f643ee0fd1407dc5085c7795460bd93da113b8f
@@ -3741,6 +3741,6 @@ SPEC CHECKSUMS:
   TOCropViewController: 797deaf39c90e6e9ddd848d88817f6b9a8a09888
   Yoga: edeb9900b9e5bb5b27b9a6a2d5914e4fe4033c1b
 
-PODFILE CHECKSUM: 9992179233d2ce7f520bf09b79df08da6a77aeba
+PODFILE CHECKSUM: e445cf1e4b603ca4f725b18fcf433be47fc9fe20
 
 COCOAPODS: 1.17.0
