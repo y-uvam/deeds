@@ -2,8 +2,8 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { tokenManager } from "../../helper/createMMKV";
 import { API_BASE_URL, API_IMAGE_URL } from "@env";
 
-export const BASE_URL = API_BASE_URL; //Local
-export const IMAGE_URL = API_IMAGE_URL; //Local
+export const BASE_URL = API_BASE_URL;
+export const IMAGE_URL = API_IMAGE_URL;
 
 export const emptySplitApi = createApi({
   reducerPath: "api",

@@ -11,6 +11,9 @@ import {setProfileData} from './src/redux/slices/persistedSlice';
 import {useEffect} from 'react';
 import FlashMessageComponent from './src/helper/FlashMessage';
 import {TabBarProvider} from './src/context/TabBarContext';
+import { apolloClient, ApolloProvider } from './src/graphql';
+import { OfflineSyncBanner } from './src/components';
+
 function AppContent() {
   const isDarkMode = useColorScheme() === 'dark';
   const dispatch = useDispatch();
@@ -36,6 +39,7 @@ function AppContent() {
               <StatusBar
                 barStyle={isDarkMode ? 'dark-content' : 'light-content'}
               />
+              <OfflineSyncBanner />
               <Routes />
               <FlashMessageComponent />
             </View>
@@ -45,11 +49,14 @@ function AppContent() {
     </GestureHandlerRootView>
   );
 }
+
 function App() {
   return (
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
-        <AppContent />
+        <ApolloProvider client={apolloClient}>
+          <AppContent />
+        </ApolloProvider>
       </PersistGate>
     </Provider>
   );

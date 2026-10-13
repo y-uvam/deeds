@@ -33,9 +33,9 @@ import {
   Reviews,
   Finance,
   Insights,
+  Ratings,
 } from "../screens";
 import { BottomTab } from "./bottomTab";
-import { Ratings } from "../screens/ratings/ratings";
 
 const { Navigator, Screen } = createStackNavigator();
 

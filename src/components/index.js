@@ -18,5 +18,5 @@ export * from "./nextButton/nextButton";
 export * from "./CustomSwitch/CustomSwitch";
 export * from "./splash/splash";
 export * from "./reels/ReelsList";
-export * from "./filter/filter";
 export * from "./commentSheet/commentSheet";
+export * from "./offlineSyncBanner/offlineSyncBanner";
