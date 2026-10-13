@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>590105080127-h1601c1ij3l936f65ojdb5naoar8o5ut.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.590105080127-h1601c1ij3l936f65ojdb5naoar8o5ut</string>
+	<key>API_KEY</key>
+	<string>AIzaSyD4dlHlJYcUwCD5Fa2J-EE_tBnXnfZ1Ftw</string>
+	<key>GCM_SENDER_ID</key>
+	<string>590105080127</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.indiemate</string>
+	<key>PROJECT_ID</key>
+	<string>indiemate-c588e</string>
+	<key>STORAGE_BUCKET</key>
+	<string>indiemate-c588e.firebasestorage.app</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:590105080127:ios:a25b96fa18f54901c0e38a</string>
+</dict>
+</plist>

@@ -14,8 +14,20 @@ if linkage != nil
   use_frameworks! :linkage => linkage.to_sym
 end
 
-target 'deeds' do
+require_relative '../node_modules/react-native-permissions/scripts/setup'
+setup_permissions([
+  'Camera',
+  'LocationWhenInUse',
+  'Microphone',
+  'Notifications',
+  'PhotoLibrary',
+])
+
+target 'indiemate' do
   config = use_native_modules!
+  pod 'GoogleUtilities', :modular_headers => true
+  pod 'RecaptchaInterop', :modular_headers => true
+  pod 'AppCheckCore', :modular_headers => true
 
   use_react_native!(
     :path => config[:reactNativePath],
@@ -30,5 +42,14 @@ target 'deeds' do
       :mac_catalyst_enabled => false,
       # :ccache_enabled => true
     )
+
+    # Fix for Xcode compiler build error in fmt library (C++20 consteval issue)
+    installer.pods_project.targets.each do |target|
+      if target.name == 'fmt'
+        target.build_configurations.each do |config|
+          config.build_settings['CLANG_CXX_LANGUAGE_STANDARD'] = 'c++17'
+        end
+      end
+    end
   end
 end

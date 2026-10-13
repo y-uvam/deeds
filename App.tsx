@@ -1,38 +1,64 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
+import {StatusBar, StyleSheet, useColorScheme, View} from 'react-native';
+import {SafeAreaProvider} from 'react-native-safe-area-context';
+import Routes from './src/navigation/routes';
+import {GestureHandlerRootView} from 'react-native-gesture-handler';
+import {BottomSheetModalProvider} from '@gorhom/bottom-sheet';
+import {appImages} from './src/assets';
+import {Provider, useDispatch} from 'react-redux';
+import {PersistGate} from 'redux-persist/integration/react';
+import store, {persistor} from './src/redux/store/store';
+import {setProfileData} from './src/redux/slices/persistedSlice';
+import {useEffect} from 'react';
+import FlashMessageComponent from './src/helper/FlashMessage';
+import {TabBarProvider} from './src/context/TabBarContext';
+import { apolloClient, ApolloProvider } from './src/graphql';
+import { OfflineSyncBanner } from './src/components';
 
-import { NewAppScreen } from '@react-native/new-app-screen';
-import { StatusBar, StyleSheet, useColorScheme, View } from 'react-native';
-import {
-  SafeAreaProvider,
-  useSafeAreaInsets,
-} from 'react-native-safe-area-context';
-
-function App() {
+function AppContent() {
   const isDarkMode = useColorScheme() === 'dark';
+  const dispatch = useDispatch();
+  const userData = {
+    _id: '1',
+    name: 'Yuvam Dhanda',
+    email: 'yuvamdhanda975@gmail.com',
+    gender: 'male',
+    age: '21',
+    profileImage: appImages.dummyuser,
+  };
+
+  useEffect(() => {
+    dispatch(setProfileData(userData));
+  }, []);
 
   return (
-    <SafeAreaProvider>
-      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-      <AppContent />
-    </SafeAreaProvider>
+    <GestureHandlerRootView style={{flex: 1}}>
+      <SafeAreaProvider>
+        <BottomSheetModalProvider>
+          <TabBarProvider>
+            <View style={styles.container}>
+              <StatusBar
+                barStyle={isDarkMode ? 'dark-content' : 'light-content'}
+              />
+              <OfflineSyncBanner />
+              <Routes />
+              <FlashMessageComponent />
+            </View>
+          </TabBarProvider>
+        </BottomSheetModalProvider>
+      </SafeAreaProvider>
+    </GestureHandlerRootView>
   );
 }
 
-function AppContent() {
-  const safeAreaInsets = useSafeAreaInsets();
-
+function App() {
   return (
-    <View style={styles.container}>
-      <NewAppScreen
-        templateFileName="App.tsx"
-        safeAreaInsets={safeAreaInsets}
-      />
-    </View>
+    <Provider store={store}>
+      <PersistGate loading={null} persistor={persistor}>
+        <ApolloProvider client={apolloClient}>
+          <AppContent />
+        </ApolloProvider>
+      </PersistGate>
+    </Provider>
   );
 }
 

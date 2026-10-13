@@ -1,0 +1,15 @@
+export const fontFamily = {
+  black: 'Urbanist-Black',
+  blackItalic: 'UrbanistBlackItalic',
+  bold: 'UrbanistBold',
+  boldItalic: 'UrbanistBoldItalic',
+  medium: 'UrbanistMedium',
+  mediumItalic: 'UrbanistMediumItalic',
+  regular: 'UrbanistRegular',
+  regularItalic: 'UrbanistRegularItalic',
+  semiBold: 'UrbanistSemiBold',
+  semiBoldItalic: 'UrbanistSemiBoldItalic',
+  regular: 'UrbanistRegular',
+  light: 'UrbanistLight',
+  italic: 'UrbanistItalic',
+};
