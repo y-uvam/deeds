@@ -53,3 +53,7 @@ node_modules
 android/app/build/
 android/build/
 android/app/.cxx/
+
+package-lock.json
+ios/Podfile.lock
+.env

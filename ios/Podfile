@@ -45,6 +45,14 @@ target 'indiemate' do
 
     # Fix for Xcode compiler build error in fmt library (C++20 consteval issue)
     installer.pods_project.targets.each do |target|
+    target.build_configurations.each do |config|
+      # Force the deployment target to 15.0 if it is set lower
+      if config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'].to_f < 15.0
+        config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '15.0'
+      end
+    end
+  end
+    installer.pods_project.targets.each do |target|
       if target.name == 'fmt'
         target.build_configurations.each do |config|
           config.build_settings['CLANG_CXX_LANGUAGE_STANDARD'] = 'c++17'

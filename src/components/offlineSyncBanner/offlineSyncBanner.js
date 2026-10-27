@@ -12,7 +12,8 @@ export const OfflineSyncBanner = () => {
     return (
       <View style={[styles.container, styles.offline]}>
         <Text style={styles.text}>
-          Waiting for network... {pendingCount > 0 ? `(${pendingCount} pending)` : ""}
+          Waiting for network...{" "}
+          {pendingCount > 0 ? `(${pendingCount} pending)` : ""}
         </Text>
       </View>
     );
@@ -21,7 +22,9 @@ export const OfflineSyncBanner = () => {
   if (pendingCount > 0) {
     return (
       <View style={[styles.container, styles.syncing]}>
-        <Text style={styles.text}>Syncing {pendingCount} offline changes...</Text>
+        <Text style={styles.text}>
+          Syncing {pendingCount} offline changes...
+        </Text>
       </View>
     );
   }
